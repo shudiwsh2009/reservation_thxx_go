@@ -1,0 +1,7 @@
+target/*
+!target/appointment.war
+!target/appointment.jar
+out/
+.idea
+*.iml
+.DS_Store
