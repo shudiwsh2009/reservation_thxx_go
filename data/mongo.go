@@ -12,9 +12,9 @@ var (
 )
 
 /**
-	User
- */
-func AddSimpleUser(username string, password string, userType string) (*domain.User, error) {
+User
+*/
+func AddSimpleUser(username string, password string, userType domain.UserType) (*domain.User, error) {
 	collection := Mongo.C("user")
 	newUser := &domain.User{
 		Id:       bson.NewObjectId(),
@@ -28,7 +28,7 @@ func AddSimpleUser(username string, password string, userType string) (*domain.U
 	return newUser, nil
 }
 
-func AddFullUser(username string, password string, fullname string, mobile string, userType string) (*domain.User, error) {
+func AddFullUser(username string, password string, fullname string, mobile string, userType domain.UserType) (*domain.User, error) {
 	collection := Mongo.C("user")
 	newUser := &domain.User{
 		Id:       bson.NewObjectId(),
@@ -78,10 +78,11 @@ func GetUserByMobile(mobile string) (*domain.User, error) {
 }
 
 /**
-	Reservation
- */
+Reservation
+*/
 
-func AddReservation(startTime time.Time, endTime time.Time, status string, teacherFullname string, teacherUsername string, teacherMobile string) (*domain.Reservation, error) {
+func AddReservation(startTime time.Time, endTime time.Time, status domain.ReservationStatus, teacherFullname string,
+	teacherUsername string, teacherMobile string) (*domain.Reservation, error) {
 	collection := Mongo.C("appointment")
 	newReservation := &domain.Reservation{
 		Id:              bson.NewObjectId(),
@@ -131,7 +132,8 @@ func GetReservationsBetweenTime(from time.Time, to time.Time) ([]*domain.Reserva
 	collection := Mongo.C("appointment")
 	var reservations []*domain.Reservation
 	reservation := &domain.Reservation{}
-	iter := collection.Find(bson.M{"startTime": bson.M{"$gte": from, "$lte": to}, "status": bson.M{"$ne": domain.STATUS_DELETED}}).Sort("startTime").Iter()
+	iter := collection.Find(bson.M{"startTime": bson.M{"$gte": from, "$lte": to},
+		"status": bson.M{"$ne": domain.Deleted}}).Sort("startTime").Iter()
 	for iter.Next(reservation) {
 		reservations = append(reservations, reservation)
 	}
@@ -142,7 +144,8 @@ func GetReservationsAfterTime(from time.Time) ([]*domain.Reservation, error) {
 	collection := Mongo.C("appointment")
 	var reservations []*domain.Reservation
 	reservation := &domain.Reservation{}
-	iter := collection.Find(bson.M{"startTime": bson.M{"$gte": from}, "status": bson.M{"$ne": domain.STATUS_DELETED}}).Sort("startTime").Iter()
+	iter := collection.Find(bson.M{"startTime": bson.M{"$gte": from},
+		"status": bson.M{"$ne": domain.Deleted}}).Sort("startTime").Iter()
 	for iter.Next(reservation) {
 		reservations = append(reservations, reservation)
 	}

@@ -5,12 +5,25 @@ import (
 	"time"
 )
 
+type ReservationStatus int
+
 const (
-	STATUS_AVAILABLE = "AVAILABLE"
-	STATUS_RESERVATED = "RESERVATED"
-	STATUS_FEEDBACK = "FEEDBACK"
-	STATUS_DELETED = "DELETED"
+	Availabel ReservationStatus = iota
+	Reservated
+	Feedback
+	Deleted
 )
+
+var reservationStatuses = [...]string{
+	"AVAILABEL",
+	"RESERVATED",
+	"FEEDBACK",
+	"DELETED",
+}
+
+func (rs ReservationStatus) String() string {
+	return reservationStatuses[rs]
+}
 
 type StudentInfo struct {
 	Name       string `bson:"name"`
@@ -33,7 +46,8 @@ type StudentFeedback struct {
 }
 
 func (sf StudentFeedback) IsEmpty() bool {
-	return len(sf.Name) == 0 || len(sf.Problem) == 0 || len(sf.Choices) == 0 || len(sf.Score) == 0 || len(sf.Feedback) == 0
+	return len(sf.Name) == 0 || len(sf.Problem) == 0 || len(sf.Choices) == 0 ||
+		len(sf.Score) == 0 || len(sf.Feedback) == 0
 }
 
 type TeacherFeedback struct {
@@ -46,18 +60,19 @@ type TeacherFeedback struct {
 }
 
 func (tf TeacherFeedback) IsEmpty() bool {
-	return len(tf.TeacherFullname) == 0 || len(tf.TeacherUsername) == 0 || len(tf.StudentFullname) == 0 || len(tf.Problem) == 0 || len(tf.Solution) == 0 || len(tf.AdviceToCenter) == 0
+	return len(tf.TeacherFullname) == 0 || len(tf.TeacherUsername) == 0 || len(tf.StudentFullname) == 0 ||
+		len(tf.Problem) == 0 || len(tf.Solution) == 0 || len(tf.AdviceToCenter) == 0
 }
 
 type Reservation struct {
-	Id              bson.ObjectId   `bson:"_id"`
-	StartTime       time.Time       `bson:"startTime"`
-	EndTime         time.Time       `bson:"endTime"`
-	Status          string          `bson:"status"`
-	TeacherUsername string          `bson:"teacherUsername"`
-	TeacherFullname string          `bson:"teacher"`
-	TeacherMobile   string          `bson:"teacherMobile"`
-	StudentInfo     StudentInfo     `bson:"studentInfo"`
-	StudentFeedback StudentFeedback `bson:"studentFeedback"`
-	TeacherFeedback TeacherFeedback `bson:"teacherFeedback"`
+	Id              bson.ObjectId     `bson:"_id"`
+	StartTime       time.Time         `bson:"startTime"`
+	EndTime         time.Time         `bson:"endTime"`
+	Status          ReservationStatus `bson:"status"`
+	TeacherUsername string            `bson:"teacherUsername"`
+	TeacherFullname string            `bson:"teacher"`
+	TeacherMobile   string            `bson:"teacherMobile"`
+	StudentInfo     StudentInfo       `bson:"studentInfo"`
+	StudentFeedback StudentFeedback   `bson:"studentFeedback"`
+	TeacherFeedback TeacherFeedback   `bson:"teacherFeedback"`
 }

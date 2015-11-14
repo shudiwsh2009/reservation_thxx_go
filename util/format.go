@@ -10,7 +10,8 @@ func IsMobile(mobile string) bool {
 }
 
 func IsEmail(email string) bool {
-	if m, _ := regexp.MatchString("^([a-z0-9A-Z]+[-|\\.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-zA-Z]{2,}$", email); !m {
+	if m, _ := regexp.MatchString("^([a-z0-9A-Z]+[-|\\.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-zA-Z]{2,}$",
+		email); !m {
 		return false
 	}
 	return true
