@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 	"github.com/shudiwsh2009/reservation_thxx_go/data"
+	"github.com/shudiwsh2009/reservation_thxx_go/domain"
 	"gopkg.in/mgo.v2"
-	"time"
 )
 
 func main() {
@@ -16,18 +16,17 @@ func main() {
 	session.SetMode(mgo.Monotonic, true)
 	data.Mongo = session.DB("appointment")
 
-	t, err := time.Parse(time.UnixDate, "Sat Mar  7 14:06:39 PST 2015")
-	if err != nil { // Always check errors even if they should not happen.
-		panic(err)
-	}
-	do := func(name, layout, want string) {
-		got := t.Format(layout)
-		if want != got {
-			fmt.Printf("error: for %q got %q; expected %q\n", layout, got, want)
-			return
+	reservationIds := []string{"5646f0f7a56d4188cf603efb", "5646f0eaa56d4188cf603efa"}
+	var reservations []*domain.Reservation
+	for _, reservationId := range reservationIds {
+		reservation, err := data.GetReservationById(reservationId)
+		if err != nil {
+			continue
 		}
-		fmt.Printf("%-15s %q gives %q\n", name, layout, got)
+		reservations = append(reservations, reservation)
 	}
-	do("Suppressed pad", "15:04", "14:06")
-	do("month", "一", "三")
+	for _, reservation := range reservations {
+		fmt.Println(reservation)
+	}
+
 }

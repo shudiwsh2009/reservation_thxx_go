@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	ADMIN_DEFAULT_PASSWORD   = "THXXFZZX"
-	TEACHER_DEFAULT_PASSWORD = "thxxfzzx"
+	AdminDefaultPassword   = "THXXFZZX"
+	TeacherDefaultPassword = "thxxfzzx"
 )
 
 type UserLogic struct {
@@ -24,8 +24,8 @@ func (ul *UserLogic) Login(username string, password string) (*domain.User, erro
 	}
 	user, err := data.GetUserByUsername(username)
 	if err == nil && (strings.EqualFold(user.Password, password) ||
-		(strings.EqualFold(user.UserType, domain.USERTYPE_TEACHER) && strings.EqualFold(user.Password, TEACHER_DEFAULT_PASSWORD)) ||
-		(strings.EqualFold(user.UserType, domain.USERTYPE_ADMIN) && strings.EqualFold(user.Password, ADMIN_DEFAULT_PASSWORD))) {
+		(strings.EqualFold(user.UserType, domain.Teacher) && strings.EqualFold(user.Password, TeacherDefaultPassword)) ||
+		(strings.EqualFold(user.UserType, domain.Admin) && strings.EqualFold(user.Password, AdminDefaultPassword))) {
 		return user, nil
 	}
 	return nil, errors.New("用户名或密码不正确")

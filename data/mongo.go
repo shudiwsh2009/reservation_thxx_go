@@ -120,10 +120,8 @@ func GetReservationById(id string) (*domain.Reservation, error) {
 func GetReservationsByStudentId(studentId string) ([]*domain.Reservation, error) {
 	collection := Mongo.C("appointment")
 	var reservations []*domain.Reservation
-	reservation := &domain.Reservation{}
-	iter := collection.Find(bson.M{"studentInfo.studentId": studentId}).Iter()
-	for iter.Next(reservation) {
-		reservations = append(reservations, reservation)
+	if err := collection.Find(bson.M{"studentInfo.studentId": studentId}).All(&reservations); err != nil {
+		return nil, err
 	}
 	return reservations, nil
 }
@@ -131,11 +129,9 @@ func GetReservationsByStudentId(studentId string) ([]*domain.Reservation, error)
 func GetReservationsBetweenTime(from time.Time, to time.Time) ([]*domain.Reservation, error) {
 	collection := Mongo.C("appointment")
 	var reservations []*domain.Reservation
-	reservation := &domain.Reservation{}
-	iter := collection.Find(bson.M{"startTime": bson.M{"$gte": from, "$lte": to},
-		"status": bson.M{"$ne": domain.Deleted}}).Sort("startTime").Iter()
-	for iter.Next(reservation) {
-		reservations = append(reservations, reservation)
+	if err := collection.Find(bson.M{"startTime": bson.M{"$gte": from, "$lte": to},
+		"status": bson.M{"$ne": domain.Deleted}}).Sort("startTime").All(&reservations); err != nil {
+		return nil, err
 	}
 	return reservations, nil
 }
@@ -143,11 +139,9 @@ func GetReservationsBetweenTime(from time.Time, to time.Time) ([]*domain.Reserva
 func GetReservationsAfterTime(from time.Time) ([]*domain.Reservation, error) {
 	collection := Mongo.C("appointment")
 	var reservations []*domain.Reservation
-	reservation := &domain.Reservation{}
-	iter := collection.Find(bson.M{"startTime": bson.M{"$gte": from},
-		"status": bson.M{"$ne": domain.Deleted}}).Sort("startTime").Iter()
-	for iter.Next(reservation) {
-		reservations = append(reservations, reservation)
+	if err := collection.Find(bson.M{"startTime": bson.M{"$gte": from},
+		"status": bson.M{"$ne": domain.Deleted}}).Sort("startTime").All(&reservations); err != nil {
+		return nil, err
 	}
 	return reservations, nil
 }

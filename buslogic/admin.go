@@ -4,31 +4,38 @@ import (
 	"errors"
 	"github.com/shudiwsh2009/reservation_thxx_go/data"
 	"github.com/shudiwsh2009/reservation_thxx_go/domain"
+	"github.com/shudiwsh2009/reservation_thxx_go/sms"
 	"github.com/shudiwsh2009/reservation_thxx_go/util"
 	"strings"
 	"time"
 )
 
-type TeacherLogic struct {
+type AdminLogic struct {
 }
 
-// 咨询师添加咨询
-func (tl *TeacherLogic) AddReservationByTeacher(startTime string, endTime string, teacherFullname string,
-	teacherMobile string, username string, userType domain.UserType) (*domain.Reservation, error) {
+// 管理员添加咨询
+func (al *AdminLogic) AddReservationByAdmin(startTime string, endTime string, teacherUsername string,
+	teacherFullname string, teacherMobile string, username string, userType domain.UserType) (*domain.Reservation, error) {
 	if strings.EqualFold(username, "") {
 		return nil, errors.New("请先登录")
-	} else if userType != domain.Teacher {
+	} else if userType != domain.Admin {
 		return nil, errors.New("权限不足")
 	} else if strings.EqualFold(startTime, "") {
 		return nil, errors.New("开始时间为空")
 	} else if strings.EqualFold(endTime, "") {
 		return nil, errors.New("结束时间为空")
+	} else if strings.EqualFold(teacherUsername, "") {
+		return nil, errors.New("咨询师工号为空")
 	} else if strings.EqualFold(teacherFullname, "") {
 		return nil, errors.New("咨询师姓名为空")
 	} else if strings.EqualFold(teacherMobile, "") {
 		return nil, errors.New("咨询师手机号为空")
 	} else if !util.IsMobile(teacherMobile) {
 		return nil, errors.New("咨询师手机号格式不正确")
+	}
+	admin, err := data.GetUserByUsername(username)
+	if err != nil || admin.UserType != domain.Admin {
+		return nil, errors.New("管理员账户出错,请联系技术支持")
 	}
 	start, err := time.Parse(util.TIME_PATTERN, startTime)
 	if err != nil {
@@ -41,16 +48,20 @@ func (tl *TeacherLogic) AddReservationByTeacher(startTime string, endTime string
 	if start.After(end) {
 		return nil, errors.New("开始时间不能晚于结束时间")
 	}
-	teacher, err := data.GetUserByUsername(username)
+	teacher, err := data.GetUserByUsername(teacherUsername)
 	if err != nil {
-		return nil, errors.New("咨询师账户失效")
+		if teacher, err = data.AddFullUser(teacherUsername, TeacherDefaultPassword, teacherFullname,
+			teacherMobile, domain.Teacher); err != nil {
+			return nil, errors.New("获取数据失败")
+		}
 	} else if teacher.UserType != domain.Teacher {
 		return nil, errors.New("权限不足")
-	}
-	teacher.Fullname = teacherFullname
-	teacher.Mobile = teacherMobile
-	if err = data.UpsertUser(teacher); err != nil {
-		return nil, errors.New("数据获取失败")
+	} else {
+		teacher.Fullname = teacherFullname
+		teacher.Mobile = teacherMobile
+		if err = data.UpsertUser(teacher); err != nil {
+			return nil, errors.New("获取数据失败")
+		}
 	}
 	reservation, err := data.AddReservation(start, end, teacher.Fullname, teacher.Username, teacher.Mobile)
 	if err != nil {
@@ -59,12 +70,13 @@ func (tl *TeacherLogic) AddReservationByTeacher(startTime string, endTime string
 	return reservation
 }
 
-// 咨询师编辑咨询
-func (tl *TeacherLogic) EditReservationByTeacher(reservationId string, startTime string, endTime string,
-	teacherFullname string, teacherMobile string, username string, userType domain.UserType) (*domain.Reservation, error) {
+// 管理员编辑咨询
+func (al *AdminLogic) EditReservationByAdmin(reservationId string, startTime string, endTime string,
+	teacherUsername string, teacherFullname string, teacherMobile string, username string,
+	userType domain.UserType) (*domain.Reservation, error) {
 	if strings.EqualFold(username, "") {
 		return nil, errors.New("请先登录")
-	} else if userType != domain.Teacher {
+	} else if userType != domain.Admin {
 		return nil, errors.New("权限不足")
 	} else if strings.EqualFold(reservationId, "") {
 		return nil, errors.New("咨询已下架")
@@ -72,12 +84,18 @@ func (tl *TeacherLogic) EditReservationByTeacher(reservationId string, startTime
 		return nil, errors.New("开始时间为空")
 	} else if strings.EqualFold(endTime, "") {
 		return nil, errors.New("结束时间为空")
+	} else if strings.EqualFold(teacherUsername, "") {
+		return nil, errors.New("咨询师工号为空")
 	} else if strings.EqualFold(teacherFullname, "") {
 		return nil, errors.New("咨询师姓名为空")
 	} else if strings.EqualFold(teacherMobile, "") {
 		return nil, errors.New("咨询师手机号为空")
 	} else if !util.IsMobile(teacherMobile) {
 		return nil, errors.New("咨询师手机号格式不正确")
+	}
+	admin, err := data.GetUserByUsername(username)
+	if err != nil || admin.UserType != domain.Admin {
+		return nil, errors.New("管理员账户出错,请联系技术支持")
 	}
 	reservation, err := data.GetReservationById(reservationId)
 	if err != nil {
@@ -96,31 +114,34 @@ func (tl *TeacherLogic) EditReservationByTeacher(reservationId string, startTime
 	if start.After(end) {
 		return nil, errors.New("开始时间不能晚于结束时间")
 	}
-	teacher, err := data.GetUserByUsername(username)
+	teacher, err := data.GetUserByUsername(teacherUsername)
 	if err != nil {
-		return nil, errors.New("咨询师账户失效")
+		if teacher, err = data.AddFullUser(teacherUsername, TeacherDefaultPassword, teacherFullname,
+			teacherMobile, domain.Teacher); err != nil {
+			return nil, errors.New("获取数据失败")
+		}
 	} else if teacher.UserType != domain.Teacher {
 		return nil, errors.New("权限不足")
-	} else if !strings.EqualFold(teacher.Username, reservation.TeacherUsername) {
-		return nil, errors.New("只能编辑本人开设的咨询")
-	}
-	teacher.Fullname = teacherFullname
-	teacher.Mobile = teacherMobile
-	if err = data.UpsertUser(teacher); err != nil {
-		return nil, errors.New("数据获取失败")
+	} else {
+		teacher.Fullname = teacherFullname
+		teacher.Mobile = teacherMobile
+		if err = data.UpsertUser(teacher); err != nil {
+			return nil, errors.New("获取数据失败")
+		}
 	}
 	reservation.StartTime = start
 	reservation.EndTime = end
-	reservation.TeacherFullname = teacherFullname
-	reservation.TeacherMobile = teacherMobile
+	reservation.TeacherUsername = teacher.Username
+	reservation.TeacherFullname = teacher.Fullname
+	reservation.TeacherMobile = teacher.Mobile
 	if err = data.UpsertReservation(reservation); err != nil {
 		return nil, errors.New("数据获取失败")
 	}
 	return reservation
 }
 
-// 咨询师删除咨询
-func (tl *TeacherLogic) RemoveReservationsByTeacher(reservationIds []string, username string, userType domain.UserType) error {
+// 管理员删除咨询
+func (al *AdminLogic) RemoveReservationsByAdmin(reservationIds []string, username string, userType domain.UserType) error {
 	if strings.EqualFold(username, "") {
 		return errors.New("请先登录")
 	} else if userType != domain.Teacher {
@@ -128,14 +149,12 @@ func (tl *TeacherLogic) RemoveReservationsByTeacher(reservationIds []string, use
 	} else if reservationIds == nil {
 		return errors.New("咨询Id列表为空")
 	}
-	teacher, err := data.GetUserByUsername(username)
-	if err != nil {
-		return errors.New("咨询师账户失效")
-	} else if teacher.UserType != domain.Teacher {
-		return errors.New("权限不足")
+	admin, err := data.GetUserByUsername(username)
+	if err != nil || admin.UserType != domain.Admin {
+		return nil, errors.New("管理员账户出错,请联系技术支持")
 	}
 	for _, reservationId := range reservationIds {
-		if reservation, err := data.GetReservationById(reservationId); err == nil && strings.EqualFold(reservation.TeacherUsername, teacher.Username) {
+		if reservation, err := data.GetReservationById(reservationId); err == nil {
 			reservation.Status = domain.Deleted
 			data.UpsertReservation(reservation)
 		}
@@ -143,8 +162,8 @@ func (tl *TeacherLogic) RemoveReservationsByTeacher(reservationIds []string, use
 	return nil
 }
 
-// 咨询师取消预约
-func (tl *TeacherLogic) CancelReservationsByTeacher(reservationIds []string, username string, userType domain.UserType) error {
+// 管理员取消预约
+func (al *AdminLogic) CancelReservationsByAdmin(reservationIds []string, username string, userType domain.UserType) error {
 	if strings.EqualFold(username, "") {
 		return errors.New("请先登录")
 	} else if userType != domain.Teacher {
@@ -152,16 +171,13 @@ func (tl *TeacherLogic) CancelReservationsByTeacher(reservationIds []string, use
 	} else if reservationIds == nil {
 		return errors.New("咨询Id列表为空")
 	}
-	teacher, err := data.GetUserByUsername(username)
-	if err != nil {
-		return errors.New("咨询师账户失效")
-	} else if teacher.UserType != domain.Teacher {
-		return errors.New("权限不足")
+	admin, err := data.GetUserByUsername(username)
+	if err != nil || admin.UserType != domain.Admin {
+		return nil, errors.New("管理员账户出错,请联系技术支持")
 	}
 	for _, reservationId := range reservationIds {
 		reseravtion, err := data.GetReservationById(reservationId)
-		if err != nil || reseravtion.Status == domain.Deleted ||
-			!strings.EqualFold(reseravtion.TeacherUsername, teacher.Username) {
+		if err != nil || reseravtion.Status == domain.Deleted {
 			continue
 		}
 		if reseravtion.Status == domain.Reservated && reseravtion.StartTime.After(time.Now().Local()) {
@@ -175,8 +191,8 @@ func (tl *TeacherLogic) CancelReservationsByTeacher(reservationIds []string, use
 	return nil
 }
 
-// 咨询师拉取反馈
-func (tl *TeacherLogic) GetFeedbackByTeacher(reservationId string, username string, userType domain.UserType) (*domain.Reservation, error) {
+// 管理员拉取反馈
+func (al *AdminLogic) GetFeedbackByAdmin(reservationId string, username string, userType domain.UserType) (*domain.Reservation, error) {
 	if strings.EqualFold(username, "") {
 		return nil, errors.New("请先登录")
 	} else if userType != domain.Teacher {
@@ -184,11 +200,9 @@ func (tl *TeacherLogic) GetFeedbackByTeacher(reservationId string, username stri
 	} else if strings.EqualFold(reservationId, "") {
 		return nil, errors.New("咨询已下架")
 	}
-	teacher, err := data.GetUserByUsername(username)
-	if err != nil {
-		return nil, errors.New("咨询师账户失效")
-	} else if teacher.UserType != domain.Teacher {
-		return nil, errors.New("权限不足")
+	admin, err := data.GetUserByUsername(username)
+	if err != nil || admin.UserType != domain.Admin {
+		return nil, errors.New("管理员账户出错,请联系技术支持")
 	}
 	reservation, err := data.GetReservationById(reservationId)
 	if err != nil || reservation.Status == domain.Deleted {
@@ -197,14 +211,12 @@ func (tl *TeacherLogic) GetFeedbackByTeacher(reservationId string, username stri
 		return nil, errors.New("咨询未开始,暂不能反馈")
 	} else if reservation.Status == domain.Availabel {
 		return nil, errors.New("咨询未被预约,不能反馈")
-	} else if !strings.EqualFold(reservation.TeacherUsername, teacher.Username) {
-		return nil, errors.New("只能反馈本人开设的咨询")
 	}
 	return reservation, nil
 }
 
-// 咨询师提交反馈
-func (tl *TeacherLogic) SubmitFeedbackByTeacher(reservationId string, teacherFullname string, teacherId string,
+// 管理员提交反馈
+func (al *AdminLogic) SubmitFeedbackByAdmin(reservationId string, teacherFullname string, teacherId string,
 	studentName string, problem string, solution string, adviceToCenter string, username string,
 	userType domain.UserType) (*domain.Reservation, error) {
 	if strings.EqualFold(username, "") {
@@ -226,11 +238,9 @@ func (tl *TeacherLogic) SubmitFeedbackByTeacher(reservationId string, teacherFul
 	} else if strings.EqualFold(adviceToCenter, "") {
 		return nil, errors.New("工作建议为空")
 	}
-	teacher, err := data.GetUserByUsername(username)
-	if err != nil {
-		return nil, errors.New("咨询师账户失效")
-	} else if teacher.UserType != domain.Teacher {
-		return nil, errors.New("权限不足")
+	admin, err := data.GetUserByUsername(username)
+	if err != nil || admin.UserType != domain.Admin {
+		return nil, errors.New("管理员账户出错,请联系技术支持")
 	}
 	reservation, err := data.GetReservationById(reservationId)
 	if err != nil || reservation.Status == domain.Deleted {
@@ -239,8 +249,8 @@ func (tl *TeacherLogic) SubmitFeedbackByTeacher(reservationId string, teacherFul
 		return nil, errors.New("咨询未开始,暂不能反馈")
 	} else if reservation.Status == domain.Availabel {
 		return nil, errors.New("咨询未被预约,不能反馈")
-	} else if !strings.EqualFold(reservation.TeacherUsername, teacher.Username) {
-		return nil, errors.New("只能反馈本人开设的咨询")
+	} else if !strings.EqualFold(teacherId, reservation.TeacherUsername) {
+		return nil, errors.New("咨询师工号不匹配")
 	}
 	if reservation.TeacherFeedback.IsEmpty() && reservation.StudentFeedback.IsEmpty() {
 		sms.SendFeedbackSMS(reservation)
@@ -259,8 +269,8 @@ func (tl *TeacherLogic) SubmitFeedbackByTeacher(reservationId string, teacherFul
 	return reservation, nil
 }
 
-// 咨询师查看学生信息
-func (tl *TeacherLogic) GetStudentInfoByTeacher(reservationId string, username string, userType domain.UserType) (domain.StudentInfo, error) {
+// 管理员查看学生信息
+func (al *AdminLogic) GetStudentInfoByAdmin(reservationId string, username string, userType domain.UserType) (domain.StudentInfo, error) {
 	if strings.EqualFold(username, "") {
 		return nil, errors.New("请先登录")
 	} else if userType != domain.Teacher {
@@ -268,19 +278,46 @@ func (tl *TeacherLogic) GetStudentInfoByTeacher(reservationId string, username s
 	} else if strings.EqualFold(reservationId, "") {
 		return nil, errors.New("咨询已下架")
 	}
-	teacher, err := data.GetUserByUsername(username)
-	if err != nil {
-		return nil, errors.New("咨询师账户失效")
-	} else if teacher.UserType != domain.Teacher {
-		return nil, errors.New("权限不足")
+	admin, err := data.GetUserByUsername(username)
+	if err != nil || admin.UserType != domain.Admin {
+		return nil, errors.New("管理员账户出错,请联系技术支持")
 	}
 	reservation, err := data.GetReservationById(reservationId)
 	if err != nil || reservation.Status == domain.Deleted {
 		return nil, errors.New("咨询已下架")
 	} else if reservation.Status == domain.Availabel {
 		return nil, errors.New("咨询未被预约,无法查看")
-	} else if !strings.EqualFold(reservation.TeacherUsername, teacher.Username) {
-		return nil, errors.New("只能查看本人开设的咨询")
 	}
 	return reservation.StudentInfo, nil
+}
+
+// 管理员导出咨询
+func (al *AdminLogic) ExportReservationsByAdmin(reservationIds []string, username string, userType domain.UserType) (string, error) {
+	if strings.EqualFold(username, "") {
+		return "", errors.New("请先登录")
+	} else if userType != domain.Teacher {
+		return "", errors.New("权限不足")
+	} else if reservationIds == nil {
+		return "", errors.New("咨询Id列表为空")
+	}
+	admin, err := data.GetUserByUsername(username)
+	if err != nil || admin.UserType != domain.Admin {
+		return "", errors.New("管理员账户出错,请联系技术支持")
+	}
+	var reservations []*domain.Reservation
+	for _, reservationId := range reservationIds {
+		reservation, err := data.GetReservationById(reservationId)
+		if err != nil {
+			continue
+		}
+		reservations = append(reservations, reservation)
+	}
+	filename := "export_" + time.Now().Local().Format("2006-01-02 15:04") + util.ExcelSuffix
+	if len(reservations) == 0 {
+		return "", nil
+	}
+	if err = util.ExportReservationsToExcel(reservations, filename); err != nil {
+		return "", err
+	}
+	return util.ExportPrefix + filename, nil
 }
