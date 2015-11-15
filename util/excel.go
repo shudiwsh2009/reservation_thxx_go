@@ -71,15 +71,11 @@ func ExportReservationsToExcel(reservations []*domain.Reservation, filename stri
 				switch reservation.StudentFeedback.Choices[i] {
 				case 'A':
 					cell.SetString("非常同意")
-					break
 				case 'B':
 					cell.SetString("一般")
-					break
 				case 'C':
 					cell.SetString("不同意")
-					break
 				default:
-					break
 				}
 			}
 		}
