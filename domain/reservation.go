@@ -8,7 +8,7 @@ import (
 type ReservationStatus int
 
 const (
-	Availabel ReservationStatus = iota
+	Availabel ReservationStatus = 1 + iota
 	Reservated
 	Feedback
 	Deleted
@@ -22,7 +22,7 @@ var reservationStatuses = [...]string{
 }
 
 func (rs ReservationStatus) String() string {
-	return reservationStatuses[rs]
+	return reservationStatuses[rs-1]
 }
 
 type StudentInfo struct {

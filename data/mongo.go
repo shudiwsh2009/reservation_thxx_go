@@ -81,14 +81,14 @@ func GetUserByMobile(mobile string) (*domain.User, error) {
 Reservation
 */
 
-func AddReservation(startTime time.Time, endTime time.Time, status domain.ReservationStatus, teacherFullname string,
-	teacherUsername string, teacherMobile string) (*domain.Reservation, error) {
+func AddReservation(startTime time.Time, endTime time.Time, teacherFullname string, teacherUsername string,
+	teacherMobile string) (*domain.Reservation, error) {
 	collection := Mongo.C("appointment")
 	newReservation := &domain.Reservation{
 		Id:              bson.NewObjectId(),
 		StartTime:       startTime,
 		EndTime:         endTime,
-		Status:          status,
+		Status:          domain.Availabel,
 		TeacherFullname: teacherFullname,
 		TeacherUsername: teacherUsername,
 		TeacherMobile:   teacherMobile,

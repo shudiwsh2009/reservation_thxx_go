@@ -141,8 +141,7 @@ func (sl *StudentLogic) SubmitFeedbackByStudent(reservationId string, name strin
 		Score:    score,
 		Feedback: feedback,
 	}
-	err = data.UpsertReservation(reservation)
-	if err != nil {
+	if err = data.UpsertReservation(reservation); err != nil {
 		return nil, errors.New("数据获取失败")
 	}
 	return reservation, nil

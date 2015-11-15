@@ -5,7 +5,7 @@ import "gopkg.in/mgo.v2/bson"
 type UserType int
 
 const (
-	Student UserType = iota
+	Student UserType = 1 + iota
 	Teacher
 	Admin
 )
@@ -17,7 +17,7 @@ var userTypes = [...]string{
 }
 
 func (ut UserType) String() string {
-	return userTypes[ut]
+	return userTypes[ut-1]
 }
 
 type User struct {
