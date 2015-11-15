@@ -85,3 +85,65 @@ func (sl *StudentLogic) MakeReservationByStudent(reservationId string, name stri
 	}
 	return reservation, nil
 }
+
+// 学生拉取反馈
+func (sl *StudentLogic) GetFeedbackByStudent(reservationId string, studentId string) (*domain.Reservation, error) {
+	if strings.EqualFold(reservationId, "") {
+		return nil, errors.New("咨询已下架")
+	} else if strings.EqualFold(studentId, "") || !util.IsStudentId(studentId) {
+		return nil, errors.New("学号不正确")
+	}
+	reservation, err := data.GetReservationById(reservationId)
+	if err != nil {
+		return nil, errors.New("咨询已下架")
+	} else if reservation.StartTime.After(time.Now().Local()) {
+		return nil, errors.New("咨询未开始,暂不能反馈")
+	} else if reservation.Status == domain.Availabel {
+		return nil, errors.New("咨询未被预约,不能反馈")
+	} else if !strings.EqualFold(reservation.StudentInfo.StudentId, studentId) {
+		return nil, errors.New("只能反馈本人预约的咨询")
+	}
+	return reservation, nil
+}
+
+// 学生反馈
+func (sl *StudentLogic) SubmitFeedbackByStudent(reservationId string, name string, problem string, choices string,
+	score string, feedback string, studentId string) (*domain.Reservation, error) {
+	if strings.EqualFold(reservationId, "") {
+		return nil, errors.New("咨询已下架")
+	} else if strings.EqualFold(name, "") {
+		return nil, errors.New("姓名为空")
+	} else if strings.EqualFold(problem, "") {
+		return nil, errors.New("咨询问题为空")
+	} else if strings.EqualFold(choices, "") {
+		return nil, errors.New("选项为空")
+	} else if strings.EqualFold(score, "") {
+		return nil, errors.New("总评为空")
+	} else if strings.EqualFold(feedback, "") {
+		return nil, errors.New("反馈为空")
+	} else if strings.EqualFold(studentId, "") || !util.IsStudentId(studentId) {
+		return nil, errors.New("学号不正确")
+	}
+	reservation, err := data.GetReservationById(reservationId)
+	if err != nil {
+		return nil, errors.New("咨询已下架")
+	} else if reservation.StartTime.After(time.Now().Local()) {
+		return nil, errors.New("咨询未开始,暂不能反馈")
+	} else if reservation.Status == domain.Availabel {
+		return nil, errors.New("咨询未被预约,不能反馈")
+	} else if !strings.EqualFold(reservation.StudentInfo.StudentId, studentId) {
+		return nil, errors.New("只能反馈本人预约的咨询")
+	}
+	reservation.StudentFeedback = domain.StudentFeedback{
+		Name:     name,
+		Problem:  problem,
+		Choices:  choices,
+		Score:    score,
+		Feedback: feedback,
+	}
+	err = data.UpsertReservation(reservation)
+	if err != nil {
+		return nil, errors.New("数据获取失败")
+	}
+	return reservation, nil
+}
