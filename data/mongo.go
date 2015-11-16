@@ -88,7 +88,7 @@ func AddReservation(startTime time.Time, endTime time.Time, teacherFullname stri
 		Id:              bson.NewObjectId(),
 		StartTime:       startTime,
 		EndTime:         endTime,
-		Status:          domain.Availabel,
+		Status:          domain.AVAILABLE,
 		TeacherFullname: teacherFullname,
 		TeacherUsername: teacherUsername,
 		TeacherMobile:   teacherMobile,
@@ -130,7 +130,7 @@ func GetReservationsBetweenTime(from time.Time, to time.Time) ([]*domain.Reserva
 	collection := Mongo.C("appointment")
 	var reservations []*domain.Reservation
 	if err := collection.Find(bson.M{"startTime": bson.M{"$gte": from, "$lte": to},
-		"status": bson.M{"$ne": domain.Deleted}}).Sort("startTime").All(&reservations); err != nil {
+		"status": bson.M{"$ne": domain.DELETED}}).Sort("startTime").All(&reservations); err != nil {
 		return nil, err
 	}
 	return reservations, nil
@@ -140,7 +140,7 @@ func GetReservationsAfterTime(from time.Time) ([]*domain.Reservation, error) {
 	collection := Mongo.C("appointment")
 	var reservations []*domain.Reservation
 	if err := collection.Find(bson.M{"startTime": bson.M{"$gte": from},
-		"status": bson.M{"$ne": domain.Deleted}}).Sort("startTime").All(&reservations); err != nil {
+		"status": bson.M{"$ne": domain.DELETED}}).Sort("startTime").All(&reservations); err != nil {
 		return nil, err
 	}
 	return reservations, nil

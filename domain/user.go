@@ -5,9 +5,9 @@ import "gopkg.in/mgo.v2/bson"
 type UserType int
 
 const (
-	Student UserType = 1 + iota
-	Teacher
-	Admin
+	STUDENT UserType = 1 + iota
+	TEACHER
+	ADMIN
 )
 
 var userTypes = [...]string{

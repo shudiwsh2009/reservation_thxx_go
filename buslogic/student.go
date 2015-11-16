@@ -49,7 +49,7 @@ func (sl *StudentLogic) MakeReservationByStudent(reservationId string, name stri
 		return nil, errors.New("咨询已下架")
 	} else if reservation.StartTime.Before(time.Now().Local()) {
 		return nil, errors.New("咨询已过期")
-	} else if reservation.Status != domain.Availabel {
+	} else if reservation.Status != domain.AVAILABLE {
 		return nil, errors.New("咨询已被预约")
 	}
 	studentReservations, err := data.GetReservationsByStudentId(studentId)
@@ -57,7 +57,7 @@ func (sl *StudentLogic) MakeReservationByStudent(reservationId string, name stri
 		return nil, errors.New("数据获取失败")
 	}
 	for _, r := range studentReservations {
-		if r.Status == domain.Reservated && r.StartTime.After(time.Now().Local()) {
+		if r.Status == domain.RESERVATED && r.StartTime.After(time.Now().Local()) {
 			return nil, errors.New("你好！你已有一个咨询预约，请完成这次咨询后再预约下一次，或致电62792453取消已有预约。")
 		}
 	}
@@ -72,7 +72,7 @@ func (sl *StudentLogic) MakeReservationByStudent(reservationId string, name stri
 		Experience: experience,
 		Problem:    problem,
 	}
-	reservation.Status = domain.Reservated
+	reservation.Status = domain.RESERVATED
 	err = data.UpsertReservation(reservation)
 	if err != nil {
 		return nil, errors.New("获取数据失败")
@@ -80,7 +80,7 @@ func (sl *StudentLogic) MakeReservationByStudent(reservationId string, name stri
 
 	// send success sms
 	if checkReservation, err := data.GetReservationById(reservationId); err == nil &&
-		checkReservation.Status == domain.Reservated && strings.EqualFold(checkReservation.StudentInfo.Mobile, mobile) {
+		checkReservation.Status == domain.RESERVATED && strings.EqualFold(checkReservation.StudentInfo.Mobile, mobile) {
 		sms.SendSuccessSMS(checkReservation)
 	}
 	return reservation, nil
@@ -98,7 +98,7 @@ func (sl *StudentLogic) GetFeedbackByStudent(reservationId string, studentId str
 		return nil, errors.New("咨询已下架")
 	} else if reservation.StartTime.After(time.Now().Local()) {
 		return nil, errors.New("咨询未开始,暂不能反馈")
-	} else if reservation.Status == domain.Availabel {
+	} else if reservation.Status == domain.AVAILABLE {
 		return nil, errors.New("咨询未被预约,不能反馈")
 	} else if !strings.EqualFold(reservation.StudentInfo.StudentId, studentId) {
 		return nil, errors.New("只能反馈本人预约的咨询")
@@ -129,7 +129,7 @@ func (sl *StudentLogic) SubmitFeedbackByStudent(reservationId string, name strin
 		return nil, errors.New("咨询已下架")
 	} else if reservation.StartTime.After(time.Now().Local()) {
 		return nil, errors.New("咨询未开始,暂不能反馈")
-	} else if reservation.Status == domain.Availabel {
+	} else if reservation.Status == domain.AVAILABLE {
 		return nil, errors.New("咨询未被预约,不能反馈")
 	} else if !strings.EqualFold(reservation.StudentInfo.StudentId, studentId) {
 		return nil, errors.New("只能反馈本人预约的咨询")

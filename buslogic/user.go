@@ -24,8 +24,8 @@ func (ul *UserLogic) Login(username string, password string) (*domain.User, erro
 	}
 	user, err := data.GetUserByUsername(username)
 	if err == nil && (strings.EqualFold(user.Password, password) ||
-		(strings.EqualFold(user.UserType, domain.Teacher) && strings.EqualFold(user.Password, TeacherDefaultPassword)) ||
-		(strings.EqualFold(user.UserType, domain.Admin) && strings.EqualFold(user.Password, AdminDefaultPassword))) {
+		(strings.EqualFold(user.UserType, domain.TEACHER) && strings.EqualFold(user.Password, TeacherDefaultPassword)) ||
+		(strings.EqualFold(user.UserType, domain.ADMIN) && strings.EqualFold(user.Password, AdminDefaultPassword))) {
 		return user, nil
 	}
 	return nil, errors.New("用户名或密码不正确")

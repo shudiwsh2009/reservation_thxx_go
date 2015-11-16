@@ -18,7 +18,7 @@ func (al *AdminLogic) AddReservationByAdmin(startTime string, endTime string, te
 	teacherFullname string, teacherMobile string, username string, userType domain.UserType) (*domain.Reservation, error) {
 	if strings.EqualFold(username, "") {
 		return nil, errors.New("请先登录")
-	} else if userType != domain.Admin {
+	} else if userType != domain.ADMIN {
 		return nil, errors.New("权限不足")
 	} else if strings.EqualFold(startTime, "") {
 		return nil, errors.New("开始时间为空")
@@ -34,7 +34,7 @@ func (al *AdminLogic) AddReservationByAdmin(startTime string, endTime string, te
 		return nil, errors.New("咨询师手机号格式不正确")
 	}
 	admin, err := data.GetUserByUsername(username)
-	if err != nil || admin.UserType != domain.Admin {
+	if err != nil || admin.UserType != domain.ADMIN {
 		return nil, errors.New("管理员账户出错,请联系技术支持")
 	}
 	start, err := time.Parse(util.TIME_PATTERN, startTime)
@@ -51,10 +51,10 @@ func (al *AdminLogic) AddReservationByAdmin(startTime string, endTime string, te
 	teacher, err := data.GetUserByUsername(teacherUsername)
 	if err != nil {
 		if teacher, err = data.AddFullUser(teacherUsername, TeacherDefaultPassword, teacherFullname,
-			teacherMobile, domain.Teacher); err != nil {
+			teacherMobile, domain.TEACHER); err != nil {
 			return nil, errors.New("获取数据失败")
 		}
-	} else if teacher.UserType != domain.Teacher {
+	} else if teacher.UserType != domain.TEACHER {
 		return nil, errors.New("权限不足")
 	} else {
 		teacher.Fullname = teacherFullname
@@ -76,7 +76,7 @@ func (al *AdminLogic) EditReservationByAdmin(reservationId string, startTime str
 	userType domain.UserType) (*domain.Reservation, error) {
 	if strings.EqualFold(username, "") {
 		return nil, errors.New("请先登录")
-	} else if userType != domain.Admin {
+	} else if userType != domain.ADMIN {
 		return nil, errors.New("权限不足")
 	} else if strings.EqualFold(reservationId, "") {
 		return nil, errors.New("咨询已下架")
@@ -94,13 +94,13 @@ func (al *AdminLogic) EditReservationByAdmin(reservationId string, startTime str
 		return nil, errors.New("咨询师手机号格式不正确")
 	}
 	admin, err := data.GetUserByUsername(username)
-	if err != nil || admin.UserType != domain.Admin {
+	if err != nil || admin.UserType != domain.ADMIN {
 		return nil, errors.New("管理员账户出错,请联系技术支持")
 	}
 	reservation, err := data.GetReservationById(reservationId)
 	if err != nil {
 		return nil, errors.New("咨询已下架")
-	} else if reservation.Status == domain.Reservated {
+	} else if reservation.Status == domain.RESERVATED {
 		return nil, errors.New("不能编辑已被预约的咨询")
 	}
 	start, err := time.Parse(util.TIME_PATTERN, startTime)
@@ -117,10 +117,10 @@ func (al *AdminLogic) EditReservationByAdmin(reservationId string, startTime str
 	teacher, err := data.GetUserByUsername(teacherUsername)
 	if err != nil {
 		if teacher, err = data.AddFullUser(teacherUsername, TeacherDefaultPassword, teacherFullname,
-			teacherMobile, domain.Teacher); err != nil {
+			teacherMobile, domain.TEACHER); err != nil {
 			return nil, errors.New("获取数据失败")
 		}
-	} else if teacher.UserType != domain.Teacher {
+	} else if teacher.UserType != domain.TEACHER {
 		return nil, errors.New("权限不足")
 	} else {
 		teacher.Fullname = teacherFullname
@@ -144,18 +144,18 @@ func (al *AdminLogic) EditReservationByAdmin(reservationId string, startTime str
 func (al *AdminLogic) RemoveReservationsByAdmin(reservationIds []string, username string, userType domain.UserType) error {
 	if strings.EqualFold(username, "") {
 		return errors.New("请先登录")
-	} else if userType != domain.Teacher {
+	} else if userType != domain.TEACHER {
 		return errors.New("权限不足")
 	} else if reservationIds == nil {
 		return errors.New("咨询Id列表为空")
 	}
 	admin, err := data.GetUserByUsername(username)
-	if err != nil || admin.UserType != domain.Admin {
+	if err != nil || admin.UserType != domain.ADMIN {
 		return nil, errors.New("管理员账户出错,请联系技术支持")
 	}
 	for _, reservationId := range reservationIds {
 		if reservation, err := data.GetReservationById(reservationId); err == nil {
-			reservation.Status = domain.Deleted
+			reservation.Status = domain.DELETED
 			data.UpsertReservation(reservation)
 		}
 	}
@@ -166,22 +166,22 @@ func (al *AdminLogic) RemoveReservationsByAdmin(reservationIds []string, usernam
 func (al *AdminLogic) CancelReservationsByAdmin(reservationIds []string, username string, userType domain.UserType) error {
 	if strings.EqualFold(username, "") {
 		return errors.New("请先登录")
-	} else if userType != domain.Teacher {
+	} else if userType != domain.TEACHER {
 		return errors.New("权限不足")
 	} else if reservationIds == nil {
 		return errors.New("咨询Id列表为空")
 	}
 	admin, err := data.GetUserByUsername(username)
-	if err != nil || admin.UserType != domain.Admin {
+	if err != nil || admin.UserType != domain.ADMIN {
 		return nil, errors.New("管理员账户出错,请联系技术支持")
 	}
 	for _, reservationId := range reservationIds {
 		reseravtion, err := data.GetReservationById(reservationId)
-		if err != nil || reseravtion.Status == domain.Deleted {
+		if err != nil || reseravtion.Status == domain.DELETED {
 			continue
 		}
-		if reseravtion.Status == domain.Reservated && reseravtion.StartTime.After(time.Now().Local()) {
-			reseravtion.Status = domain.Availabel
+		if reseravtion.Status == domain.RESERVATED && reseravtion.StartTime.After(time.Now().Local()) {
+			reseravtion.Status = domain.AVAILABLE
 			reseravtion.StudentInfo = domain.StudentInfo{}
 			reseravtion.StudentFeedback = domain.StudentFeedback{}
 			reseravtion.TeacherFeedback = domain.TeacherFeedback{}
@@ -195,21 +195,21 @@ func (al *AdminLogic) CancelReservationsByAdmin(reservationIds []string, usernam
 func (al *AdminLogic) GetFeedbackByAdmin(reservationId string, username string, userType domain.UserType) (*domain.Reservation, error) {
 	if strings.EqualFold(username, "") {
 		return nil, errors.New("请先登录")
-	} else if userType != domain.Teacher {
+	} else if userType != domain.TEACHER {
 		return nil, errors.New("权限不足")
 	} else if strings.EqualFold(reservationId, "") {
 		return nil, errors.New("咨询已下架")
 	}
 	admin, err := data.GetUserByUsername(username)
-	if err != nil || admin.UserType != domain.Admin {
+	if err != nil || admin.UserType != domain.ADMIN {
 		return nil, errors.New("管理员账户出错,请联系技术支持")
 	}
 	reservation, err := data.GetReservationById(reservationId)
-	if err != nil || reservation.Status == domain.Deleted {
+	if err != nil || reservation.Status == domain.DELETED {
 		return nil, errors.New("咨询已下架")
 	} else if reservation.StartTime.After(time.Now().Local()) {
 		return nil, errors.New("咨询未开始,暂不能反馈")
-	} else if reservation.Status == domain.Availabel {
+	} else if reservation.Status == domain.AVAILABLE {
 		return nil, errors.New("咨询未被预约,不能反馈")
 	}
 	return reservation, nil
@@ -221,7 +221,7 @@ func (al *AdminLogic) SubmitFeedbackByAdmin(reservationId string, teacherFullnam
 	userType domain.UserType) (*domain.Reservation, error) {
 	if strings.EqualFold(username, "") {
 		return nil, errors.New("请先登录")
-	} else if userType != domain.Teacher {
+	} else if userType != domain.TEACHER {
 		return nil, errors.New("权限不足")
 	} else if strings.EqualFold(reservationId, "") {
 		return nil, errors.New("咨询已下架")
@@ -239,15 +239,15 @@ func (al *AdminLogic) SubmitFeedbackByAdmin(reservationId string, teacherFullnam
 		return nil, errors.New("工作建议为空")
 	}
 	admin, err := data.GetUserByUsername(username)
-	if err != nil || admin.UserType != domain.Admin {
+	if err != nil || admin.UserType != domain.ADMIN {
 		return nil, errors.New("管理员账户出错,请联系技术支持")
 	}
 	reservation, err := data.GetReservationById(reservationId)
-	if err != nil || reservation.Status == domain.Deleted {
+	if err != nil || reservation.Status == domain.DELETED {
 		return nil, errors.New("咨询已下架")
 	} else if reservation.StartTime.After(time.Now().Local()) {
 		return nil, errors.New("咨询未开始,暂不能反馈")
-	} else if reservation.Status == domain.Availabel {
+	} else if reservation.Status == domain.AVAILABLE {
 		return nil, errors.New("咨询未被预约,不能反馈")
 	} else if !strings.EqualFold(teacherId, reservation.TeacherUsername) {
 		return nil, errors.New("咨询师工号不匹配")
@@ -273,19 +273,19 @@ func (al *AdminLogic) SubmitFeedbackByAdmin(reservationId string, teacherFullnam
 func (al *AdminLogic) GetStudentInfoByAdmin(reservationId string, username string, userType domain.UserType) (domain.StudentInfo, error) {
 	if strings.EqualFold(username, "") {
 		return nil, errors.New("请先登录")
-	} else if userType != domain.Teacher {
+	} else if userType != domain.TEACHER {
 		return nil, errors.New("权限不足")
 	} else if strings.EqualFold(reservationId, "") {
 		return nil, errors.New("咨询已下架")
 	}
 	admin, err := data.GetUserByUsername(username)
-	if err != nil || admin.UserType != domain.Admin {
+	if err != nil || admin.UserType != domain.ADMIN {
 		return nil, errors.New("管理员账户出错,请联系技术支持")
 	}
 	reservation, err := data.GetReservationById(reservationId)
-	if err != nil || reservation.Status == domain.Deleted {
+	if err != nil || reservation.Status == domain.DELETED {
 		return nil, errors.New("咨询已下架")
-	} else if reservation.Status == domain.Availabel {
+	} else if reservation.Status == domain.AVAILABLE {
 		return nil, errors.New("咨询未被预约,无法查看")
 	}
 	return reservation.StudentInfo, nil
@@ -295,13 +295,13 @@ func (al *AdminLogic) GetStudentInfoByAdmin(reservationId string, username strin
 func (al *AdminLogic) ExportReservationsByAdmin(reservationIds []string, username string, userType domain.UserType) (string, error) {
 	if strings.EqualFold(username, "") {
 		return "", errors.New("请先登录")
-	} else if userType != domain.Teacher {
+	} else if userType != domain.TEACHER {
 		return "", errors.New("权限不足")
 	} else if reservationIds == nil {
 		return "", errors.New("咨询Id列表为空")
 	}
 	admin, err := data.GetUserByUsername(username)
-	if err != nil || admin.UserType != domain.Admin {
+	if err != nil || admin.UserType != domain.ADMIN {
 		return "", errors.New("管理员账户出错,请联系技术支持")
 	}
 	var reservations []*domain.Reservation
@@ -312,7 +312,7 @@ func (al *AdminLogic) ExportReservationsByAdmin(reservationIds []string, usernam
 		}
 		reservations = append(reservations, reservation)
 	}
-	filename := "export_" + time.Now().Local().Format("2006-01-02 15:04") + util.ExcelSuffix
+	filename := "export_" + time.Now().Local().Format(util.TIME_PATTERN) + util.ExcelSuffix
 	if len(reservations) == 0 {
 		return "", nil
 	}

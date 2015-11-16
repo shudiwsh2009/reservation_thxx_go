@@ -8,10 +8,10 @@ import (
 type ReservationStatus int
 
 const (
-	Availabel ReservationStatus = 1 + iota
-	Reservated
-	Feedback
-	Deleted
+	AVAILABLE ReservationStatus = 1 + iota
+	RESERVATED
+	FEEDBACK
+	DELETED
 )
 
 var reservationStatuses = [...]string{

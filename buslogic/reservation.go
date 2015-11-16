@@ -21,7 +21,7 @@ func (rl *ReservationLogic) GetReservationsByStudent() ([]*domain.Reservation, e
 	}
 	var result []*domain.Reservation
 	for _, r := range reservations {
-		if r.Status == domain.Availabel && r.StartTime.Before(time.Now().Local()) {
+		if r.Status == domain.AVAILABLE && r.StartTime.Before(time.Now().Local()) {
 			continue
 		}
 		result = append(result, r)
@@ -33,13 +33,13 @@ func (rl *ReservationLogic) GetReservationsByStudent() ([]*domain.Reservation, e
 func (rl *ReservationLogic) GetReservationsByTeacher(username string, userType domain.UserType) ([]*domain.Reservation, error) {
 	if strings.EqualFold(username, "") {
 		return nil, errors.New("请先登录")
-	} else if userType != domain.Teacher {
+	} else if userType != domain.TEACHER {
 		return nil, errors.New("权限不足")
 	}
 	teacher, err := data.GetUserByUsername(username)
 	if err != nil {
 		return nil, errors.New("请先登录")
-	} else if teacher.UserType != domain.Teacher {
+	} else if teacher.UserType != domain.TEACHER {
 		return nil, errors.New("权限不足")
 	}
 	from := time.Now().Local().AddDate(0, 0, -7)
@@ -49,7 +49,7 @@ func (rl *ReservationLogic) GetReservationsByTeacher(username string, userType d
 	}
 	var result []*domain.Reservation
 	for _, r := range reservations {
-		if r.Status == domain.Availabel && r.StartTime.Before(time.Now().Local()) {
+		if r.Status == domain.AVAILABLE && r.StartTime.Before(time.Now().Local()) {
 			continue
 		} else if strings.EqualFold(r.TeacherUsername, teacher.Username) {
 			result = append(result, r)
@@ -62,11 +62,11 @@ func (rl *ReservationLogic) GetReservationsByTeacher(username string, userType d
 func (rl *ReservationLogic) GetReservationsByAdmin(username string, userType domain.UserType) ([]*domain.Reservation, error) {
 	if strings.EqualFold(username, "") {
 		return nil, errors.New("请先登录")
-	} else if userType != domain.Admin {
+	} else if userType != domain.ADMIN {
 		return nil, errors.New("权限不足")
 	}
 	admin, err := data.GetUserByUsername(username)
-	if err != nil || admin.UserType != domain.Admin {
+	if err != nil || admin.UserType != domain.ADMIN {
 		return nil, errors.New("管理员账户出错,请联系技术支持")
 	}
 	from := time.Now().Local().AddDate(0, 0, -7)
@@ -76,7 +76,7 @@ func (rl *ReservationLogic) GetReservationsByAdmin(username string, userType dom
 	}
 	var result []*domain.Reservation
 	for _, r := range reservations {
-		if r.Status == domain.Availabel && r.StartTime.Before(time.Now().Local()) {
+		if r.Status == domain.AVAILABLE && r.StartTime.Before(time.Now().Local()) {
 			continue
 		}
 		result = append(result, r)
@@ -88,11 +88,11 @@ func (rl *ReservationLogic) GetReservationsByAdmin(username string, userType dom
 func (rl *ReservationLogic) GetReservationsMonthlyByAdmin(username string, userType string) ([]*domain.Reservation, error) {
 	if strings.EqualFold(username, "") {
 		return nil, errors.New("请先登录")
-	} else if userType != domain.Admin {
+	} else if userType != domain.ADMIN {
 		return nil, errors.New("权限不足")
 	}
 	admin, err := data.GetUserByUsername(username)
-	if err != nil || admin.UserType != domain.Admin {
+	if err != nil || admin.UserType != domain.ADMIN {
 		return nil, errors.New("管理员账户出错,请联系技术支持")
 	}
 	from := time.Now().Local().AddDate(0, 0, -30)
@@ -102,7 +102,7 @@ func (rl *ReservationLogic) GetReservationsMonthlyByAdmin(username string, userT
 	}
 	var result []*domain.Reservation
 	for _, r := range reservations {
-		if r.Status == domain.Availabel && r.StartTime.Before(time.Now().Local()) {
+		if r.Status == domain.AVAILABLE && r.StartTime.Before(time.Now().Local()) {
 			continue
 		}
 		result = append(result, r)
