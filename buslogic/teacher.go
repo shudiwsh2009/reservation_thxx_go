@@ -55,7 +55,7 @@ func (tl *TeacherLogic) AddReservationByTeacher(startTime string, endTime string
 	if err != nil {
 		return nil, errors.New("数据获取失败")
 	}
-	return reservation
+	return reservation, nil
 }
 
 // 咨询师编辑咨询
@@ -115,7 +115,7 @@ func (tl *TeacherLogic) EditReservationByTeacher(reservationId string, startTime
 	if err = models.UpsertReservation(reservation); err != nil {
 		return nil, errors.New("数据获取失败")
 	}
-	return reservation
+	return reservation, nil
 }
 
 // 咨询师删除咨询
@@ -259,7 +259,7 @@ func (tl *TeacherLogic) SubmitFeedbackByTeacher(reservationId string, teacherFul
 }
 
 // 咨询师查看学生信息
-func (tl *TeacherLogic) GetStudentInfoByTeacher(reservationId string, username string, userType models.UserType) (models.StudentInfo, error) {
+func (tl *TeacherLogic) GetStudentInfoByTeacher(reservationId string, username string, userType models.UserType) (*models.StudentInfo, error) {
 	if strings.EqualFold(username, "") {
 		return nil, errors.New("请先登录")
 	} else if userType != models.TEACHER {
@@ -281,5 +281,5 @@ func (tl *TeacherLogic) GetStudentInfoByTeacher(reservationId string, username s
 	} else if !strings.EqualFold(reservation.TeacherUsername, teacher.Username) {
 		return nil, errors.New("只能查看本人开设的咨询")
 	}
-	return reservation.StudentInfo, nil
+	return &reservation.StudentInfo, nil
 }

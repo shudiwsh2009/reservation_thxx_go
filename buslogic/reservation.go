@@ -12,8 +12,8 @@ type ReservationLogic struct {
 
 // 学生查看前后一周内的所有咨询
 func (rl *ReservationLogic) GetReservationsByStudent() ([]*models.Reservation, error) {
-	from := time.Now().Local().AddDate(0, 0, 7)
-	to := time.Now().Local().AddDate(0, 0, -7)
+	from := time.Now().Local().AddDate(0, 0, -7)
+	to := time.Now().Local().AddDate(0, 0, 7)
 	reservations, err := models.GetReservationsBetweenTime(from, to)
 	if err != nil {
 		return nil, errors.New("获取数据失败")
@@ -84,7 +84,7 @@ func (rl *ReservationLogic) GetReservationsByAdmin(username string, userType mod
 }
 
 // 管理员查看指定日期后30天内的所有咨询
-func (rl *ReservationLogic) GetReservationsMonthlyByAdmin(username string, userType string) ([]*models.Reservation, error) {
+func (rl *ReservationLogic) GetReservationsMonthlyByAdmin(username string, userType models.UserType) ([]*models.Reservation, error) {
 	if strings.EqualFold(username, "") {
 		return nil, errors.New("请先登录")
 	} else if userType != models.ADMIN {

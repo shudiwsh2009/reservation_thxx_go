@@ -23,8 +23,8 @@ func (ul *UserLogic) Login(username string, password string) (*models.User, erro
 	}
 	user, err := models.GetUserByUsername(username)
 	if err == nil && (strings.EqualFold(user.Password, password) ||
-		(strings.EqualFold(user.UserType, models.TEACHER) && strings.EqualFold(user.Password, TeacherDefaultPassword)) ||
-		(strings.EqualFold(user.UserType, models.ADMIN) && strings.EqualFold(user.Password, AdminDefaultPassword))) {
+		(user.UserType == models.TEACHER && strings.EqualFold(user.Password, TeacherDefaultPassword)) ||
+		(user.UserType == models.ADMIN && strings.EqualFold(user.Password, AdminDefaultPassword))) {
 		return user, nil
 	}
 	return nil, errors.New("用户名或密码不正确")

@@ -21,7 +21,7 @@ const (
 	SMS_FEEDBACK_STUDENT = "温馨提示：%s你好，感谢使用我们的一对一咨询服务，请再次登录乐学预约界面，为咨询师反馈评分，帮助我们成长。"
 )
 
-func SendSuccessSMS(reservation models.Reservation) error {
+func SendSuccessSMS(reservation *models.Reservation) error {
 	studentSMS := fmt.Sprintf(SMS_SUCCESS_STUDENT, reservation.StudentInfo.Name, Weekdays[reservation.StartTime.Weekday()],
 		reservation.StartTime.Format("1"), reservation.StartTime.Format("2"), reservation.StartTime.Format("15:04"),
 		reservation.EndTime.Format("15:04"))
@@ -37,7 +37,7 @@ func SendSuccessSMS(reservation models.Reservation) error {
 	return nil
 }
 
-func SendReminderSMS(reservation models.Reservation) error {
+func SendReminderSMS(reservation *models.Reservation) error {
 	studentSMS := fmt.Sprintf(SMS_REMINDER_STUDENT, reservation.StudentInfo.Name, reservation.StartTime.Format("15:04"),
 		reservation.EndTime.Format("15:04"))
 	if err := sendSMS(reservation.StudentInfo.Mobile, studentSMS); err != nil {
@@ -51,7 +51,7 @@ func SendReminderSMS(reservation models.Reservation) error {
 	return nil
 }
 
-func SendFeedbackSMS(reservation models.Reservation) error {
+func SendFeedbackSMS(reservation *models.Reservation) error {
 	studentSMS := fmt.Sprintf(SMS_FEEDBACK_STUDENT, reservation.StudentInfo.Name)
 	if err := sendSMS(reservation.StudentInfo.Mobile, studentSMS); err != nil {
 		return err

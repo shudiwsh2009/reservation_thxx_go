@@ -2,15 +2,18 @@ package main
 
 import (
 	"fmt"
+	"github.com/shudiwsh2009/reservation_thxx_go/controllers"
 	"github.com/shudiwsh2009/reservation_thxx_go/models"
 	"github.com/shudiwsh2009/reservation_thxx_go/utils"
 	"gopkg.in/mgo.v2"
+	"log"
+	"net/http"
 	"os"
 	"time"
 )
 
-func init() {
-	// 初始化数据库连接
+func main() {
+	// 数据库连接
 	session, err := mgo.Dial("127.0.0.1:27017")
 	if err != nil {
 		fmt.Errorf("连接数据库失败：%v", err)
@@ -19,28 +22,24 @@ func init() {
 	defer session.Close()
 	session.SetMode(mgo.Monotonic, true)
 	models.Mongo = session.DB("appointment")
-	// 初始化时区
+	// 时区
 	if utils.Location, err = time.LoadLocation("Asia/Shanghai"); err != nil {
 		fmt.Errorf("初始化时区失败：%v", err)
 		os.Exit(1)
 	}
-}
-
-func main() {
-
-	//	reservationIds := []string{"5646f0f7a56d4188cf603efb", "5646f0eaa56d4188cf603efa"}
-	//	var reservations []*domain.Reservation
-	//	for _, reservationId := range reservationIds {
-	//		reservation, err := data.GetReservationById(reservationId)
-	//		if err != nil {
-	//			continue
-	//		}
-	//		reservations = append(reservations, reservation)
-	//	}
-	//	for _, reservation := range reservations {
-	//		fmt.Println(reservation)
-	//	}
-	t := time.Now().In(utils.Location)
-	fmt.Println(t.Format("2006-01-02 15:04"))
-
+	// 加载静态资源处理器
+	http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets/"))))
+	// 加载页面处理器
+	http.HandleFunc("/appointment", controllers.EntryPage)
+	http.HandleFunc("/appointment/entry", controllers.EntryPage)
+	http.HandleFunc("/appointment/login", controllers.LoginPage)
+	http.HandleFunc("/appointment/student", controllers.StudentPage)
+	http.HandleFunc("/appointment/teacher", controllers.TeacherPage)
+	http.HandleFunc("/appointment/admin", controllers.AdminPage)
+	// 加载动态处理器
+	http.HandleFunc("/reservation/student/view", controllers.ViewReservationsByStudent)
+	// 启动监听
+	if err := http.ListenAndServe(":8080", nil); err != nil {
+		log.Fatal("ListenAndServe: ", err)
+	}
 }

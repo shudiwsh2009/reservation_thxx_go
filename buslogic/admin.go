@@ -65,7 +65,7 @@ func (al *AdminLogic) AddReservationByAdmin(startTime string, endTime string, te
 	if err != nil {
 		return nil, errors.New("数据获取失败")
 	}
-	return reservation
+	return reservation, nil
 }
 
 // 管理员编辑咨询
@@ -135,7 +135,7 @@ func (al *AdminLogic) EditReservationByAdmin(reservationId string, startTime str
 	if err = models.UpsertReservation(reservation); err != nil {
 		return nil, errors.New("数据获取失败")
 	}
-	return reservation
+	return reservation, nil
 }
 
 // 管理员删除咨询
@@ -149,7 +149,7 @@ func (al *AdminLogic) RemoveReservationsByAdmin(reservationIds []string, usernam
 	}
 	admin, err := models.GetUserByUsername(username)
 	if err != nil || admin.UserType != models.ADMIN {
-		return nil, errors.New("管理员账户出错,请联系技术支持")
+		return errors.New("管理员账户出错,请联系技术支持")
 	}
 	for _, reservationId := range reservationIds {
 		if reservation, err := models.GetReservationById(reservationId); err == nil {
@@ -171,7 +171,7 @@ func (al *AdminLogic) CancelReservationsByAdmin(reservationIds []string, usernam
 	}
 	admin, err := models.GetUserByUsername(username)
 	if err != nil || admin.UserType != models.ADMIN {
-		return nil, errors.New("管理员账户出错,请联系技术支持")
+		return errors.New("管理员账户出错,请联系技术支持")
 	}
 	for _, reservationId := range reservationIds {
 		reseravtion, err := models.GetReservationById(reservationId)
@@ -268,7 +268,7 @@ func (al *AdminLogic) SubmitFeedbackByAdmin(reservationId string, teacherFullnam
 }
 
 // 管理员查看学生信息
-func (al *AdminLogic) GetStudentInfoByAdmin(reservationId string, username string, userType models.UserType) (models.StudentInfo, error) {
+func (al *AdminLogic) GetStudentInfoByAdmin(reservationId string, username string, userType models.UserType) (*models.StudentInfo, error) {
 	if strings.EqualFold(username, "") {
 		return nil, errors.New("请先登录")
 	} else if userType != models.TEACHER {
@@ -286,7 +286,7 @@ func (al *AdminLogic) GetStudentInfoByAdmin(reservationId string, username strin
 	} else if reservation.Status == models.AVAILABLE {
 		return nil, errors.New("咨询未被预约,无法查看")
 	}
-	return reservation.StudentInfo, nil
+	return &reservation.StudentInfo, nil
 }
 
 // 管理员导出咨询
