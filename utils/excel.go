@@ -1,20 +1,20 @@
-package util
+package utils
 
 import (
 	"errors"
 	"fmt"
-	"github.com/shudiwsh2009/reservation_thxx_go/domain"
+	"github.com/shudiwsh2009/reservation_thxx_go/models"
 	"github.com/tealeg/xlsx"
 	"strings"
 )
 
 const (
 	DefaultReservationExportExcelFilename = "export_template.xlsx"
-	ExportPrefix                          = "export/"
+	ExportPrefix                          = "static/export/"
 	ExcelSuffix                           = ".xlsx"
 )
 
-func ExportReservationsToExcel(reservations []*domain.Reservation, filename string) error {
+func ExportReservationsToExcel(reservations []*models.Reservation, filename string) error {
 	xl, err := xlsx.OpenFile(ExportPrefix + DefaultReservationExportExcelFilename)
 	if err != nil {
 		return errors.New("导出失败:打开模板文件失败")

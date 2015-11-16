@@ -1,11 +1,10 @@
-package sms
+package utils
 
 import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/shudiwsh2009/reservation_thxx_go/domain"
-	"github.com/shudiwsh2009/reservation_thxx_go/util"
+	"github.com/shudiwsh2009/reservation_thxx_go/models"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -22,15 +21,15 @@ const (
 	SMS_FEEDBACK_STUDENT = "温馨提示：%s你好，感谢使用我们的一对一咨询服务，请再次登录乐学预约界面，为咨询师反馈评分，帮助我们成长。"
 )
 
-func SendSuccessSMS(reservation domain.Reservation) error {
-	studentSMS := fmt.Sprintf(SMS_SUCCESS_STUDENT, reservation.StudentInfo.Name, util.Weekdays[reservation.StartTime.Weekday()],
+func SendSuccessSMS(reservation models.Reservation) error {
+	studentSMS := fmt.Sprintf(SMS_SUCCESS_STUDENT, reservation.StudentInfo.Name, Weekdays[reservation.StartTime.Weekday()],
 		reservation.StartTime.Format("1"), reservation.StartTime.Format("2"), reservation.StartTime.Format("15:04"),
 		reservation.EndTime.Format("15:04"))
 	if err := sendSMS(reservation.StudentInfo.Mobile, studentSMS); err != nil {
 		return err
 	}
 	teacherSMS := fmt.Sprint(SMS_SUCCESS_TEACHER, reservation.TeacherFullname, reservation.StudentInfo.Name,
-		util.Weekdays[reservation.StartTime.Weekday()], reservation.StartTime.Format("1"), reservation.StartTime.Format("2"),
+		Weekdays[reservation.StartTime.Weekday()], reservation.StartTime.Format("1"), reservation.StartTime.Format("2"),
 		reservation.StartTime.Format("15:04"), reservation.EndTime.Format("15:04"))
 	if err := sendSMS(reservation.TeacherMobile, teacherSMS); err != nil {
 		return err
@@ -38,7 +37,7 @@ func SendSuccessSMS(reservation domain.Reservation) error {
 	return nil
 }
 
-func SendReminderSMS(reservation domain.Reservation) error {
+func SendReminderSMS(reservation models.Reservation) error {
 	studentSMS := fmt.Sprintf(SMS_REMINDER_STUDENT, reservation.StudentInfo.Name, reservation.StartTime.Format("15:04"),
 		reservation.EndTime.Format("15:04"))
 	if err := sendSMS(reservation.StudentInfo.Mobile, studentSMS); err != nil {
@@ -52,7 +51,7 @@ func SendReminderSMS(reservation domain.Reservation) error {
 	return nil
 }
 
-func SendFeedbackSMS(reservation domain.Reservation) error {
+func SendFeedbackSMS(reservation models.Reservation) error {
 	studentSMS := fmt.Sprintf(SMS_FEEDBACK_STUDENT, reservation.StudentInfo.Name)
 	if err := sendSMS(reservation.StudentInfo.Mobile, studentSMS); err != nil {
 		return err
@@ -61,7 +60,7 @@ func SendFeedbackSMS(reservation domain.Reservation) error {
 }
 
 func sendSMS(mobile string, content string) error {
-	if m := util.IsMobile(mobile); !m {
+	if m := IsMobile(mobile); !m {
 		return errors.New("手机号格式不正确")
 	}
 	appEnv := os.Getenv("RESERVATION_THXX_ENV")

@@ -2,11 +2,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/shudiwsh2009/reservation_thxx_go/data"
+	"github.com/shudiwsh2009/reservation_thxx_go/models"
+	"github.com/shudiwsh2009/reservation_thxx_go/utils"
 	"gopkg.in/mgo.v2"
-	"time"
-	"github.com/shudiwsh2009/reservation_thxx_go/util"
 	"os"
+	"time"
 )
 
 func init() {
@@ -18,9 +18,9 @@ func init() {
 	}
 	defer session.Close()
 	session.SetMode(mgo.Monotonic, true)
-	data.Mongo = session.DB("appointment")
+	models.Mongo = session.DB("appointment")
 	// 初始化时区
-	if util.Location, err = time.LoadLocation("Asia/Shanghai"); err != nil {
+	if utils.Location, err = time.LoadLocation("Asia/Shanghai"); err != nil {
 		fmt.Errorf("初始化时区失败：%v", err)
 		os.Exit(1)
 	}
@@ -28,19 +28,19 @@ func init() {
 
 func main() {
 
-//	reservationIds := []string{"5646f0f7a56d4188cf603efb", "5646f0eaa56d4188cf603efa"}
-//	var reservations []*domain.Reservation
-//	for _, reservationId := range reservationIds {
-//		reservation, err := data.GetReservationById(reservationId)
-//		if err != nil {
-//			continue
-//		}
-//		reservations = append(reservations, reservation)
-//	}
-//	for _, reservation := range reservations {
-//		fmt.Println(reservation)
-//	}
-	t := time.Now().In(util.Location)
+	//	reservationIds := []string{"5646f0f7a56d4188cf603efb", "5646f0eaa56d4188cf603efa"}
+	//	var reservations []*domain.Reservation
+	//	for _, reservationId := range reservationIds {
+	//		reservation, err := data.GetReservationById(reservationId)
+	//		if err != nil {
+	//			continue
+	//		}
+	//		reservations = append(reservations, reservation)
+	//	}
+	//	for _, reservation := range reservations {
+	//		fmt.Println(reservation)
+	//	}
+	t := time.Now().In(utils.Location)
 	fmt.Println(t.Format("2006-01-02 15:04"))
 
 }

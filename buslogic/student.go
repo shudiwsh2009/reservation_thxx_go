@@ -2,10 +2,8 @@ package buslogic
 
 import (
 	"errors"
-	"github.com/shudiwsh2009/reservation_thxx_go/data"
-	"github.com/shudiwsh2009/reservation_thxx_go/domain"
-	"github.com/shudiwsh2009/reservation_thxx_go/sms"
-	"github.com/shudiwsh2009/reservation_thxx_go/util"
+	"github.com/shudiwsh2009/reservation_thxx_go/models"
+	"github.com/shudiwsh2009/reservation_thxx_go/utils"
 	"strings"
 	"time"
 )
@@ -16,7 +14,7 @@ type StudentLogic struct {
 // 学生预约咨询
 func (sl *StudentLogic) MakeReservationByStudent(reservationId string, name string, gender string,
 	studentId string, school string, hometown string, mobile string, email string, experience string,
-	problem string) (*domain.Reservation, error) {
+	problem string) (*models.Reservation, error) {
 	if strings.EqualFold(reservationId, "") {
 		return nil, errors.New("咨询已下架")
 	} else if strings.EqualFold(name, "") {
@@ -37,31 +35,31 @@ func (sl *StudentLogic) MakeReservationByStudent(reservationId string, name stri
 		return nil, errors.New("咨询经历为空")
 	} else if strings.EqualFold(problem, "") {
 		return nil, errors.New("咨询问题为空")
-	} else if !util.IsStudentId(studentId) {
+	} else if !utils.IsStudentId(studentId) {
 		return nil, errors.New("学号不正确")
-	} else if !util.IsMobile(mobile) {
+	} else if !utils.IsMobile(mobile) {
 		return nil, errors.New("手机号格式不正确")
-	} else if !util.IsEmail(email) {
+	} else if !utils.IsEmail(email) {
 		return nil, errors.New("邮箱格式不正确")
 	}
-	reservation, err := data.GetReservationById(reservationId)
+	reservation, err := models.GetReservationById(reservationId)
 	if err != nil {
 		return nil, errors.New("咨询已下架")
 	} else if reservation.StartTime.Before(time.Now().Local()) {
 		return nil, errors.New("咨询已过期")
-	} else if reservation.Status != domain.AVAILABLE {
+	} else if reservation.Status != models.AVAILABLE {
 		return nil, errors.New("咨询已被预约")
 	}
-	studentReservations, err := data.GetReservationsByStudentId(studentId)
+	studentReservations, err := models.GetReservationsByStudentId(studentId)
 	if err != nil {
 		return nil, errors.New("数据获取失败")
 	}
 	for _, r := range studentReservations {
-		if r.Status == domain.RESERVATED && r.StartTime.After(time.Now().Local()) {
+		if r.Status == models.RESERVATED && r.StartTime.After(time.Now().Local()) {
 			return nil, errors.New("你好！你已有一个咨询预约，请完成这次咨询后再预约下一次，或致电62792453取消已有预约。")
 		}
 	}
-	reservation.StudentInfo = domain.StudentInfo{
+	reservation.StudentInfo = models.StudentInfo{
 		Name:       name,
 		Gender:     gender,
 		StudentId:  studentId,
@@ -72,33 +70,33 @@ func (sl *StudentLogic) MakeReservationByStudent(reservationId string, name stri
 		Experience: experience,
 		Problem:    problem,
 	}
-	reservation.Status = domain.RESERVATED
-	err = data.UpsertReservation(reservation)
+	reservation.Status = models.RESERVATED
+	err = models.UpsertReservation(reservation)
 	if err != nil {
 		return nil, errors.New("获取数据失败")
 	}
 
 	// send success sms
-	if checkReservation, err := data.GetReservationById(reservationId); err == nil &&
-		checkReservation.Status == domain.RESERVATED && strings.EqualFold(checkReservation.StudentInfo.Mobile, mobile) {
-		sms.SendSuccessSMS(checkReservation)
+	if checkReservation, err := models.GetReservationById(reservationId); err == nil &&
+		checkReservation.Status == models.RESERVATED && strings.EqualFold(checkReservation.StudentInfo.Mobile, mobile) {
+		utils.SendSuccessSMS(checkReservation)
 	}
 	return reservation, nil
 }
 
 // 学生拉取反馈
-func (sl *StudentLogic) GetFeedbackByStudent(reservationId string, studentId string) (*domain.Reservation, error) {
+func (sl *StudentLogic) GetFeedbackByStudent(reservationId string, studentId string) (*models.Reservation, error) {
 	if strings.EqualFold(reservationId, "") {
 		return nil, errors.New("咨询已下架")
-	} else if strings.EqualFold(studentId, "") || !util.IsStudentId(studentId) {
+	} else if strings.EqualFold(studentId, "") || !utils.IsStudentId(studentId) {
 		return nil, errors.New("学号不正确")
 	}
-	reservation, err := data.GetReservationById(reservationId)
+	reservation, err := models.GetReservationById(reservationId)
 	if err != nil {
 		return nil, errors.New("咨询已下架")
 	} else if reservation.StartTime.After(time.Now().Local()) {
 		return nil, errors.New("咨询未开始,暂不能反馈")
-	} else if reservation.Status == domain.AVAILABLE {
+	} else if reservation.Status == models.AVAILABLE {
 		return nil, errors.New("咨询未被预约,不能反馈")
 	} else if !strings.EqualFold(reservation.StudentInfo.StudentId, studentId) {
 		return nil, errors.New("只能反馈本人预约的咨询")
@@ -108,7 +106,7 @@ func (sl *StudentLogic) GetFeedbackByStudent(reservationId string, studentId str
 
 // 学生反馈
 func (sl *StudentLogic) SubmitFeedbackByStudent(reservationId string, name string, problem string, choices string,
-	score string, feedback string, studentId string) (*domain.Reservation, error) {
+	score string, feedback string, studentId string) (*models.Reservation, error) {
 	if strings.EqualFold(reservationId, "") {
 		return nil, errors.New("咨询已下架")
 	} else if strings.EqualFold(name, "") {
@@ -121,27 +119,27 @@ func (sl *StudentLogic) SubmitFeedbackByStudent(reservationId string, name strin
 		return nil, errors.New("总评为空")
 	} else if strings.EqualFold(feedback, "") {
 		return nil, errors.New("反馈为空")
-	} else if strings.EqualFold(studentId, "") || !util.IsStudentId(studentId) {
+	} else if strings.EqualFold(studentId, "") || !utils.IsStudentId(studentId) {
 		return nil, errors.New("学号不正确")
 	}
-	reservation, err := data.GetReservationById(reservationId)
+	reservation, err := models.GetReservationById(reservationId)
 	if err != nil {
 		return nil, errors.New("咨询已下架")
 	} else if reservation.StartTime.After(time.Now().Local()) {
 		return nil, errors.New("咨询未开始,暂不能反馈")
-	} else if reservation.Status == domain.AVAILABLE {
+	} else if reservation.Status == models.AVAILABLE {
 		return nil, errors.New("咨询未被预约,不能反馈")
 	} else if !strings.EqualFold(reservation.StudentInfo.StudentId, studentId) {
 		return nil, errors.New("只能反馈本人预约的咨询")
 	}
-	reservation.StudentFeedback = domain.StudentFeedback{
+	reservation.StudentFeedback = models.StudentFeedback{
 		Name:     name,
 		Problem:  problem,
 		Choices:  choices,
 		Score:    score,
 		Feedback: feedback,
 	}
-	if err = data.UpsertReservation(reservation); err != nil {
+	if err = models.UpsertReservation(reservation); err != nil {
 		return nil, errors.New("数据获取失败")
 	}
 	return reservation, nil

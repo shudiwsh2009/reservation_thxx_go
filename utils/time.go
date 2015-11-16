@@ -1,4 +1,5 @@
-package util
+package utils
+
 import "time"
 
 var Weekdays = [...]string{
@@ -12,8 +13,8 @@ var Weekdays = [...]string{
 }
 
 const (
-	TIME_PATTERN = "2006-01-02 15:04"
-	DATE_PATTERN = "2006-01-02"
+	TIME_PATTERN  = "2006-01-02 15:04"
+	DATE_PATTERN  = "2006-01-02"
 	CLOCK_PATTERN = "15:04"
 )
 
