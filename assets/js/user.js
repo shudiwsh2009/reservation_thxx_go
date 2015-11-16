@@ -6,51 +6,11 @@ function optimize(t) {
 	$(t).css("top", (height - $(t).height()) / 2 - 11 + "px");
 }
 
-function studentLogin() {
+function login() {
 	$.ajax({
 		type: "POST",
 		async: false,
-		url: "/Reservation/user/student/login",
-		data: {
-			username: $("#username").val(),
-			password: $("#password").val(),
-		},
-		dataType: "json",
-		success: function(data) {
-			if (data.state === "SUCCESS") {
-				window.location.href = data.url;
-			} else {
-				alert(data.message);
-			}
-		}
-	});
-}
-
-function studentRegister() {
-	$.ajax({
-		type: "POST",
-		async: false,
-		url: "/Reservation/user/student/register",
-		data: {
-			username: $("#username").val(),
-			password: $("#password").val(),
-		},
-		dataType: "json",
-		success: function(data) {
-			if (data.state === "SUCCESS") {
-				window.location.href = data.url;
-			} else {
-				alert(data.message);
-			}
-		}
-	});
-}
-
-function teacherLogin() {
-	$.ajax({
-		type: "POST",
-		async: false,
-		url: "/Reservation/user/teacher/login",
+		url: "/reservation/user/login",
 		data: {
 			username: $("#username").val(),
 			password: $("#password").val(),
@@ -70,7 +30,7 @@ function logout() {
 	$.ajax({
 		type: "GET",
 		async: false,
-		url: "/Reservation/user/logout",
+		url: "/reservation/user/logout",
 		data: {},
 		dataType: "json",
 		success: function(data) {

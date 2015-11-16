@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"github.com/shudiwsh2009/reservation_thxx_go/controllers"
 	"github.com/shudiwsh2009/reservation_thxx_go/models"
@@ -9,8 +10,34 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"regexp"
 	"time"
 )
+
+var needUserPath = regexp.MustCompile("^/reservation/(logout|(teacher|admin)/)")
+
+func checkUserHandler(fn func(http.ResponseWriter, *http.Request)) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// check url to see whether there is "/teacher/" or "/admin/" or "/logout"
+		m := needUserPath.FindStringSubmatch(r.URL.Path)
+		fmt.Println(r.URL.Path, "   ", m)
+		if m == nil {
+			fn(w, r)
+			return
+		}
+		if _, err := r.Cookie("user_id"); err != nil {
+			controllers.ErrorHandler(w, r, errors.New("请先登录"))
+			return
+		} else if _, err := r.Cookie("username"); err != nil {
+			controllers.ErrorHandler(w, r, errors.New("请先登录"))
+			return
+		} else if _, err := r.Cookie("user_type"); err != nil {
+			controllers.ErrorHandler(w, r, errors.New("请先登录"))
+			return
+		}
+		fn(w, r)
+	}
+}
 
 func main() {
 	// 数据库连接
@@ -37,7 +64,9 @@ func main() {
 	http.HandleFunc("/appointment/teacher", controllers.TeacherPage)
 	http.HandleFunc("/appointment/admin", controllers.AdminPage)
 	// 加载动态处理器
-	http.HandleFunc("/reservation/student/view", controllers.ViewReservationsByStudent)
+	http.HandleFunc("/reservation/login", checkUserHandler(controllers.Login))
+	http.HandleFunc("/reservation/logout", checkUserHandler(controllers.Logout))
+	http.HandleFunc("/reservation/teacher/view", checkUserHandler(controllers.ViewReservationsByStudent))
 	// 启动监听
 	if err := http.ListenAndServe(":8080", nil); err != nil {
 		log.Fatal("ListenAndServe: ", err)

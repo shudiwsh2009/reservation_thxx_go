@@ -41,27 +41,3 @@ func (ul *UserLogic) GetUserByUsername(username string) (*models.User, error) {
 	}
 	return user, nil
 }
-
-// 查找咨询师
-// 查找顺序:全名 > 工号 > 手机号
-func (ul *UserLogic) SearchTeacher(fullname string, username string, mobile string) (*models.User, error) {
-	if !strings.EqualFold(fullname, "") {
-		user, err := models.GetUserByFullname(fullname)
-		if err == nil {
-			return user, nil
-		}
-	}
-	if !strings.EqualFold(username, "") {
-		user, err := models.GetUserByUsername(username)
-		if err == nil {
-			return user, nil
-		}
-	}
-	if !strings.EqualFold(mobile, "") {
-		user, err := models.GetUserByMobile(mobile)
-		if err == nil {
-			return user, nil
-		}
-	}
-	return nil, errors.New("用户不存在")
-}

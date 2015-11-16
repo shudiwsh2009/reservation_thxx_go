@@ -144,7 +144,7 @@ select{
 .clearfix{
 	clear: both;
 }
-.student_login, .student_register {
+.login {
   border: 2px solid rgba(0, 0, 0, 0.72);
   border-radius: 9px;
   margin: 30px 20px;

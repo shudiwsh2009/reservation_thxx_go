@@ -29,6 +29,7 @@ func ViewReservationsByStudent(w http.ResponseWriter, r *http.Request) {
 			array = append(array, object)
 		}
 		result["reservations"] = array
+
 		if data, err := json.Marshal(result); err == nil {
 			fmt.Println(string(data))
 			w.Write(data)

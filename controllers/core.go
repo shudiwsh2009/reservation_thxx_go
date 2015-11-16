@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"encoding/json"
-	"fmt"
 	"html/template"
 	"net/http"
 )
@@ -38,8 +37,6 @@ func LoginPage(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
-	} else if r.Method == "POST" {
-
 	} else {
 
 	}

@@ -319,3 +319,36 @@ func (al *AdminLogic) ExportReservationsByAdmin(reservationIds []string, usernam
 	}
 	return utils.ExportPrefix + filename, nil
 }
+
+// 查找咨询师
+// 查找顺序:全名 > 工号 > 手机号
+func (ul *UserLogic) SearchTeacher(fullname string, username string, mobile string, admin string, userType models.UserType) (*models.User, error) {
+	if strings.EqualFold(admin, "") {
+		return nil, errors.New("请先登录")
+	} else if userType != models.ADMIN {
+		return nil, errors.New("权限不足")
+	}
+	user, err := models.GetUserByUsername(admin)
+	if err != nil || user.UserType != models.ADMIN {
+		return nil, errors.New("管理员账户出错,请联系技术支持")
+	}
+	if !strings.EqualFold(fullname, "") {
+		user, err := models.GetUserByFullname(fullname)
+		if err == nil {
+			return user, nil
+		}
+	}
+	if !strings.EqualFold(username, "") {
+		user, err := models.GetUserByUsername(username)
+		if err == nil {
+			return user, nil
+		}
+	}
+	if !strings.EqualFold(mobile, "") {
+		user, err := models.GetUserByMobile(mobile)
+		if err == nil {
+			return user, nil
+		}
+	}
+	return nil, errors.New("用户不存在")
+}
