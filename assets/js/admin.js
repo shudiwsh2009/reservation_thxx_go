@@ -191,13 +191,13 @@ function optimize(t) {
 
 function addReservation() {
 	$("#cell_time_add")[0].onclick = "";
-	$("#cell_time_add")[0].innerHTML = "<input type='text' id='input_date' style='width: 80px'></input>日，"
-		+ "<input style='width:20px' id='start_hour'></input>时<input style='width:20px' id='start_minute'></input>分"
-		+ "至<input style='width:20px' id='end_hour'></input>时<input style='width:20px' id='end_minute'></input>分";
-	$("#cell_teacher_fullname_add")[0].innerHTML = "<input id='teacher_fullname' style='width:60px'></input>"
+	$("#cell_time_add")[0].innerHTML = "<input type='text' id='input_date' style='width: 80px'/>日，"
+		+ "<input style='width:20px' id='start_hour'/>时<input style='width:20px' id='start_minute'/>分"
+		+ "至<input style='width:20px' id='end_hour'/>时<input style='width:20px' id='end_minute'/>分";
+	$("#cell_teacher_fullname_add")[0].innerHTML = "<input id='teacher_fullname' style='width:60px'/>"
 		+ "<button type='button' onclick='searchTeacher();'>搜索</button>";
-	$("#cell_teacher_username_add")[0].innerHTML = "<input id='teacher_username' style='width:120px'></input>";
-	$("#cell_teacher_mobile_add")[0].innerHTML = "<input id='teacher_mobile' style='width:120px'></input>";
+	$("#cell_teacher_username_add")[0].innerHTML = "<input id='teacher_username' style='width:120px'/>";
+	$("#cell_teacher_mobile_add")[0].innerHTML = "<input id='teacher_mobile' style='width:120px'/>";
 	$("#cell_status_add")[0].innerHTML = "<button type='button' onclick='addReservationConfirm();'>确认</button>";
 	$("#cell_student_add")[0].innerHTML = "<button type='button' onclick='window.location.reload();'>取消</button>";
 	$("#input_date").DatePicker({
@@ -239,6 +239,12 @@ function addReservationConfirm() {
 	} else {
 		endTime += endMinute;
 	}
+	if ($("#input_date").val().length == 0 || startHour.length == 0) {
+		startTime = "";
+	}
+	if ($("#input_date").val().length == 0 || endHour.length == 0) {
+		endTime = "";
+	}
 	var payload = {
 		start_time: startTime,
 		end_time: endTime,
@@ -250,7 +256,7 @@ function addReservationConfirm() {
 	$.ajax({
 		type: "POST",
 		async: false,
-		url: "/Reservation/admin/reservation/add",
+		url: "/admin/reservation/add",
 		data: payload,
 		dataType: "json",
 		success: function(data) {
@@ -265,16 +271,16 @@ function addReservationConfirm() {
 
 function editReservation(index) {
 	$("#cell_time_" + index)[0].onclick = "";
-	$("#cell_time_" + index)[0].innerHTML = "<input type='text' id='input_date' style='width: 80px'></input>日，"
-		+ "<input style='width:20px' id='start_hour'></input>时<input style='width:20px' id='start_minute'></input>分"
-		+ "至<input style='width:20px' id='end_hour'></input>时<input style='width:20px' id='end_minute'></input>分";
+	$("#cell_time_" + index)[0].innerHTML = "<input type='text' id='input_date' style='width: 80px'/>日，"
+		+ "<input style='width:20px' id='start_hour'/>时<input style='width:20px' id='start_minute'/>分"
+		+ "至<input style='width:20px' id='end_hour'/>时<input style='width:20px' id='end_minute'/>分";
 	$("#cell_teacher_fullname_" + index)[0].innerHTML = "<input id='teacher_fullname" + index + "' style='width:60px' "
 		+ "value='" + reservations[index].teacher_fullname + "''></input>"
 		+ "<button type='button' onclick='searchTeacher();'>搜索</button>";
 	$("#cell_teacher_username_" + index)[0].innerHTML = "<input id='teacher_username" + index + "' style='width:120px' "
-		+ "value='" + reservations[index].teacher_username + "'></input>";
+		+ "value='" + reservations[index].teacher_username + "'/>";
 	$("#cell_teacher_mobile_" + index)[0].innerHTML = "<input id='teacher_mobile" + index + "' style='width:120px' "
-		+ "value='" + reservations[index].teacher_mobile + "'></input>";
+		+ "value='" + reservations[index].teacher_mobile + "'/>";
 	$("#cell_status_" + index)[0].innerHTML = "<button type='button' onclick='editReservationConfirm(" + index + ");'>确认</button>";
 	$("#cell_student_" + index)[0].innerHTML = "<button type='button' onclick='window.location.reload();'>取消</button>";
 	$("#input_date").DatePicker({
@@ -316,6 +322,12 @@ function editReservationConfirm(index) {
 	} else {
 		endTime += endMinute;
 	}
+	if ($("#input_date").val().length == 0 || startHour.length == 0) {
+		startTime = "";
+	}
+	if ($("#input_date").val().length == 0 || endHour.length == 0) {
+		endTime = "";
+	}
 	var payload = {
 		reservation_id: reservations[index].reservation_id,
 		start_time: startTime,
@@ -328,7 +340,7 @@ function editReservationConfirm(index) {
 	$.ajax({
 		type: "POST",
 		async: false,
-		url: "/Reservation/admin/reservation/edit",
+		url: "/admin/reservation/edit",
 		data: payload,
 		dataType: "json",
 		success: function(data) {
@@ -350,7 +362,7 @@ function searchTeacher(index) {
 	$.ajax({
 		type: "POST",
 		async: false,
-		url: "/Reservation/user/teacher/search",
+		url: "/admin/teacher/search",
 		data: payload,
 		dataType: "json",
 		success: function(data) {
@@ -388,7 +400,7 @@ function removeReservationsConfirm() {
 	$.ajax({
 		type: "POST",
 		async: false,
-		url: "/Reservation/admin/reservation/remove",
+		url: "/admin/reservation/remove",
 		data: payload,
 		traditional: true,
 		dataType: "json",
@@ -427,7 +439,7 @@ function cancelReservationsConfirm() {
 	$.ajax({
 		type: "POST",
 		async: false,
-		url: "/Reservation/admin/reservation/cancel",
+		url: "/admin/reservation/cancel",
 		data: payload,
 		traditional: true,
 		dataType: "json",
@@ -448,7 +460,7 @@ function getFeedback(index) {
 	$.ajax({
 		type: "POST",
 		async: false,
-		url: "/Reservation/admin/reservation/feedback/get",
+		url: "/admin/reservation/feedback/get",
 		data: payload,
 		dataType: "json",
 		success: function(data) {
@@ -487,7 +499,7 @@ function submitFeedback(index) {
 	$.ajax({
 		type: "POST",
 		async: false,
-		url: "/Reservation/admin/reservation/feedback/submit",
+		url: "/admin/reservation/feedback/submit",
 		data: payload,
 		dataType: "json",
 		success: function(data) {

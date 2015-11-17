@@ -13,8 +13,8 @@ type TeacherLogic struct {
 
 // 咨询师添加咨询
 func (tl *TeacherLogic) AddReservationByTeacher(startTime string, endTime string, teacherFullname string,
-	teacherMobile string, username string, userType models.UserType) (*models.Reservation, error) {
-	if strings.EqualFold(username, "") {
+	teacherMobile string, userId string, userType models.UserType) (*models.Reservation, error) {
+	if strings.EqualFold(userId, "") {
 		return nil, errors.New("请先登录")
 	} else if userType != models.TEACHER {
 		return nil, errors.New("权限不足")
@@ -29,18 +29,18 @@ func (tl *TeacherLogic) AddReservationByTeacher(startTime string, endTime string
 	} else if !utils.IsMobile(teacherMobile) {
 		return nil, errors.New("咨询师手机号格式不正确")
 	}
-	start, err := time.Parse(utils.TIME_PATTERN, startTime)
+	start, err := time.ParseInLocation(utils.TIME_PATTERN, startTime, utils.Location)
 	if err != nil {
 		return nil, errors.New("开始时间格式错误")
 	}
-	end, err := time.Parse(utils.TIME_PATTERN, endTime)
+	end, err := time.ParseInLocation(utils.TIME_PATTERN, endTime, utils.Location)
 	if err != nil {
 		return nil, errors.New("结束时间格式错误")
 	}
 	if start.After(end) {
 		return nil, errors.New("开始时间不能晚于结束时间")
 	}
-	teacher, err := models.GetUserByUsername(username)
+	teacher, err := models.GetUserById(userId)
 	if err != nil {
 		return nil, errors.New("咨询师账户失效")
 	} else if teacher.UserType != models.TEACHER {
@@ -60,8 +60,8 @@ func (tl *TeacherLogic) AddReservationByTeacher(startTime string, endTime string
 
 // 咨询师编辑咨询
 func (tl *TeacherLogic) EditReservationByTeacher(reservationId string, startTime string, endTime string,
-	teacherFullname string, teacherMobile string, username string, userType models.UserType) (*models.Reservation, error) {
-	if strings.EqualFold(username, "") {
+	teacherFullname string, teacherMobile string, userId string, userType models.UserType) (*models.Reservation, error) {
+	if strings.EqualFold(userId, "") {
 		return nil, errors.New("请先登录")
 	} else if userType != models.TEACHER {
 		return nil, errors.New("权限不足")
@@ -84,18 +84,18 @@ func (tl *TeacherLogic) EditReservationByTeacher(reservationId string, startTime
 	} else if reservation.Status == models.RESERVATED {
 		return nil, errors.New("不能编辑已被预约的咨询")
 	}
-	start, err := time.Parse(utils.TIME_PATTERN, startTime)
+	start, err := time.ParseInLocation(utils.TIME_PATTERN, startTime, utils.Location)
 	if err != nil {
 		return nil, errors.New("开始时间格式错误")
 	}
-	end, err := time.Parse(utils.TIME_PATTERN, endTime)
+	end, err := time.ParseInLocation(utils.TIME_PATTERN, endTime, utils.Location)
 	if err != nil {
 		return nil, errors.New("结束时间格式错误")
 	}
 	if start.After(end) {
 		return nil, errors.New("开始时间不能晚于结束时间")
 	}
-	teacher, err := models.GetUserByUsername(username)
+	teacher, err := models.GetUserById(userId)
 	if err != nil {
 		return nil, errors.New("咨询师账户失效")
 	} else if teacher.UserType != models.TEACHER {
@@ -119,15 +119,15 @@ func (tl *TeacherLogic) EditReservationByTeacher(reservationId string, startTime
 }
 
 // 咨询师删除咨询
-func (tl *TeacherLogic) RemoveReservationsByTeacher(reservationIds []string, username string, userType models.UserType) error {
-	if strings.EqualFold(username, "") {
+func (tl *TeacherLogic) RemoveReservationsByTeacher(reservationIds []string, userId string, userType models.UserType) error {
+	if strings.EqualFold(userId, "") {
 		return errors.New("请先登录")
 	} else if userType != models.TEACHER {
 		return errors.New("权限不足")
 	} else if reservationIds == nil {
 		return errors.New("咨询Id列表为空")
 	}
-	teacher, err := models.GetUserByUsername(username)
+	teacher, err := models.GetUserById(userId)
 	if err != nil {
 		return errors.New("咨询师账户失效")
 	} else if teacher.UserType != models.TEACHER {
@@ -143,15 +143,15 @@ func (tl *TeacherLogic) RemoveReservationsByTeacher(reservationIds []string, use
 }
 
 // 咨询师取消预约
-func (tl *TeacherLogic) CancelReservationsByTeacher(reservationIds []string, username string, userType models.UserType) error {
-	if strings.EqualFold(username, "") {
+func (tl *TeacherLogic) CancelReservationsByTeacher(reservationIds []string, userId string, userType models.UserType) error {
+	if strings.EqualFold(userId, "") {
 		return errors.New("请先登录")
 	} else if userType != models.TEACHER {
 		return errors.New("权限不足")
 	} else if reservationIds == nil {
 		return errors.New("咨询Id列表为空")
 	}
-	teacher, err := models.GetUserByUsername(username)
+	teacher, err := models.GetUserById(userId)
 	if err != nil {
 		return errors.New("咨询师账户失效")
 	} else if teacher.UserType != models.TEACHER {
@@ -163,7 +163,7 @@ func (tl *TeacherLogic) CancelReservationsByTeacher(reservationIds []string, use
 			!strings.EqualFold(reseravtion.TeacherUsername, teacher.Username) {
 			continue
 		}
-		if reseravtion.Status == models.RESERVATED && reseravtion.StartTime.After(time.Now().Local()) {
+		if reseravtion.Status == models.RESERVATED && reseravtion.StartTime.After(time.Now().In(utils.Location)) {
 			reseravtion.Status = models.AVAILABLE
 			reseravtion.StudentInfo = models.StudentInfo{}
 			reseravtion.StudentFeedback = models.StudentFeedback{}
@@ -175,15 +175,15 @@ func (tl *TeacherLogic) CancelReservationsByTeacher(reservationIds []string, use
 }
 
 // 咨询师拉取反馈
-func (tl *TeacherLogic) GetFeedbackByTeacher(reservationId string, username string, userType models.UserType) (*models.Reservation, error) {
-	if strings.EqualFold(username, "") {
+func (tl *TeacherLogic) GetFeedbackByTeacher(reservationId string, userId string, userType models.UserType) (*models.Reservation, error) {
+	if strings.EqualFold(userId, "") {
 		return nil, errors.New("请先登录")
 	} else if userType != models.TEACHER {
 		return nil, errors.New("权限不足")
 	} else if strings.EqualFold(reservationId, "") {
 		return nil, errors.New("咨询已下架")
 	}
-	teacher, err := models.GetUserByUsername(username)
+	teacher, err := models.GetUserById(userId)
 	if err != nil {
 		return nil, errors.New("咨询师账户失效")
 	} else if teacher.UserType != models.TEACHER {
@@ -192,7 +192,7 @@ func (tl *TeacherLogic) GetFeedbackByTeacher(reservationId string, username stri
 	reservation, err := models.GetReservationById(reservationId)
 	if err != nil || reservation.Status == models.DELETED {
 		return nil, errors.New("咨询已下架")
-	} else if reservation.StartTime.After(time.Now().Local()) {
+	} else if reservation.StartTime.After(time.Now().In(utils.Location)) {
 		return nil, errors.New("咨询未开始,暂不能反馈")
 	} else if reservation.Status == models.AVAILABLE {
 		return nil, errors.New("咨询未被预约,不能反馈")
@@ -204,9 +204,9 @@ func (tl *TeacherLogic) GetFeedbackByTeacher(reservationId string, username stri
 
 // 咨询师提交反馈
 func (tl *TeacherLogic) SubmitFeedbackByTeacher(reservationId string, teacherFullname string, teacherId string,
-	studentName string, problem string, solution string, adviceToCenter string, username string,
+	studentName string, problem string, solution string, adviceToCenter string, userId string,
 	userType models.UserType) (*models.Reservation, error) {
-	if strings.EqualFold(username, "") {
+	if strings.EqualFold(userId, "") {
 		return nil, errors.New("请先登录")
 	} else if userType != models.TEACHER {
 		return nil, errors.New("权限不足")
@@ -225,7 +225,7 @@ func (tl *TeacherLogic) SubmitFeedbackByTeacher(reservationId string, teacherFul
 	} else if strings.EqualFold(adviceToCenter, "") {
 		return nil, errors.New("工作建议为空")
 	}
-	teacher, err := models.GetUserByUsername(username)
+	teacher, err := models.GetUserById(userId)
 	if err != nil {
 		return nil, errors.New("咨询师账户失效")
 	} else if teacher.UserType != models.TEACHER {
@@ -234,7 +234,7 @@ func (tl *TeacherLogic) SubmitFeedbackByTeacher(reservationId string, teacherFul
 	reservation, err := models.GetReservationById(reservationId)
 	if err != nil || reservation.Status == models.DELETED {
 		return nil, errors.New("咨询已下架")
-	} else if reservation.StartTime.After(time.Now().Local()) {
+	} else if reservation.StartTime.After(time.Now().In(utils.Location)) {
 		return nil, errors.New("咨询未开始,暂不能反馈")
 	} else if reservation.Status == models.AVAILABLE {
 		return nil, errors.New("咨询未被预约,不能反馈")
@@ -259,15 +259,15 @@ func (tl *TeacherLogic) SubmitFeedbackByTeacher(reservationId string, teacherFul
 }
 
 // 咨询师查看学生信息
-func (tl *TeacherLogic) GetStudentInfoByTeacher(reservationId string, username string, userType models.UserType) (*models.StudentInfo, error) {
-	if strings.EqualFold(username, "") {
+func (tl *TeacherLogic) GetStudentInfoByTeacher(reservationId string, userId string, userType models.UserType) (*models.StudentInfo, error) {
+	if strings.EqualFold(userId, "") {
 		return nil, errors.New("请先登录")
 	} else if userType != models.TEACHER {
 		return nil, errors.New("权限不足")
 	} else if strings.EqualFold(reservationId, "") {
 		return nil, errors.New("咨询已下架")
 	}
-	teacher, err := models.GetUserByUsername(username)
+	teacher, err := models.GetUserById(userId)
 	if err != nil {
 		return nil, errors.New("咨询师账户失效")
 	} else if teacher.UserType != models.TEACHER {

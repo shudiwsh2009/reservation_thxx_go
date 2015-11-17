@@ -15,7 +15,7 @@ const (
 )
 
 var reservationStatuses = [...]string{
-	"AVAILABEL",
+	"AVAILABLE",
 	"RESERVATED",
 	"FEEDBACK",
 	"DELETED",

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/shudiwsh2009/reservation_thxx_go/buslogic"
 	"github.com/shudiwsh2009/reservation_thxx_go/models"
-	"github.com/shudiwsh2009/reservation_thxx_go/utils"
 	"net/http"
 	"time"
 )
@@ -26,21 +25,21 @@ func Login(w http.ResponseWriter, r *http.Request, userId string, userType model
 		Name:    "user_id",
 		Value:   fmt.Sprintf("%x", string(user.Id)),
 		Path:    "/",
-		Expires: time.Now().In(utils.Location).AddDate(1, 0, 0),
+		Expires: time.Now().Local().AddDate(1, 0, 0),
 		MaxAge:  365 * 24 * 60 * 60,
 	})
 	http.SetCookie(w, &http.Cookie{
 		Name:    "username",
 		Value:   user.Username,
 		Path:    "/",
-		Expires: time.Now().In(utils.Location).AddDate(1, 0, 0),
+		Expires: time.Now().Local().AddDate(1, 0, 0),
 		MaxAge:  365 * 24 * 60 * 60,
 	})
 	http.SetCookie(w, &http.Cookie{
 		Name:    "user_type",
 		Value:   fmt.Sprintf("%d", user.UserType),
 		Path:    "/",
-		Expires: time.Now().In(utils.Location).AddDate(1, 0, 0),
+		Expires: time.Now().Local().AddDate(1, 0, 0),
 		MaxAge:  365 * 24 * 60 * 60,
 	})
 	switch user.UserType {
@@ -53,7 +52,6 @@ func Login(w http.ResponseWriter, r *http.Request, userId string, userType model
 	}
 
 	if data, err := json.Marshal(result); err == nil {
-		fmt.Println(string(data))
 		w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 		w.Write(data)
 	}
@@ -84,7 +82,6 @@ func Logout(w http.ResponseWriter, r *http.Request, userId string, userType mode
 	})
 
 	if data, err := json.Marshal(result); err == nil {
-		fmt.Println(string(data))
 		w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 		w.Write(data)
 	}

@@ -25,7 +25,6 @@ func handleWithCookie(fn func(http.ResponseWriter, *http.Request, string, models
 			fn(w, r, "", 0)
 			return
 		}
-		fmt.Println("check user cookie in URL: ", r.URL.Path)
 		var userId string
 		var userType models.UserType
 		if cookie, err := r.Cookie("user_id"); err != nil {
@@ -44,7 +43,6 @@ func handleWithCookie(fn func(http.ResponseWriter, *http.Request, string, models
 		} else {
 			ut, _ := strconv.Atoi(cookie.Value)
 			userType = models.UserType(ut)
-			fmt.Println(userType)
 		}
 		fn(w, r, userId, userType)
 	}
@@ -85,6 +83,13 @@ func main() {
 	adminRouter := router.PathPrefix("/admin").Subrouter()
 	adminRouter.HandleFunc("/reservation/view", handleWithCookie(controllers.ViewReservationsByAdmin)).Methods("GET")
 	adminRouter.HandleFunc("/reservation/view/monthly", handleWithCookie(controllers.ViewMonthlyReservationsByAdmin)).Methods("GET")
+	adminRouter.HandleFunc("/reservation/add", handleWithCookie(controllers.AddReservationByAdmin)).Methods("POST")
+	adminRouter.HandleFunc("/reservation/edit", handleWithCookie(controllers.EditReservationByAdmin)).Methods("POST")
+	adminRouter.HandleFunc("/reservation/remove", handleWithCookie(controllers.RemoveReservationByAdmin)).Methods("POST")
+	adminRouter.HandleFunc("/reservation/cancel", handleWithCookie(controllers.CancelReservationByAdmin)).Methods("POST")
+	adminRouter.HandleFunc("/reservation/feedback/get", handleWithCookie(controllers.GetFeedbackByAdmin)).Methods("POST")
+	adminRouter.HandleFunc("/reservation/feedback/submit", handleWithCookie(controllers.SubmitFeedbackByAdmin)).Methods("POST")
+	adminRouter.HandleFunc("/teacher/search", handleWithCookie(controllers.SearchTeacherByAdmin)).Methods("POST")
 	// http加载处理器
 	http.Handle("/", router)
 	http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets/"))))

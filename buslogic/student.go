@@ -45,7 +45,7 @@ func (sl *StudentLogic) MakeReservationByStudent(reservationId string, name stri
 	reservation, err := models.GetReservationById(reservationId)
 	if err != nil {
 		return nil, errors.New("咨询已下架")
-	} else if reservation.StartTime.Before(time.Now().Local()) {
+	} else if reservation.StartTime.Before(time.Now().In(utils.Location)) {
 		return nil, errors.New("咨询已过期")
 	} else if reservation.Status != models.AVAILABLE {
 		return nil, errors.New("咨询已被预约")
@@ -55,7 +55,7 @@ func (sl *StudentLogic) MakeReservationByStudent(reservationId string, name stri
 		return nil, errors.New("数据获取失败")
 	}
 	for _, r := range studentReservations {
-		if r.Status == models.RESERVATED && r.StartTime.After(time.Now().Local()) {
+		if r.Status == models.RESERVATED && r.StartTime.After(time.Now().In(utils.Location)) {
 			return nil, errors.New("你好！你已有一个咨询预约，请完成这次咨询后再预约下一次，或致电62792453取消已有预约。")
 		}
 	}
@@ -94,7 +94,7 @@ func (sl *StudentLogic) GetFeedbackByStudent(reservationId string, studentId str
 	reservation, err := models.GetReservationById(reservationId)
 	if err != nil {
 		return nil, errors.New("咨询已下架")
-	} else if reservation.StartTime.After(time.Now().Local()) {
+	} else if reservation.StartTime.After(time.Now().In(utils.Location)) {
 		return nil, errors.New("咨询未开始,暂不能反馈")
 	} else if reservation.Status == models.AVAILABLE {
 		return nil, errors.New("咨询未被预约,不能反馈")
@@ -125,7 +125,7 @@ func (sl *StudentLogic) SubmitFeedbackByStudent(reservationId string, name strin
 	reservation, err := models.GetReservationById(reservationId)
 	if err != nil {
 		return nil, errors.New("咨询已下架")
-	} else if reservation.StartTime.After(time.Now().Local()) {
+	} else if reservation.StartTime.After(time.Now().In(utils.Location)) {
 		return nil, errors.New("咨询未开始,暂不能反馈")
 	} else if reservation.Status == models.AVAILABLE {
 		return nil, errors.New("咨询未被预约,不能反馈")
