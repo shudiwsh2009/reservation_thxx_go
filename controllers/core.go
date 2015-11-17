@@ -7,62 +7,42 @@ import (
 )
 
 func EntryPage(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "GET" {
-		t := template.Must(template.ParseFiles("templates/entry.html"))
-		err := t.Execute(w, nil)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
-	} else {
-
+	t := template.Must(template.ParseFiles("templates/entry.html"))
+	err := t.Execute(w, nil)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
 
 func StudentPage(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "GET" {
-		t := template.Must(template.ParseFiles("templates/student.html"))
-		err := t.Execute(w, nil)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
-	} else {
-
+	t := template.Must(template.ParseFiles("templates/student.html"))
+	err := t.Execute(w, nil)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
 
 func LoginPage(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "GET" {
-		t := template.Must(template.ParseFiles("templates/login.html"))
-		err := t.Execute(w, nil)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
-	} else {
-
+	t := template.Must(template.ParseFiles("templates/login.html"))
+	err := t.Execute(w, nil)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
 
 func TeacherPage(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "GET" {
-		t := template.Must(template.ParseFiles("templates/teacher.html"))
-		err := t.Execute(w, nil)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
-	} else {
-
+	t := template.Must(template.ParseFiles("templates/teacher.html"))
+	err := t.Execute(w, nil)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
 
 func AdminPage(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "GET" {
-		t := template.Must(template.ParseFiles("templates/admin.html"))
-		err := t.Execute(w, nil)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
-	} else {
-
+	t := template.Must(template.ParseFiles("templates/admin.html"))
+	err := t.Execute(w, nil)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
 

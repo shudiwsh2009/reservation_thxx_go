@@ -25,18 +25,24 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 	http.SetCookie(w, &http.Cookie{
 		Name:    "user_id",
-		Value:   string(user.Id),
+		Value:   fmt.Sprintf("%x", string(user.Id)),
+		Path: "/",
 		Expires: time.Now().In(utils.Location).AddDate(1, 0, 0),
+		MaxAge: 365 * 24 * 60 * 60,
 	})
 	http.SetCookie(w, &http.Cookie{
 		Name:    "username",
 		Value:   user.Username,
+		Path: "/",
 		Expires: time.Now().In(utils.Location).AddDate(1, 0, 0),
+		MaxAge: 365 * 24 * 60 * 60,
 	})
 	http.SetCookie(w, &http.Cookie{
 		Name:    "user_type",
-		Value:   string(user.UserType),
+		Value:   fmt.Sprintf("%d", user.UserType),
+		Path: "/",
 		Expires: time.Now().In(utils.Location).AddDate(1, 0, 0),
+		MaxAge: 365 * 24 * 60 * 60,
 	})
 	switch user.UserType {
 	case models.ADMIN:
@@ -49,6 +55,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	if data, err := json.Marshal(result); err == nil {
 		fmt.Println(string(data))
+		w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 		w.Write(data)
 	}
 }
@@ -64,15 +71,18 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 	}
 	http.SetCookie(w, &http.Cookie{
 		Name:    "user_id",
-		Expires: time.Now().In(utils.Location).AddDate(-1, 0, 0),
+		Path: "/",
+		MaxAge: -1,
 	})
 	http.SetCookie(w, &http.Cookie{
 		Name:    "username",
-		Expires: time.Now().In(utils.Location).AddDate(-1, 0, 0),
+		Path: "/",
+		MaxAge: -1,
 	})
 	http.SetCookie(w, &http.Cookie{
 		Name:    "user_type",
-		Expires: time.Now().In(utils.Location).AddDate(-1, 0, 0),
+		Path: "/",
+		MaxAge: -1,
 	})
 
 	if data, err := json.Marshal(result); err == nil {
