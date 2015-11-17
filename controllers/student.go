@@ -4,11 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/shudiwsh2009/reservation_thxx_go/buslogic"
+	"github.com/shudiwsh2009/reservation_thxx_go/models"
 	"github.com/shudiwsh2009/reservation_thxx_go/utils"
 	"net/http"
 )
 
-func ViewReservationsByStudent(w http.ResponseWriter, r *http.Request) {
+func ViewReservationsByStudent(w http.ResponseWriter, r *http.Request, username string, userType models.UserType) {
 	if r.Method == "GET" {
 		var result = map[string]interface{}{"state": "SUCCESS"}
 		var rl = buslogic.ReservationLogic{}

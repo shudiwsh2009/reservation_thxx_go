@@ -6,7 +6,7 @@ function viewReservations() {
 	$.ajax({
 		type: "GET",
 		async: false,
-		url: "/Reservation/admin/reservation/view",
+		url: "/admin/reservation/view",
 		dataType: "json",
 		success: function(data) {
 			if (data.state === "SUCCESS") {
@@ -28,7 +28,7 @@ function queryReservations() {
 	$.ajax({
 		type: "GET",
 		async: false,
-		url: "/Reservation/admin/reservation/view/monthly",
+		url: "/admin/reservation/view/monthly",
 		data: payload,
 		dataType: "json",
 		success: function(data) {
@@ -49,32 +49,12 @@ function exportReservations() {
 	$.ajax({
 		type: "POST",
 		async: false,
-		url: "/Reservation/admin/reservation/export",
+		url: "/admin/reservation/export",
 		data: payload,
 		dataType: "json",
 		success: function(data) {
 			if (data.state === "SUCCESS") {
 				window.open(data.url);
-			} else {
-				alert(data.message);
-			}
-		}
-	});
-}
-
-function queryStudent() {
-	var payload = {
-		student_username: $("#query_student").val(),
-	};
-	$.ajax({
-		type: "POST",
-		async: false,
-		url: "/Reservation/admin/student/query",
-		data: payload, 
-		dataType: "json",
-		success: function(data) {
-			if (data.state === "SUCCESS") {
-				showStudent(data.student_info);
 			} else {
 				alert(data.message);
 			}

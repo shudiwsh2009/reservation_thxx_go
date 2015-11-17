@@ -10,7 +10,7 @@ function login() {
 	$.ajax({
 		type: "POST",
 		async: false,
-		url: "/reservation/user/login",
+		url: "/user/login",
 		data: {
 			username: $("#username").val(),
 			password: $("#password").val(),
@@ -30,12 +30,12 @@ function logout() {
 	$.ajax({
 		type: "GET",
 		async: false,
-		url: "/reservation/user/logout",
+		url: "/user/logout",
 		data: {},
 		dataType: "json",
 		success: function(data) {
 			if (data.state === "SUCCESS") {
-				window.location.href = data.url;
+				//window.location.href = data.url;
 			}
 		},
 	});

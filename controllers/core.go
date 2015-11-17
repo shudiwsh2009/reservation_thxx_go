@@ -2,11 +2,12 @@ package controllers
 
 import (
 	"encoding/json"
+	"github.com/shudiwsh2009/reservation_thxx_go/models"
 	"html/template"
 	"net/http"
 )
 
-func EntryPage(w http.ResponseWriter, r *http.Request) {
+func EntryPage(w http.ResponseWriter, r *http.Request, username string, userType models.UserType) {
 	t := template.Must(template.ParseFiles("templates/entry.html"))
 	err := t.Execute(w, nil)
 	if err != nil {
@@ -14,7 +15,7 @@ func EntryPage(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func StudentPage(w http.ResponseWriter, r *http.Request) {
+func StudentPage(w http.ResponseWriter, r *http.Request, username string, userType models.UserType) {
 	t := template.Must(template.ParseFiles("templates/student.html"))
 	err := t.Execute(w, nil)
 	if err != nil {
@@ -22,7 +23,7 @@ func StudentPage(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func LoginPage(w http.ResponseWriter, r *http.Request) {
+func LoginPage(w http.ResponseWriter, r *http.Request, username string, userType models.UserType) {
 	t := template.Must(template.ParseFiles("templates/login.html"))
 	err := t.Execute(w, nil)
 	if err != nil {
@@ -30,7 +31,7 @@ func LoginPage(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func TeacherPage(w http.ResponseWriter, r *http.Request) {
+func TeacherPage(w http.ResponseWriter, r *http.Request, username string, userType models.UserType) {
 	t := template.Must(template.ParseFiles("templates/teacher.html"))
 	err := t.Execute(w, nil)
 	if err != nil {
@@ -38,7 +39,7 @@ func TeacherPage(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func AdminPage(w http.ResponseWriter, r *http.Request) {
+func AdminPage(w http.ResponseWriter, r *http.Request, username string, userType models.UserType) {
 	t := template.Must(template.ParseFiles("templates/admin.html"))
 	err := t.Execute(w, nil)
 	if err != nil {

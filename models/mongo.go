@@ -49,6 +49,15 @@ func UpsertUser(user *User) error {
 	return err
 }
 
+func GetUserById(userId string) (*User, error) {
+	collection := Mongo.C("user")
+	user := &User{}
+	if err := collection.FindId(bson.ObjectIdHex(userId)).One(user); err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
 func GetUserByUsername(username string) (*User, error) {
 	collection := Mongo.C("user")
 	user := &User{}
