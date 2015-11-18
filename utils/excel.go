@@ -10,12 +10,12 @@ import (
 
 const (
 	DefaultReservationExportExcelFilename = "export_template.xlsx"
-	ExportPrefix                          = "assets/export/"
+	ExportFolder                          = "assets/export/"
 	ExcelSuffix                           = ".xlsx"
 )
 
 func ExportReservationsToExcel(reservations []*models.Reservation, filename string) error {
-	xl, err := xlsx.OpenFile(ExportPrefix + DefaultReservationExportExcelFilename)
+	xl, err := xlsx.OpenFile(ExportFolder + DefaultReservationExportExcelFilename)
 	if err != nil {
 		return errors.New("导出失败:打开模板文件失败")
 	}
@@ -80,7 +80,7 @@ func ExportReservationsToExcel(reservations []*models.Reservation, filename stri
 			}
 		}
 	}
-	err = xl.Save(ExportPrefix + filename)
+	err = xl.Save(ExportFolder + filename)
 	if err != nil {
 		return errors.New("导出失败:保存文件失败")
 	}

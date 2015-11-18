@@ -314,14 +314,14 @@ func (al *AdminLogic) ExportReservationsByAdmin(reservationIds []string, userId 
 		}
 		reservations = append(reservations, reservation)
 	}
-	filename := "export_" + time.Now().In(utils.Location).Format(utils.TIME_PATTERN) + utils.ExcelSuffix
+	filename := "export_" + time.Now().In(utils.Location).Format(utils.DATE_PATTERN) + utils.ExcelSuffix
 	if len(reservations) == 0 {
 		return "", nil
 	}
 	if err = utils.ExportReservationsToExcel(reservations, filename); err != nil {
 		return "", err
 	}
-	return utils.ExportPrefix + filename, nil
+	return "/" + utils.ExportFolder + filename, nil
 }
 
 // 查找咨询师

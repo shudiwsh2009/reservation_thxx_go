@@ -43,23 +43,30 @@ function queryReservations() {
 }
 
 function exportReservations() {
-	var payload = {
-		from_time: $("#export_date").val(),
-	};
-	$.ajax({
-		type: "POST",
-		async: false,
-		url: "/admin/reservation/export",
-		data: payload,
-		dataType: "json",
-		success: function(data) {
-			if (data.state === "SUCCESS") {
-				window.open(data.url);
-			} else {
-				alert(data.message);
-			}
-		}
-	});
+    var reservationIds = [];
+    for (var i = 0; i < reservations.length; ++i) {
+        if ($("#cell_checkbox_" + i)[0].checked) {
+            reservationIds.push(reservations[i].reservation_id);
+        }
+    }
+    var payload = {
+        reservation_ids: reservationIds,
+    };
+    $.ajax({
+        type: "POST",
+        async: false,
+        url: "/admin/reservation/export",
+        data: payload,
+        traditional: true,
+        dataType: "json",
+        success: function(data) {
+            if (data.state === "SUCCESS") {
+                window.open(data.url);
+            } else {
+                alert(data.message);
+            }
+        }
+    });
 }
 
 function refreshDataTable(reservations) {
@@ -367,9 +374,9 @@ function searchTeacher(index) {
 		dataType: "json",
 		success: function(data) {
 			if (data.state === "SUCCESS") {
-				$("#teacher_username" + (index === undefined ? "" : index)).val(data.teacher_username);
-				$("#teacher_fullname" + (index === undefined ? "" : index)).val(data.teacher_fullname);
-				$("#teacher_mobile" + (index === undefined ? "" : index)).val(data.teacher_mobile);
+				$("#teacher_username" + (index === undefined ? "" : index)).val(data.teacher.teacher_username);
+				$("#teacher_fullname" + (index === undefined ? "" : index)).val(data.teacher.teacher_fullname);
+				$("#teacher_mobile" + (index === undefined ? "" : index)).val(data.teacher.teacher_mobile);
 			}
 		}
 	});
@@ -475,26 +482,39 @@ function getFeedback(index) {
 
 function showFeedback(index, feedback) {
 	$("body").append("\
-		<div class='fankui_tch' id='feedback_table_" + index + "' style='text-align:left; top:100px; height:300px; width:400px; left:100px'>\
+		<div class='fankui_tch' id='feedback_table_" + index + "' style='text-align:left; top:100px; height:420px; width:400px; left:100px'>\
 			咨询师反馈表<br>\
-			问题评估：<br>\
+			您的姓名：<input id='teacher_fullname'/><br>\
+			工作证号：<input id='teacher_username'/><br>\
+			来访者姓名：<input id='student_fullname'/><br>\
+			来访者问题描述：<br>\
 			<textarea id='problem' style='width:350px;height:80px'></textarea><br>\
-			咨询记录：<br>\
-			<textarea id='record' style='width:350px;height:80px'></textarea><br>\
+			咨询师提供的问题解决方法：<br>\
+			<textarea id='solution' style='width:350px;height:80px'></textarea><br>\
+			对中心的工作建议：<br>\
+			<textarea id='advice' style='width:350px;height:80px'></textarea><br>\
 			<button type='button' onclick='submitFeedback(" + index + ");'>提交</button>\
 			<button type='button' onclick='$(\".fankui_tch\").remove();'>取消</button>\
 		</div>\
 	");
-	$("#problem").val(feedback.problem);
-	$("#record").val(feedback.record);
+	$("#teacher_fullname").val(feedback.teacher_fullname)
+	$("#teacher_username").val(feedback.teacher_username)
+	$("#student_fullname").val(feedback.student_fullname)
+	$("#problem").val(feedback.problem)
+	$("#solution").val(feedback.solution)
+	$("#advice").val(feedback.advice)
 	optimize(".fankui_tch");
 }
 
 function submitFeedback(index) {
 	var payload = {
 		reservation_id: reservations[index].reservation_id,
+		teacher_fullname: $("#teacher_fullname").val(),
+		teacher_username: $("#teacher_username").val(),
+		student_fullname: $("#student_fullname").val(),
 		problem: $("#problem").val(),
-		record: $("#record").val(),
+		solution: $("#solution").val(),
+		advice: $("#advice").val(),
 	};
 	$.ajax({
 		type: "POST",
@@ -530,7 +550,7 @@ function getStudent(index) {
 	$.ajax({
 		type: "POST",
 		async: false,
-		url: "/Reservation/admin/student/get",
+		url: "/admin/student/get",
 		data: payload, 
 		dataType: "json",
 		success: function(data) {
@@ -546,95 +566,17 @@ function getStudent(index) {
 function showStudent(student) {
 	$("body").append("\
 		<div class='admin_chakan' style='text-align: left'>\
-			学号：" + student.student_username + "<br>\
-			姓名：" + student.student_fullname + "<br>\
-			性别：" + student.student_gender + "<br>\
-			出生日期：" + student.student_birthday + "<br>\
-			系别：" + student.student_school + "<br>\
-			年级：" + student.student_grade + "<br>\
-			现住址：" + student.student_current_address + "<br>\
-			家庭住址：" + student.student_family_address + "<br>\
-			联系电话：" + student.student_mobile + "<br>\
-			Email：" + student.student_email + "<br>\
-			咨询经历：" + (student.student_experience_time ? "时间：" + student.student_experience_time + " 地点：" + student.student_experience_location + " 咨询师：" + stduent.student_experience_teacher : "无") + "<br>\
-			父亲年龄：" + student.student_father_age + " 职业：" + student.student_father_job + " 学历：" + student.student_father_edu + "<br>\
-			母亲年龄：" + student.student_mother_age + " 职业：" + student.student_mother_job + " 学历：" + student.student_mother_edu + "<br>\
-			父母婚姻状况：" + student.student_parent_marriage + "<br>\
-			近三个月里发生的有重大意义的事：" + student.student_significant + "<br>\
-			需要接受帮助的主要问题：" + student.student_problem + "<br>\
-			<br>\
-			已绑定的咨询师：<span id='binded_teacher_username'>" + student.student_binded_teacher_username + "</span>&nbsp;\
-				<span id='binded_teacher_fullname'>" + student.student_binded_teacher_fullname + "</span>\
-				<button type='button' onclick='unbindStudent(" + student.student_username + ");'>解绑</button><br>\
-			请输入匹配咨询师工号：<input id='teacher_username' type='text'></input>\
-			<button type='button' onclick='bindStudent(" + student.student_username + ");'>绑定</button><br>\
-			<br>\
-			<button type='button' onclick='exportStudent(" + student.student_username + ");'>导出</button>\
-			<button type='button' onclick='$(\".admin_chakan\").remove();'>关闭</button>\
+			姓名：" + student.name + "<br>\
+			性别：" + student.gender + "<br>\
+			院系：" + student.school + "<br>\
+			学号：" + student.student_id + "<br>\
+			手机：" + student.mobile + "<br>\
+			生源地：" + student.hometown + "<br>\
+			邮箱：" + student.email + "<br>\
+			是否使用本系统：" + student.experience + "<br>\
+			咨询问题：" + student.problem + "<br>\
+			<button type='button' onclick='$(\".admin_chakan\").remove();'>返回</button>\
 		</div>\
 	");
 	optimize(".admin_chakan");
-}
-
-function exportStudent(studentUsername) {
-	var payload = {
-		student_username: studentUsername,
-	};
-	$.ajax({
-		type: "POST",
-		async: false,
-		url: "/Reservation/admin/student/export",
-		data: payload,
-		dataType: "json",
-		success: function(data) {
-			if (data.state === "SUCCESS") {
-				window.open(data.url);
-			} else {
-				alert(data.message);
-			}
-		},
-	});
-}
-
-function unbindStudent(studentUsername) {
-	var payload = {
-		student_username: studentUsername,
-	};
-	$.ajax({
-		type: "POST",
-		async: false,
-		url: "/Reservation/admin/student/unbind",
-		data: payload,
-		dataType: "json",
-		success: function(data) {
-			if (data.state === "SUCCESS") {
-				$("#binded_teacher_username").text(data.student_info.student_binded_teacher_username);
-				$("#binded_teacher_fullname").text(data.student_info.student_binded_teacher_fullname);
-			} else {
-				alert(data.message);
-			}
-		},
-	});
-}
-
-function bindStudent(studentUsername) {
-	var payload = {
-		student_username: studentUsername,
-		teacher_username: $("#teacher_username").val(),
-	};
-	$.ajax({
-		type: "POST",
-		async: false,
-		url: "/Reservation/admin/student/bind",
-		data: payload,
-		dataType: "json",
-		success: function(data) {
-			if (data.state === "SUCCESS") {
-				$("#binded_teacher_username").text(data.student_info.student_binded_teacher_username);
-				$("#binded_teacher_fullname").text(data.student_info.student_binded_teacher_fullname);
-			} else {
-				alert(data.message);
-			}
-		},
-	});
 }

@@ -41,8 +41,12 @@ func handleWithCookie(fn func(http.ResponseWriter, *http.Request, string, models
 			http.Redirect(w, r, "/appointment/login", http.StatusFound)
 			return
 		} else {
-			ut, _ := strconv.Atoi(cookie.Value)
-			userType = models.UserType(ut)
+			if ut, err := strconv.Atoi(cookie.Value); err != nil {
+				http.Redirect(w, r, "/appointment/login", http.StatusFound)
+				return
+			} else {
+				userType = models.UserType(ut)
+			}
 		}
 		fn(w, r, userId, userType)
 	}
@@ -89,6 +93,8 @@ func main() {
 	adminRouter.HandleFunc("/reservation/cancel", handleWithCookie(controllers.CancelReservationByAdmin)).Methods("POST")
 	adminRouter.HandleFunc("/reservation/feedback/get", handleWithCookie(controllers.GetFeedbackByAdmin)).Methods("POST")
 	adminRouter.HandleFunc("/reservation/feedback/submit", handleWithCookie(controllers.SubmitFeedbackByAdmin)).Methods("POST")
+	adminRouter.HandleFunc("/reservation/export", handleWithCookie(controllers.ExportReservationsByAdmin)).Methods("POST")
+	adminRouter.HandleFunc("/student/get", handleWithCookie(controllers.GetStudentInfoByAdmin)).Methods("POST")
 	adminRouter.HandleFunc("/teacher/search", handleWithCookie(controllers.SearchTeacherByAdmin)).Methods("POST")
 	// http加载处理器
 	http.Handle("/", router)

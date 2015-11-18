@@ -3,9 +3,9 @@ package buslogic
 import (
 	"errors"
 	"github.com/shudiwsh2009/reservation_thxx_go/models"
+	"github.com/shudiwsh2009/reservation_thxx_go/utils"
 	"strings"
 	"time"
-	"github.com/shudiwsh2009/reservation_thxx_go/utils"
 )
 
 type ReservationLogic struct {
