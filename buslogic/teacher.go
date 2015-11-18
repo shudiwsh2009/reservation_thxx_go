@@ -119,44 +119,47 @@ func (tl *TeacherLogic) EditReservationByTeacher(reservationId string, startTime
 }
 
 // 咨询师删除咨询
-func (tl *TeacherLogic) RemoveReservationsByTeacher(reservationIds []string, userId string, userType models.UserType) error {
+func (tl *TeacherLogic) RemoveReservationsByTeacher(reservationIds []string, userId string, userType models.UserType) (int, error) {
 	if strings.EqualFold(userId, "") {
-		return errors.New("请先登录")
+		return 0, errors.New("请先登录")
 	} else if userType != models.TEACHER {
-		return errors.New("权限不足")
+		return 0, errors.New("权限不足")
 	} else if reservationIds == nil {
-		return errors.New("咨询Id列表为空")
+		return 0, errors.New("咨询Id列表为空")
 	}
 	teacher, err := models.GetUserById(userId)
 	if err != nil {
-		return errors.New("咨询师账户失效")
+		return 0, errors.New("咨询师账户失效")
 	} else if teacher.UserType != models.TEACHER {
-		return errors.New("权限不足")
+		return 0, errors.New("权限不足")
 	}
+	removed := 0
 	for _, reservationId := range reservationIds {
 		if reservation, err := models.GetReservationById(reservationId); err == nil && strings.EqualFold(reservation.TeacherUsername, teacher.Username) {
 			reservation.Status = models.DELETED
 			models.UpsertReservation(reservation)
+			removed++
 		}
 	}
-	return nil
+	return removed, nil
 }
 
 // 咨询师取消预约
-func (tl *TeacherLogic) CancelReservationsByTeacher(reservationIds []string, userId string, userType models.UserType) error {
+func (tl *TeacherLogic) CancelReservationsByTeacher(reservationIds []string, userId string, userType models.UserType) (int, error) {
 	if strings.EqualFold(userId, "") {
-		return errors.New("请先登录")
+		return 0, errors.New("请先登录")
 	} else if userType != models.TEACHER {
-		return errors.New("权限不足")
+		return 0, errors.New("权限不足")
 	} else if reservationIds == nil {
-		return errors.New("咨询Id列表为空")
+		return 0, errors.New("咨询Id列表为空")
 	}
 	teacher, err := models.GetUserById(userId)
 	if err != nil {
-		return errors.New("咨询师账户失效")
+		return 0, errors.New("咨询师账户失效")
 	} else if teacher.UserType != models.TEACHER {
-		return errors.New("权限不足")
+		return 0, errors.New("权限不足")
 	}
+	removed := 0
 	for _, reservationId := range reservationIds {
 		reseravtion, err := models.GetReservationById(reservationId)
 		if err != nil || reseravtion.Status == models.DELETED ||
@@ -169,9 +172,10 @@ func (tl *TeacherLogic) CancelReservationsByTeacher(reservationIds []string, use
 			reseravtion.StudentFeedback = models.StudentFeedback{}
 			reseravtion.TeacherFeedback = models.TeacherFeedback{}
 			models.UpsertReservation(reseravtion)
+			removed++
 		}
 	}
-	return nil
+	return removed, nil
 }
 
 // 咨询师拉取反馈
