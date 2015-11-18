@@ -7,7 +7,7 @@ function viewReservations() {
 	$.ajax({
 		type: "GET",
 		async: false,
-		url: "/Reservation/teacher/reservation/view",
+		url: "/teacher/reservation/view",
 		dataType: "json",
 		success: function(data) {
 			if (data.state === "SUCCESS") {
@@ -143,11 +143,11 @@ function optimize(t) {
 
 function addReservation() {
 	$("#cell_time_add")[0].onclick = "";
-	$("#cell_time_add")[0].innerHTML = "<input type='text' id='input_date' style='width: 60px'></input><br>"
-		+ "<input style='width:15px' id='start_hour'></input>时<input style='width:15px' id='start_minute'></input>分<br>"
-		+ "<input style='width:15px' id='end_hour'></input>时<input style='width:15px' id='end_minute'></input>分";
-	$("#cell_teacher_fullname_add")[0].innerHTML = "<input id='teacher_fullname' style='width:80px' value='" + teacher.teacher_fullname + "'></input>";
-	$("#cell_teacher_mobile_add")[0].innerHTML = "<input id='teacher_mobile' style='width:120px' value='" + teacher.teacher_mobile + "'></input>";
+	$("#cell_time_add")[0].innerHTML = "<input type='text' id='input_date' style='width: 60px'/><br>"
+		+ "<input style='width:15px' id='start_hour'/>时<input style='width:15px' id='start_minute'/>分<br>"
+		+ "<input style='width:15px' id='end_hour'/>时<input style='width:15px' id='end_minute'/>分";
+	$("#cell_teacher_fullname_add")[0].innerHTML = "<input id='teacher_fullname' style='width:80px' value='" + teacher.teacher_fullname + "'/>";
+	$("#cell_teacher_mobile_add")[0].innerHTML = "<input id='teacher_mobile' style='width:120px' value='" + teacher.teacher_mobile + "'/>";
 	$("#cell_status_add")[0].innerHTML = "<button type='button' onclick='addReservationConfirm();'>确认</button>";
 	$("#cell_student_add")[0].innerHTML = "<button type='button' onclick='window.location.reload();'>取消</button>";
 	$("#input_date").DatePicker({
@@ -189,6 +189,12 @@ function addReservationConfirm() {
 	} else {
 		endTime += endMinute;
 	}
+	if ($("#input_date").val().length == 0 || startHour.length == 0) {
+		startTime = "";
+	}
+	if ($("#input_date").val().length == 0 || endHour.length == 0) {
+		endTime = "";
+	}
 	var payload = {
 		start_time: startTime,
 		end_time: endTime,
@@ -199,7 +205,7 @@ function addReservationConfirm() {
 	$.ajax({
 		type: "POST",
 		async: false,
-		url: "/Reservation/teacher/reservation/add",
+		url: "/teacher/reservation/add",
 		data: payload,
 		dataType: "json",
 		success: function(data) {
@@ -215,13 +221,13 @@ function addReservationConfirm() {
 function editReservation(index) {
 	$("#cell_time_" + index).height(68);
 	$("#cell_time_" + index)[0].onclick = "";
-	$("#cell_time_" + index)[0].innerHTML = "<input type='text' id='input_date' style='width:60px'></input><br>"
-		+ "<input style='width:15px' id='start_hour'></input>时<input style='width:15px' id='start_minute'></input>分"
-		+ "<input style='width:15px' id='end_hour'></input>时<input style='width:15px' id='end_minute'></input>分";
+	$("#cell_time_" + index)[0].innerHTML = "<input type='text' id='input_date' style='width:60px'/><br>"
+		+ "<input style='width:15px' id='start_hour'/>时<input style='width:15px' id='start_minute'/>分"
+		+ "<input style='width:15px' id='end_hour'/>时<input style='width:15px' id='end_minute'/>分";
 	$("#cell_teacher_fullname_" + index)[0].innerHTML = "<input id='teacher_fullname" + index + "' style='width:80px' "
 		+ "value='" + reservations[index].teacher_fullname + "''></input>";
 	$("#cell_teacher_mobile_" + index)[0].innerHTML = "<input id='teacher_mobile" + index + "' style='width:120px' "
-		+ "value='" + reservations[index].teacher_mobile + "'></input>";
+		+ "value='" + reservations[index].teacher_mobile + "'/>";
 	$("#cell_status_" + index)[0].innerHTML = "<button type='button' onclick='editReservationConfirm(" + index + ");'>确认</button>";
 	$("#cell_student_" + index)[0].innerHTML = "<button type='button' onclick='window.location.reload();'>取消</button>";
 	$("#input_date").DatePicker({
@@ -263,6 +269,12 @@ function editReservationConfirm(index) {
 	} else {
 		endTime += endMinute;
 	}
+	if ($("#input_date").val().length == 0 || startHour.length == 0) {
+		startTime = "";
+	}
+	if ($("#input_date").val().length == 0 || endHour.length == 0) {
+		endTime = "";
+	}
 	var payload = {
 		reservation_id: reservations[index].reservation_id,
 		start_time: startTime,
@@ -274,7 +286,7 @@ function editReservationConfirm(index) {
 	$.ajax({
 		type: "POST",
 		async: false,
-		url: "/Reservation/teacher/reservation/edit",
+		url: "/teacher/reservation/edit",
 		data: payload,
 		dataType: "json",
 		success: function(data) {
@@ -312,7 +324,7 @@ function removeReservationsConfirm() {
 	$.ajax({
 		type: "POST",
 		async: false,
-		url: "/Reservation/teacher/reservation/remove",
+		url: "/teacher/reservation/remove",
 		data: payload,
 		traditional: true,
 		dataType: "json",
@@ -351,7 +363,7 @@ function cancelReservationsConfirm() {
 	$.ajax({
 		type: "POST",
 		async: false,
-		url: "/Reservation/teacher/reservation/cancel",
+		url: "/teacher/reservation/cancel",
 		data: payload,
 		traditional: true,
 		dataType: "json",
@@ -372,7 +384,7 @@ function getFeedback(index) {
 	$.ajax({
 		type: "POST",
 		async: false,
-		url: "/Reservation/teacher/reservation/feedback/get",
+		url: "/teacher/reservation/feedback/get",
 		data: payload,
 		dataType: "json",
 		success: function(data) {
@@ -411,7 +423,7 @@ function submitFeedback(index) {
 	$.ajax({
 		type: "POST",
 		async: false,
-		url: "/Reservation/teacher/reservation/feedback/submit",
+		url: "/teacher/reservation/feedback/submit",
 		data: payload,
 		dataType: "json",
 		success: function(data) {
@@ -442,7 +454,7 @@ function getStudent(index) {
 	$.ajax({
 		type: "POST",
 		async: false,
-		url: "/Reservation/teacher/student/get",
+		url: "/teacher/student/get",
 		data: payload, 
 		dataType: "json",
 		success: function(data) {
@@ -458,27 +470,16 @@ function getStudent(index) {
 function showStudent(student) {
 	$("body").append("\
 		<div class='admin_chakan' style='text-align: left'>\
-			学号：" + student.student_username + "<br>\
-			姓名：" + student.student_fullname + "<br>\
-			性别：" + student.student_gender + "<br>\
-			出生日期：" + student.student_birthday + "<br>\
-			系别：" + student.student_school + "<br>\
-			年级：" + student.student_grade + "<br>\
-			现住址：" + student.student_current_address + "<br>\
-			家庭住址：" + student.student_family_address + "<br>\
-			联系电话：" + student.student_mobile + "<br>\
-			Email：" + student.student_email + "<br>\
-			咨询经历：" + (student.student_experience_time ? "时间：" + student.student_experience_time + " 地点：" + student.student_experience_location + " 咨询师：" + stduent.student_experience_teacher : "无") + "<br>\
-			父亲年龄：" + student.student_father_age + " 职业：" + student.student_father_job + " 学历：" + student.student_father_edu + "<br>\
-			母亲年龄：" + student.student_mother_age + " 职业：" + student.student_mother_job + " 学历：" + student.student_mother_edu + "<br>\
-			父母婚姻状况：" + student.student_parent_marriage + "<br>\
-			近三个月里发生的有重大意义的事：" + student.student_significant + "<br>\
-			需要接受帮助的主要问题：" + student.student_problem + "<br>\
-			<br>\
-			已绑定的咨询师：<span id='binded_teacher_username'>" + student.student_binded_teacher_username + "</span>&nbsp;\
-				<span id='binded_teacher_fullname'>" + student.student_binded_teacher_fullname + "</span><br>\
-			<br>\
-			<button type='button' onclick='$(\".admin_chakan\").remove();'>关闭</button>\
+			姓名：" + student.name + "<br>\
+			性别：" + student.gender + "<br>\
+			院系：" + student.school + "<br>\
+			学号：" + student.student_id + "<br>\
+			手机：" + student.mobile + "<br>\
+			生源地：" + student.hometown + "<br>\
+			邮箱：" + student.email + "<br>\
+			是否使用本系统：" + student.experience + "<br>\
+			咨询问题：" + student.problem + "<br>\
+			<button type='button' onclick='$(\".admin_chakan\").remove();'>返回</button>\
 		</div>\
 	");
 	optimize(".admin_chakan");

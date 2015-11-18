@@ -41,3 +41,14 @@ func (ul *UserLogic) GetUserByUsername(username string) (*models.User, error) {
 	}
 	return user, nil
 }
+
+func (ul *UserLogic) GetUserById(userId string) (*models.User, error) {
+	if len(userId) == 0 {
+		return nil, errors.New("请先登录")
+	}
+	user, err := models.GetUserById(userId)
+	if err != nil {
+		return nil, errors.New("用户不存在")
+	}
+	return user, nil
+}
