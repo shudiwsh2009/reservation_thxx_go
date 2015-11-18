@@ -6,7 +6,7 @@ function viewReservations() {
 	$.ajax({
 		type: "GET",
 		async: false,
-		url: "/reservation/student/view",
+		url: "/student/reservation/view",
 		dataType: "json",
 		success: function(data) {
 			if (data.state === "SUCCESS") {
@@ -102,70 +102,42 @@ function makeReservation(index) {
 function makeReservationData(index) {
 	$("body").append("\
 		<div class='yuyue_stu' id='make_reservation_data_" + index + "' style='text-align:left;height:370px;overflow:scroll'>\
-			<div style='text-align:center;font-size:23px'>学生信息登记表</div><br>\
-			姓　　名：<input id='student_fullname' value='" + student.student_fullname + "'><br>\
-			性　　别：<select id='student_gender'><option value=''>请选择</option><option value='男'>男</option><option value='女'>女</option></select><br>\
-			出生日期：<input id='student_birthday' value='" + student.student_birthday + "'><br>\
-			系　　别：<input id='student_school' value='" + student.student_school + "'><br>\
-			年　　级：<input id='student_grade' value='" + student.student_grade + "'><br>\
-			现在住址：<input id='student_current_address' value='" + student.student_current_address + "'><br>\
-			家庭住址：<input id='student_family_address' value='" + student.student_family_address + "'><br>\
-			联系电话：<input id='student_mobile' value='" + student.student_mobile + "'><br>\
-			邮　　箱：<input id='student_email' value='" + student.student_email + "'><br>\
-			咨询经历：<br>\
-			时间：<input id='student_experience_time' value='" + student.student_experience_time + "'><br>\
-			地点：<input id='student_experience_location' style='width:60px' value='" + student.student_experience_location + "'>\
-			咨询师：<input id='student_experience_teacher' style='width:60px' value='" + student.student_experience_teacher + "'><br>\
-			父　　亲<br>\
-			年龄：<input id='student_father_age' style='width:20px' value='" + student.student_father_age + "'> 职业：<input id='student_father_job' style='width:40px' value='" + student.student_father_job + "'> 学历：<input id='student_father_edu' style='width:40px' value='" + student.student_father_edu + "'><br>\
-			母　　亲<br>\
-			年龄：<input id='student_mother_age' style='width:20px' value='" + student.student_mother_age + "'> 职业：<input id='student_mother_job' style='width:40px' value='" + student.student_mother_job + "'> 学历：<input id='student_mother_edu' style='width:40px' value='" + student.student_mother_edu + "'><br>\
-			父母婚姻状况：<select id='student_parent_marriage'><option value=''>请选择</option><option value='良好'>良好</option><option value='一般'>一般</option><option value='离婚'>离婚</option><option value='再婚'>再婚</option></select><br>\
-			在近三个月里，是否发生了对你有重大意义的事（如亲友的死亡、法律诉讼、失恋等）？<br>\
-			<textarea id='student_significant'></textarea><br>\
-			你现在需要接受帮助的主要问题是什么？<br>\
-			<textarea id='student_problem'></textarea><br>\
+			<div style='text-align:center;font-size:23px'>咨询申请表</div><br>\
+			姓　　名：<input id='name'/><br>\
+			性　　别：<select id='gender'><option value=''>请选择</option><option value='男'>男</option><option value='女'>女</option></select><br>\
+			学　　号：<input id='student_id'/><br>\
+			院　　系：<input id='school'/><br>\
+			生 源 地：<input id='hometown'/><br>\
+			手　　机：<input id='mobile'/><br>\
+			邮　　箱：<input id='email'/><br>\
+			以前曾做过学习发展咨询、职业咨询或心理咨询吗？<select id='experience'><option value=''>请选择</option><option value='是'>是</option><option value='否'>否</option></select><br>\
+			请概括你最想要咨询的问题：<br>\
+			<textarea id='problem'></textarea><br>\
 			<button type='button' onclick='makeReservationConfirm(" + index + ");'>确定</button>\
 			<button type='button' onclick='$(\".yuyue_stu\").remove();'>取消</button>\
 		</div>\
 	");
-	$("#student_gender").val(student.student_gender);
-	$("#student_parent_marriage").val(student.student_parent_marriage);
-	$("#student_significant").val(student.student_significant);
-	$("#student_problem").val(student.student_problem);
 	optimize(".yuyue_stu");
 }
 
 function makeReservationConfirm(index) {
 	var payload = {
 		reservation_id: reservations[index].reservation_id,
-		student_fullname: $("#student_fullname").val(),
-		student_gender: $("#student_gender").val(),
-		student_birthday: $("#student_birthday").val(),
-		student_school: $("#student_school").val(),
-		student_grade: $("#student_grade").val(),
-		student_current_address: $("#student_current_address").val(),
-		student_family_address: $("#student_family_address").val(),
-		student_mobile: $("#student_mobile").val(),
-		student_email: $("#student_email").val(),
-		student_experience_time: $("#student_experience_time").val(),
-		student_experience_location: $("#student_experience_location").val(),
-		student_experience_teacher: $("#student_experience_teacher").val(),
-		student_father_age: $("#student_father_age").val(),
-		student_father_job: $("#student_father_job").val(),
-		student_father_edu: $("#student_father_edu").val(),
-		student_mother_age: $("#student_mother_age").val(),
-		student_mother_job: $("#student_mother_job").val(),
-		student_mother_edu: $("#student_mother_edu").val(),
-		student_parent_marriage: $("#student_parent_marriage").val(),
-		student_significant: $("#student_significant").val(),
-		student_problem: $("#student_problem").val(),
+		name: $("#name").val(),
+		gender: $("#gender").val(),
+		student_id: $("#student_id").val(),
+		school: $("#school").val(),
+        hometown: $("#hometown").val(),
+        mobile: $("#mobile").val(),
+        email: $("#email").val(),
+        experience: $("#experience").val(),
+        problem: $("#problem").val(),
 	};
 	console.log(payload);
 	$.ajax({
 		type: "POST",
 		async: false,
-		url: "/Reservation/reservation/student/make",
+		url: "/student/reservation/make",
 		data: payload,
 		dataType: "json",
 		success: function(data) {
@@ -193,18 +165,33 @@ function makeReservationSuccess(index) {
 }
 
 function getFeedback(index) {
+    $("body").append("\
+		<div class='fankui_stu_pre'>\
+			请输入预约学号\
+			<br>\
+			<input id='fb_student_id'/>\
+			<br>\
+			<button type='button' onclick='getFeedbackConfirm(" + index + ");'>确定</button>\
+			<button type='button' onclick='$(\".fankui_stu_pre\").remove();'>取消</button>\
+		</div>\
+	");
+    optimize(".fankui_stu_pre");
+}
+
+function getFeedbackConfirm(index) {
 	var payload = {
 		reservation_id: reservations[index].reservation_id,
+        student_id: $("#fb_student_id").val(),
 	};
 	$.ajax({
 		type: "POST",
 		async: false,
-		url: "/Reservation/reservation/student/feedback/get",
+		url: "/student/reservation/feedback/get",
 		data: payload,
 		dataType: "json",
 		success: function(data) {
 			if (data.state === "SUCCESS") {
-				showFeedback(index, data.feedback);
+				showFeedback(index, data.feedback, $("#fb_student_id").val());
 			} else {
 				alert(data.message);
 			}
@@ -212,70 +199,60 @@ function getFeedback(index) {
 	});
 }
 
-function showFeedback(index, feedback) {
-	$("body").append("\
-		<div class='fankui_stu' id='feedback_table_" + index + "'\
-			style='text-align:left; font-size:8px; position: absolute; height:350px;top:100px;left:5px;'>\
-			学生反馈表<br>\
-			1、你是否得到了你所希望的咨询？<br>\
-			<select id='feedback_q1'>\
-				<option value='4'>肯定是的</option>\
-				<option value='3'>基本上是的</option>\
-				<option value='2'>没有</option>\
-				<option value='1'>肯定没有</option>\
-			</select><br>\
-			2、咨询在多大程度上满足了你的需要？<br>\
-			<select id='feedback_q2'>\
-				<option value='4'>几乎全部需要得到满足</option>\
-				<option value='3'>大部分需要得到满足</option>\
-				<option value='2'>仅一小部分需要得到满足</option>\
-				<option value='1'>需要丝毫没有得到满足</option>\
-			</select><br>\
-			3、如果一个朋友需要咨询，你会向他或她推荐这位咨询师吗？<br>\
-			<select id='feedback_q3'>\
-				<option value='4'>肯定会</option>\
-				<option value='3'>会</option>\
-				<option value='2'>不会</option>\
-				<option value='1'>肯定不会</option>\
-			</select><br>\
-			4、总体来讲，你对你接受的咨询有多满意？<br>\
-			<select id='feedback_q4'>\
-				<option value='4'>非常满意</option>\
-				<option value='3'>大部分满意</option>\
-				<option value='2'>无所谓，或不太满意</option>\
-				<option value='1'>非常不满意</option>\
-			</select><br>\
-			5、如果你将再次寻求咨询，你会回来找这位咨询师吗？<br>\
-			<select id='feedback_q5'>\
-				<option value='4'>肯定会</option>\
-				<option value='3'>会</option>\
-				<option value='2'>不会</option>\
-				<option value='1'>肯定不会</option>\
-			</select><br>\
-			<button type='button' onclick='submitFeedback(" + index + ");'>提交</button>\
-			<button type='button' onclick='$(\".fankui_stu\").remove();'>取消</button>\
+function showFeedback(index, feedback, studentId) {
+    $(".fankui_stu_pre").remove();
+    $('body').append('\
+		<div class="fankui_stu" id="fankui_stu_'+ index +'" style="text-align:left;font-size:8px;position:absolute;height:606px;top:110px;left:5px;">\
+		<div style="text-align:center;font-size:23px">咨询效果反馈问卷</div><br>\
+			姓名：<input id="name"/><br>\
+			咨询问题：<br><textarea id="problem" style="width:250px;margin-left:20px"></textarea><br>\
+			我和咨询师对咨询目标的看法是一致的<select id="fb_q1"><option value="">请选择</option><option value="A">非常同意</option><option value="B">一般</option><option value="C">不同意</option></select><br>\
+			我对自己有新的认识<select id="fb_q2"><option value="">请选择</option><option value="A">非常同意</option><option value="B">一般</option><option value="C">不同意</option></select><br>\
+			我对如何解决面临的问题有了新的思路<select id="fb_q3"><option value="">请选择</option><option value="A">非常同意</option><option value="B">一般</option><option value="C">不同意</option></select><br>\
+			了解到有关这一问题的政策信息与知识<select id="fb_q4"><option value="">请选择</option><option value="A">非常同意</option><option value="B">一般</option><option value="C">不同意</option></select><br>\
+			我很清楚接下来需要干什么<select id="fb_q5"><option value="">请选择</option><option value="A">非常同意</option><option value="B">一般</option><option value="C">不同意</option></select><br>\
+			我掌握了认识自己的方法<select id="fb_q6"><option value="">请选择</option><option value="A">非常同意</option><option value="B">一般</option><option value="C">不同意</option></select><br>\
+			我掌握了如何获取更多信息的方法<select id="fb_q7"><option value="">请选择</option><option value="A">非常同意</option><option value="B">一般</option><option value="C">不同意</option></select><br>\
+			我掌握了如何提升自身能力的方法<select id="fb_q8"><option value="">请选择</option><option value="A">非常同意</option><option value="B">一般</option><option value="C">不同意</option></select><br>\
+			我意识到要对自己的学习与发展负责<select id="fb_q9"><option value="">请选择</option><option value="A">非常同意</option><option value="B">一般</option><option value="C">不同意</option></select><br>\
+			我将尝试将咨询中的收获应用于生活中<select id="fb_q10"><option value="">请选择</option><option value="A">非常同意</option><option value="B">一般</option><option value="C">不同意</option></select><br>\
+			通过本次咨询，让我对解决问题更有信心了<select id="fb_q11"><option value="">请选择</option><option value="A">非常同意</option><option value="B">一般</option><option value="C">不同意</option></select><br>\
+			我喜欢我的咨询师，下次还会来预约咨询<select id="fb_q12"><option value="">请选择</option><option value="A">非常同意</option><option value="B">一般</option><option value="C">不同意</option></select><br>\
+			请为本次咨询打分（0~100）：<input id="score" style="width:50px;"/><br>\
+			感受和建议：<br><textarea id="feedback" style="width:250px;margin-left:20px"></textarea><br>\
+			<div style="text-align:center;">\
+			<button type="button" onclick="submitFeedback(' + index + ',' + studentId + ');">提交反馈</button>\
+			<button type="button" onclick="$(\'.fankui_stu\').remove();">取消</button></div>\
 		</div>\
-	");
-	for (var i = 1; i <= feedback.scores.length; ++i) {
-		$("#feedback_q" + i).val(feedback.scores[i - 1]);
-	}
-	optimize(".fankui_stu");
+	');
+    $("#name").val(feedback.name);
+    $("#problem").val(feedback.problem);
+    $("#score").val(feedback.score);
+    $("#feedback").val(feedback.feedback);
+    for (var i = 1; i <= 12 && i <= feedback.choices.length; i++){
+        var t = feedback.choices[i - 1];
+        $("#fb_q"+i).val(t);
+    }
 }
 
-function submitFeedback(index) {
-	var scores = [];
-	for (var i = 1; i <= 5; ++i) {
-		scores.push(parseInt($("#feedback_q" + i).val()));
-	}
+function submitFeedback(index, studentId) {
+	var choices = "";
+    for (var i = 1; i <= 12; i++) {
+        choices += $("#fb_q" + i).val();
+    }
 	var payload = {
 		reservation_id: reservations[index].reservation_id,
-		scores: scores,
+        name: $("#name").val(),
+        problem: $("#problem").val(),
+        choices: choices,
+		score: $("#score").val(),
+        feedback: $("#feedback").val(),
+        student_id: studentId,
 	};
-	console.log(payload);
 	$.ajax({
 		type: "POST",
 		async: false,
-		url: "/Reservation/reservation/student/feedback/submit",
+		url: "/student/reservation/feedback/submit",
 		data: payload,
 		traditional: true,
 		dataType: "json",

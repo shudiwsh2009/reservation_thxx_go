@@ -2,7 +2,6 @@ package utils
 
 import (
 	"errors"
-	"fmt"
 	"github.com/shudiwsh2009/reservation_thxx_go/models"
 	"github.com/tealeg/xlsx"
 	"strings"
@@ -26,7 +25,6 @@ func ExportReservationsToExcel(reservations []*models.Reservation, filename stri
 	var row *xlsx.Row
 	var cell *xlsx.Cell
 	for _, reservation := range reservations {
-		fmt.Println(reservation)
 		row = sheet.AddRow()
 		// 学生申请表
 		cell = row.AddCell()

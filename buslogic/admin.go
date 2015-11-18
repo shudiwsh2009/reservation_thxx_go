@@ -144,8 +144,6 @@ func (al *AdminLogic) RemoveReservationsByAdmin(reservationIds []string, userId 
 		return 0, errors.New("请先登录")
 	} else if userType != models.ADMIN {
 		return 0, errors.New("权限不足")
-	} else if reservationIds == nil {
-		return 0, errors.New("咨询Id列表为空")
 	}
 	admin, err := models.GetUserById(userId)
 	if err != nil || admin.UserType != models.ADMIN {
@@ -168,8 +166,6 @@ func (al *AdminLogic) CancelReservationsByAdmin(reservationIds []string, userId 
 		return 0, errors.New("请先登录")
 	} else if userType != models.ADMIN {
 		return 0, errors.New("权限不足")
-	} else if reservationIds == nil {
-		return 0, errors.New("咨询Id列表为空")
 	}
 	admin, err := models.GetUserById(userId)
 	if err != nil || admin.UserType != models.ADMIN {
@@ -299,8 +295,6 @@ func (al *AdminLogic) ExportReservationsByAdmin(reservationIds []string, userId 
 		return "", errors.New("请先登录")
 	} else if userType != models.ADMIN {
 		return "", errors.New("权限不足")
-	} else if reservationIds == nil {
-		return "", errors.New("咨询Id列表为空")
 	}
 	admin, err := models.GetUserById(userId)
 	if err != nil || admin.UserType != models.ADMIN {

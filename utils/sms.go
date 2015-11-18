@@ -23,13 +23,13 @@ const (
 
 func SendSuccessSMS(reservation *models.Reservation) error {
 	studentSMS := fmt.Sprintf(SMS_SUCCESS_STUDENT, reservation.StudentInfo.Name, Weekdays[reservation.StartTime.Weekday()],
-		reservation.StartTime.Format("1"), reservation.StartTime.Format("2"), reservation.StartTime.Format("15:04"),
+		reservation.StartTime.Month(), reservation.StartTime.Day(), reservation.StartTime.Format("15:04"),
 		reservation.EndTime.Format("15:04"))
 	if err := sendSMS(reservation.StudentInfo.Mobile, studentSMS); err != nil {
 		return err
 	}
-	teacherSMS := fmt.Sprint(SMS_SUCCESS_TEACHER, reservation.TeacherFullname, reservation.StudentInfo.Name,
-		Weekdays[reservation.StartTime.Weekday()], reservation.StartTime.Format("1"), reservation.StartTime.Format("2"),
+	teacherSMS := fmt.Sprintf(SMS_SUCCESS_TEACHER, reservation.TeacherFullname, reservation.StudentInfo.Name,
+		Weekdays[reservation.StartTime.Weekday()], reservation.StartTime.Month(), reservation.StartTime.Day(),
 		reservation.StartTime.Format("15:04"), reservation.EndTime.Format("15:04"))
 	if err := sendSMS(reservation.TeacherMobile, teacherSMS); err != nil {
 		return err

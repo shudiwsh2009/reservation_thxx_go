@@ -124,8 +124,6 @@ func (tl *TeacherLogic) RemoveReservationsByTeacher(reservationIds []string, use
 		return 0, errors.New("请先登录")
 	} else if userType != models.TEACHER {
 		return 0, errors.New("权限不足")
-	} else if reservationIds == nil {
-		return 0, errors.New("咨询Id列表为空")
 	}
 	teacher, err := models.GetUserById(userId)
 	if err != nil {
@@ -150,8 +148,6 @@ func (tl *TeacherLogic) CancelReservationsByTeacher(reservationIds []string, use
 		return 0, errors.New("请先登录")
 	} else if userType != models.TEACHER {
 		return 0, errors.New("权限不足")
-	} else if reservationIds == nil {
-		return 0, errors.New("咨询Id列表为空")
 	}
 	teacher, err := models.GetUserById(userId)
 	if err != nil {
