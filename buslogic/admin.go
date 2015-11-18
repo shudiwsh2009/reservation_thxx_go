@@ -14,7 +14,7 @@ type AdminLogic struct {
 // 管理员添加咨询
 func (al *AdminLogic) AddReservationByAdmin(startTime string, endTime string, teacherUsername string,
 	teacherFullname string, teacherMobile string, userId string, userType models.UserType) (*models.Reservation, error) {
-	if strings.EqualFold(userId, "") {
+	if len(userId) == 0 {
 		return nil, errors.New("请先登录")
 	} else if userType != models.ADMIN {
 		return nil, errors.New("权限不足")
@@ -72,7 +72,7 @@ func (al *AdminLogic) AddReservationByAdmin(startTime string, endTime string, te
 func (al *AdminLogic) EditReservationByAdmin(reservationId string, startTime string, endTime string,
 	teacherUsername string, teacherFullname string, teacherMobile string, userId string,
 	userType models.UserType) (*models.Reservation, error) {
-	if strings.EqualFold(userId, "") {
+	if len(userId) == 0 {
 		return nil, errors.New("请先登录")
 	} else if userType != models.ADMIN {
 		return nil, errors.New("权限不足")
@@ -140,7 +140,7 @@ func (al *AdminLogic) EditReservationByAdmin(reservationId string, startTime str
 
 // 管理员删除咨询
 func (al *AdminLogic) RemoveReservationsByAdmin(reservationIds []string, userId string, userType models.UserType) (int, error) {
-	if strings.EqualFold(userId, "") {
+	if len(userId) == 0 {
 		return 0, errors.New("请先登录")
 	} else if userType != models.ADMIN {
 		return 0, errors.New("权限不足")
@@ -164,7 +164,7 @@ func (al *AdminLogic) RemoveReservationsByAdmin(reservationIds []string, userId 
 
 // 管理员取消预约
 func (al *AdminLogic) CancelReservationsByAdmin(reservationIds []string, userId string, userType models.UserType) (int, error) {
-	if strings.EqualFold(userId, "") {
+	if len(userId) == 0 {
 		return 0, errors.New("请先登录")
 	} else if userType != models.ADMIN {
 		return 0, errors.New("权限不足")
@@ -195,7 +195,7 @@ func (al *AdminLogic) CancelReservationsByAdmin(reservationIds []string, userId 
 
 // 管理员拉取反馈
 func (al *AdminLogic) GetFeedbackByAdmin(reservationId string, userId string, userType models.UserType) (*models.Reservation, error) {
-	if strings.EqualFold(userId, "") {
+	if len(userId) == 0 {
 		return nil, errors.New("请先登录")
 	} else if userType != models.ADMIN {
 		return nil, errors.New("权限不足")
@@ -221,7 +221,7 @@ func (al *AdminLogic) GetFeedbackByAdmin(reservationId string, userId string, us
 func (al *AdminLogic) SubmitFeedbackByAdmin(reservationId string, teacherFullname string, teacherUsername string,
 	studentFullname string, problem string, solution string, adviceToCenter string, userId string,
 	userType models.UserType) (*models.Reservation, error) {
-	if strings.EqualFold(userId, "") {
+	if len(userId) == 0 {
 		return nil, errors.New("请先登录")
 	} else if userType != models.ADMIN {
 		return nil, errors.New("权限不足")
@@ -273,7 +273,7 @@ func (al *AdminLogic) SubmitFeedbackByAdmin(reservationId string, teacherFullnam
 
 // 管理员查看学生信息
 func (al *AdminLogic) GetStudentInfoByAdmin(reservationId string, userId string, userType models.UserType) (*models.StudentInfo, error) {
-	if strings.EqualFold(userId, "") {
+	if len(userId) == 0 {
 		return nil, errors.New("请先登录")
 	} else if userType != models.ADMIN {
 		return nil, errors.New("权限不足")
@@ -295,7 +295,7 @@ func (al *AdminLogic) GetStudentInfoByAdmin(reservationId string, userId string,
 
 // 管理员导出咨询
 func (al *AdminLogic) ExportReservationsByAdmin(reservationIds []string, userId string, userType models.UserType) (string, error) {
-	if strings.EqualFold(userId, "") {
+	if len(userId) == 0 {
 		return "", errors.New("请先登录")
 	} else if userType != models.ADMIN {
 		return "", errors.New("权限不足")
@@ -327,7 +327,7 @@ func (al *AdminLogic) ExportReservationsByAdmin(reservationIds []string, userId 
 // 查找咨询师
 // 查找顺序:全名 > 工号 > 手机号
 func (al *AdminLogic) SearchTeacherByAdmin(teacherFullname string, teacherUsername string, teacherMobile string, userId string, userType models.UserType) (*models.User, error) {
-	if strings.EqualFold(userId, "") {
+	if len(userId) == 0 {
 		return nil, errors.New("请先登录")
 	} else if userType != models.ADMIN {
 		return nil, errors.New("权限不足")
