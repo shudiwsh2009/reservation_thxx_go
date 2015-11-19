@@ -9,7 +9,6 @@ import (
 	"gopkg.in/mgo.v2"
 	"log"
 	"net/http"
-	"os"
 	"regexp"
 	"strconv"
 	"time"
@@ -57,7 +56,7 @@ func main() {
 	session, err := mgo.Dial("127.0.0.1:27017")
 	if err != nil {
 		fmt.Errorf("连接数据库失败：%v", err)
-		os.Exit(1)
+		return
 	}
 	defer session.Close()
 	session.SetMode(mgo.Monotonic, true)
@@ -65,7 +64,7 @@ func main() {
 	// 时区
 	if utils.Location, err = time.LoadLocation("Asia/Shanghai"); err != nil {
 		fmt.Errorf("初始化时区失败：%v", err)
-		os.Exit(1)
+		return
 	}
 
 	// TODO: Remove the following test codes

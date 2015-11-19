@@ -14,7 +14,7 @@ type ReservationLogic struct {
 // 学生查看前后一周内的所有咨询
 func (rl *ReservationLogic) GetReservationsByStudent() ([]*models.Reservation, error) {
 	from := time.Now().In(utils.Location).AddDate(0, 0, -7)
-	to := time.Now().In(utils.Location).AddDate(0, 0, 7)
+	to := time.Now().In(utils.Location).AddDate(0, 0, 8)
 	reservations, err := models.GetReservationsBetweenTime(from, to)
 	if err != nil {
 		return nil, errors.New("获取数据失败")
