@@ -113,7 +113,7 @@ func main() {
 	// http加载处理器
 	http.Handle("/", router)
 	http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets/"))))
-	if err := http.ListenAndServe(":8080", nil); err != nil {
+	if err := http.ListenAndServe(":8090", nil); err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
 }
