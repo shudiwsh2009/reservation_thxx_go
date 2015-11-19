@@ -1,6 +1,7 @@
 #!/bin/bash
 echo "#update git"
-go get -u all
+go get -u github.com/shudiwsh2009/reservation_thxx_go
+go get -u github.com/shudiwsh2009/reservation_thxx_go_reminder
 
 echo "#deploy website"
 supervisorctl stop reservation_thxx_go
