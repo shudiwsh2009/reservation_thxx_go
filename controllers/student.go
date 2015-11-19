@@ -1,11 +1,12 @@
 package controllers
+
 import (
-	"net/http"
-	"github.com/shudiwsh2009/reservation_thxx_go/models"
-	"github.com/shudiwsh2009/reservation_thxx_go/buslogic"
-"github.com/shudiwsh2009/reservation_thxx_go/utils"
-	"time"
 	"encoding/json"
+	"github.com/shudiwsh2009/reservation_thxx_go/buslogic"
+	"github.com/shudiwsh2009/reservation_thxx_go/models"
+	"github.com/shudiwsh2009/reservation_thxx_go/utils"
+	"net/http"
+	"time"
 )
 
 func ViewReservationsByStudent(w http.ResponseWriter, r *http.Request, userId string, userType models.UserType) {

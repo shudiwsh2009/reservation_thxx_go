@@ -66,7 +66,7 @@ func sendSMS(mobile string, content string) error {
 	appEnv := os.Getenv("RESERVATION_THXX_ENV")
 	uid := os.Getenv("RESERVATION_THXX_SMS_UID")
 	key := os.Getenv("RESERVATION_THXX_SMS_KEY")
-	if !strings.EqualFold(appEnv, "ONLINE") || strings.EqualFold(uid, "") || strings.EqualFold(key, "") {
+	if !strings.EqualFold(appEnv, "ONLINE") || len(uid) == 0 || len(key) == 0 {
 		fmt.Printf("Send SMS: \"%s\" to %s.\n", content, mobile)
 		return nil
 	}

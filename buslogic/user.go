@@ -16,9 +16,9 @@ type UserLogic struct {
 
 // 学生登录
 func (ul *UserLogic) Login(username string, password string) (*models.User, error) {
-	if strings.EqualFold(username, "") {
+	if len(username) == 0 {
 		return nil, errors.New("用户名为空")
-	} else if strings.EqualFold(password, "") {
+	} else if len(password) == 0 {
 		return nil, errors.New("密码为空")
 	}
 	user, err := models.GetUserByUsername(username)
@@ -32,7 +32,7 @@ func (ul *UserLogic) Login(username string, password string) (*models.User, erro
 
 // 获取用户
 func (ul *UserLogic) GetUserByUsername(username string) (*models.User, error) {
-	if strings.EqualFold(username, "") {
+	if len(username) == 0 {
 		return nil, errors.New("请先登录")
 	}
 	user, err := models.GetUserByUsername(username)

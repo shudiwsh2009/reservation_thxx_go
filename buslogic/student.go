@@ -15,25 +15,25 @@ type StudentLogic struct {
 func (sl *StudentLogic) MakeReservationByStudent(reservationId string, name string, gender string,
 	studentId string, school string, hometown string, mobile string, email string, experience string,
 	problem string) (*models.Reservation, error) {
-	if strings.EqualFold(reservationId, "") {
+	if len(reservationId) == 0 {
 		return nil, errors.New("咨询已下架")
-	} else if strings.EqualFold(name, "") {
+	} else if len(name) == 0 {
 		return nil, errors.New("姓名为空")
-	} else if strings.EqualFold(gender, "") {
+	} else if len(gender) == 0 {
 		return nil, errors.New("性别为空")
-	} else if strings.EqualFold(studentId, "") {
+	} else if len(studentId) == 0 {
 		return nil, errors.New("学号为空")
-	} else if strings.EqualFold(school, "") {
+	} else if len(school) == 0 {
 		return nil, errors.New("院系为空")
-	} else if strings.EqualFold(hometown, "") {
+	} else if len(hometown) == 0 {
 		return nil, errors.New("生源地为空")
-	} else if strings.EqualFold(mobile, "") {
+	} else if len(mobile) == 0 {
 		return nil, errors.New("手机号为空")
-	} else if strings.EqualFold(email, "") {
+	} else if len(email) == 0 {
 		return nil, errors.New("邮箱为空")
-	} else if strings.EqualFold(experience, "") {
+	} else if len(experience) == 0 {
 		return nil, errors.New("咨询经历为空")
-	} else if strings.EqualFold(problem, "") {
+	} else if len(problem) == 0 {
 		return nil, errors.New("咨询问题为空")
 	} else if !utils.IsStudentId(studentId) {
 		return nil, errors.New("学号不正确")
@@ -86,9 +86,9 @@ func (sl *StudentLogic) MakeReservationByStudent(reservationId string, name stri
 
 // 学生拉取反馈
 func (sl *StudentLogic) GetFeedbackByStudent(reservationId string, studentId string) (*models.Reservation, error) {
-	if strings.EqualFold(reservationId, "") {
+	if len(reservationId) == 0 {
 		return nil, errors.New("咨询已下架")
-	} else if strings.EqualFold(studentId, "") || !utils.IsStudentId(studentId) {
+	} else if len(studentId) == 0 || !utils.IsStudentId(studentId) {
 		return nil, errors.New("学号不正确")
 	}
 	reservation, err := models.GetReservationById(reservationId)
@@ -107,19 +107,19 @@ func (sl *StudentLogic) GetFeedbackByStudent(reservationId string, studentId str
 // 学生反馈
 func (sl *StudentLogic) SubmitFeedbackByStudent(reservationId string, name string, problem string, choices string,
 	score string, feedback string, studentId string) (*models.Reservation, error) {
-	if strings.EqualFold(reservationId, "") {
+	if len(reservationId) == 0 {
 		return nil, errors.New("咨询已下架")
-	} else if strings.EqualFold(name, "") {
+	} else if len(name) == 0 {
 		return nil, errors.New("姓名为空")
-	} else if strings.EqualFold(problem, "") {
+	} else if len(problem) == 0 {
 		return nil, errors.New("咨询问题为空")
-	} else if strings.EqualFold(choices, "") {
+	} else if len(choices) == 0 {
 		return nil, errors.New("选项为空")
-	} else if strings.EqualFold(score, "") {
+	} else if len(score) == 0 {
 		return nil, errors.New("总评为空")
-	} else if strings.EqualFold(feedback, "") {
+	} else if len(feedback) == 0 {
 		return nil, errors.New("反馈为空")
-	} else if strings.EqualFold(studentId, "") || !utils.IsStudentId(studentId) {
+	} else if len(studentId) == 0 || !utils.IsStudentId(studentId) {
 		return nil, errors.New("学号不正确")
 	}
 	reservation, err := models.GetReservationById(reservationId)

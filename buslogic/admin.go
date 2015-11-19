@@ -18,15 +18,15 @@ func (al *AdminLogic) AddReservationByAdmin(startTime string, endTime string, te
 		return nil, errors.New("请先登录")
 	} else if userType != models.ADMIN {
 		return nil, errors.New("权限不足")
-	} else if strings.EqualFold(startTime, "") {
+	} else if len(startTime) == 0 {
 		return nil, errors.New("开始时间为空")
-	} else if strings.EqualFold(endTime, "") {
+	} else if len(endTime) == 0 {
 		return nil, errors.New("结束时间为空")
-	} else if strings.EqualFold(teacherUsername, "") {
+	} else if len(teacherUsername) == 0 {
 		return nil, errors.New("咨询师工号为空")
-	} else if strings.EqualFold(teacherFullname, "") {
+	} else if len(teacherFullname) == 0 {
 		return nil, errors.New("咨询师姓名为空")
-	} else if strings.EqualFold(teacherMobile, "") {
+	} else if len(teacherMobile) == 0 {
 		return nil, errors.New("咨询师手机号为空")
 	} else if !utils.IsMobile(teacherMobile) {
 		return nil, errors.New("咨询师手机号格式不正确")
@@ -76,17 +76,17 @@ func (al *AdminLogic) EditReservationByAdmin(reservationId string, startTime str
 		return nil, errors.New("请先登录")
 	} else if userType != models.ADMIN {
 		return nil, errors.New("权限不足")
-	} else if strings.EqualFold(reservationId, "") {
+	} else if len(reservationId) == 0 {
 		return nil, errors.New("咨询已下架")
-	} else if strings.EqualFold(startTime, "") {
+	} else if len(startTime) == 0 {
 		return nil, errors.New("开始时间为空")
-	} else if strings.EqualFold(endTime, "") {
+	} else if len(endTime) == 0 {
 		return nil, errors.New("结束时间为空")
-	} else if strings.EqualFold(teacherUsername, "") {
+	} else if len(teacherUsername) == 0 {
 		return nil, errors.New("咨询师工号为空")
-	} else if strings.EqualFold(teacherFullname, "") {
+	} else if len(teacherFullname) == 0 {
 		return nil, errors.New("咨询师姓名为空")
-	} else if strings.EqualFold(teacherMobile, "") {
+	} else if len(teacherMobile) == 0 {
 		return nil, errors.New("咨询师手机号为空")
 	} else if !utils.IsMobile(teacherMobile) {
 		return nil, errors.New("咨询师手机号格式不正确")
@@ -195,7 +195,7 @@ func (al *AdminLogic) GetFeedbackByAdmin(reservationId string, userId string, us
 		return nil, errors.New("请先登录")
 	} else if userType != models.ADMIN {
 		return nil, errors.New("权限不足")
-	} else if strings.EqualFold(reservationId, "") {
+	} else if len(reservationId) == 0 {
 		return nil, errors.New("咨询已下架")
 	}
 	admin, err := models.GetUserById(userId)
@@ -221,19 +221,19 @@ func (al *AdminLogic) SubmitFeedbackByAdmin(reservationId string, teacherFullnam
 		return nil, errors.New("请先登录")
 	} else if userType != models.ADMIN {
 		return nil, errors.New("权限不足")
-	} else if strings.EqualFold(reservationId, "") {
+	} else if len(reservationId) == 0 {
 		return nil, errors.New("咨询已下架")
-	} else if strings.EqualFold(teacherFullname, "") {
+	} else if len(teacherFullname) == 0 {
 		return nil, errors.New("咨询师姓名为空")
-	} else if strings.EqualFold(teacherUsername, "") {
+	} else if len(teacherUsername) == 0 {
 		return nil, errors.New("咨询师工作证号为空")
-	} else if strings.EqualFold(studentFullname, "") {
+	} else if len(studentFullname) == 0 {
 		return nil, errors.New("学生姓名为空")
-	} else if strings.EqualFold(problem, "") {
+	} else if len(problem) == 0 {
 		return nil, errors.New("咨询问题为空")
-	} else if strings.EqualFold(solution, "") {
+	} else if len(solution) == 0 {
 		return nil, errors.New("解决方法为空")
-	} else if strings.EqualFold(adviceToCenter, "") {
+	} else if len(adviceToCenter) == 0 {
 		return nil, errors.New("工作建议为空")
 	}
 	admin, err := models.GetUserById(userId)
@@ -273,7 +273,7 @@ func (al *AdminLogic) GetStudentInfoByAdmin(reservationId string, userId string,
 		return nil, errors.New("请先登录")
 	} else if userType != models.ADMIN {
 		return nil, errors.New("权限不足")
-	} else if strings.EqualFold(reservationId, "") {
+	} else if len(reservationId) == 0 {
 		return nil, errors.New("咨询已下架")
 	}
 	admin, err := models.GetUserById(userId)

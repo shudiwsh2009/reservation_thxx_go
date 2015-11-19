@@ -68,7 +68,7 @@ type Reservation struct {
 	Id              bson.ObjectId     `bson:"_id"`
 	StartTime       time.Time         `bson:"startTime"`
 	EndTime         time.Time         `bson:"endTime"`
-	Status          ReservationStatus `bson:"status"`
+	Status          ReservationStatus `bson:"status_GO"`
 	TeacherUsername string            `bson:"teacherUsername"`
 	TeacherFullname string            `bson:"teacher"`
 	TeacherMobile   string            `bson:"teacherMobile"`

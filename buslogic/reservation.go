@@ -31,7 +31,7 @@ func (rl *ReservationLogic) GetReservationsByStudent() ([]*models.Reservation, e
 
 // 咨询师查看负7天之后的所有咨询
 func (rl *ReservationLogic) GetReservationsByTeacher(userId string, userType models.UserType) ([]*models.Reservation, error) {
-	if strings.EqualFold(userId, "") {
+	if len(userId) == 0 {
 		return nil, errors.New("请先登录")
 	} else if userType != models.TEACHER {
 		return nil, errors.New("权限不足")
@@ -60,7 +60,7 @@ func (rl *ReservationLogic) GetReservationsByTeacher(userId string, userType mod
 
 // 管理员查看负7天之后的所有咨询
 func (rl *ReservationLogic) GetReservationsByAdmin(userId string, userType models.UserType) ([]*models.Reservation, error) {
-	if strings.EqualFold(userId, "") {
+	if len(userId) == 0 {
 		return nil, errors.New("请先登录")
 	} else if userType != models.ADMIN {
 		return nil, errors.New("权限不足")
@@ -86,7 +86,7 @@ func (rl *ReservationLogic) GetReservationsByAdmin(userId string, userType model
 
 // 管理员查看指定日期后30天内的所有咨询
 func (rl *ReservationLogic) GetReservationsMonthlyByAdmin(from string, userId string, userType models.UserType) ([]*models.Reservation, error) {
-	if strings.EqualFold(userId, "") {
+	if len(userId) == 0 {
 		return nil, errors.New("请先登录")
 	} else if userType != models.ADMIN {
 		return nil, errors.New("权限不足")

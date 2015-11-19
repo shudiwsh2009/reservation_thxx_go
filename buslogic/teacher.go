@@ -14,17 +14,17 @@ type TeacherLogic struct {
 // 咨询师添加咨询
 func (tl *TeacherLogic) AddReservationByTeacher(startTime string, endTime string, teacherFullname string,
 	teacherMobile string, userId string, userType models.UserType) (*models.Reservation, error) {
-	if strings.EqualFold(userId, "") {
+	if len(userId) == 0 {
 		return nil, errors.New("请先登录")
 	} else if userType != models.TEACHER {
 		return nil, errors.New("权限不足")
-	} else if strings.EqualFold(startTime, "") {
+	} else if len(startTime) == 0 {
 		return nil, errors.New("开始时间为空")
-	} else if strings.EqualFold(endTime, "") {
+	} else if len(endTime) == 0 {
 		return nil, errors.New("结束时间为空")
-	} else if strings.EqualFold(teacherFullname, "") {
+	} else if len(teacherFullname) == 0 {
 		return nil, errors.New("咨询师姓名为空")
-	} else if strings.EqualFold(teacherMobile, "") {
+	} else if len(teacherMobile) == 0 {
 		return nil, errors.New("咨询师手机号为空")
 	} else if !utils.IsMobile(teacherMobile) {
 		return nil, errors.New("咨询师手机号格式不正确")
@@ -61,19 +61,19 @@ func (tl *TeacherLogic) AddReservationByTeacher(startTime string, endTime string
 // 咨询师编辑咨询
 func (tl *TeacherLogic) EditReservationByTeacher(reservationId string, startTime string, endTime string,
 	teacherFullname string, teacherMobile string, userId string, userType models.UserType) (*models.Reservation, error) {
-	if strings.EqualFold(userId, "") {
+	if len(userId) == 0 {
 		return nil, errors.New("请先登录")
 	} else if userType != models.TEACHER {
 		return nil, errors.New("权限不足")
-	} else if strings.EqualFold(reservationId, "") {
+	} else if len(reservationId) == 0 {
 		return nil, errors.New("咨询已下架")
-	} else if strings.EqualFold(startTime, "") {
+	} else if len(startTime) == 0 {
 		return nil, errors.New("开始时间为空")
-	} else if strings.EqualFold(endTime, "") {
+	} else if len(endTime) == 0 {
 		return nil, errors.New("结束时间为空")
-	} else if strings.EqualFold(teacherFullname, "") {
+	} else if len(teacherFullname) == 0 {
 		return nil, errors.New("咨询师姓名为空")
-	} else if strings.EqualFold(teacherMobile, "") {
+	} else if len(teacherMobile) == 0 {
 		return nil, errors.New("咨询师手机号为空")
 	} else if !utils.IsMobile(teacherMobile) {
 		return nil, errors.New("咨询师手机号格式不正确")
@@ -120,7 +120,7 @@ func (tl *TeacherLogic) EditReservationByTeacher(reservationId string, startTime
 
 // 咨询师删除咨询
 func (tl *TeacherLogic) RemoveReservationsByTeacher(reservationIds []string, userId string, userType models.UserType) (int, error) {
-	if strings.EqualFold(userId, "") {
+	if len(userId) == 0 {
 		return 0, errors.New("请先登录")
 	} else if userType != models.TEACHER {
 		return 0, errors.New("权限不足")
@@ -144,7 +144,7 @@ func (tl *TeacherLogic) RemoveReservationsByTeacher(reservationIds []string, use
 
 // 咨询师取消预约
 func (tl *TeacherLogic) CancelReservationsByTeacher(reservationIds []string, userId string, userType models.UserType) (int, error) {
-	if strings.EqualFold(userId, "") {
+	if len(userId) == 0 {
 		return 0, errors.New("请先登录")
 	} else if userType != models.TEACHER {
 		return 0, errors.New("权限不足")
@@ -176,11 +176,11 @@ func (tl *TeacherLogic) CancelReservationsByTeacher(reservationIds []string, use
 
 // 咨询师拉取反馈
 func (tl *TeacherLogic) GetFeedbackByTeacher(reservationId string, userId string, userType models.UserType) (*models.Reservation, error) {
-	if strings.EqualFold(userId, "") {
+	if len(userId) == 0 {
 		return nil, errors.New("请先登录")
 	} else if userType != models.TEACHER {
 		return nil, errors.New("权限不足")
-	} else if strings.EqualFold(reservationId, "") {
+	} else if len(reservationId) == 0 {
 		return nil, errors.New("咨询已下架")
 	}
 	teacher, err := models.GetUserById(userId)
@@ -206,23 +206,23 @@ func (tl *TeacherLogic) GetFeedbackByTeacher(reservationId string, userId string
 func (tl *TeacherLogic) SubmitFeedbackByTeacher(reservationId string, teacherFullname string, teacherId string,
 	studentName string, problem string, solution string, adviceToCenter string, userId string,
 	userType models.UserType) (*models.Reservation, error) {
-	if strings.EqualFold(userId, "") {
+	if len(userId) == 0 {
 		return nil, errors.New("请先登录")
 	} else if userType != models.TEACHER {
 		return nil, errors.New("权限不足")
-	} else if strings.EqualFold(reservationId, "") {
+	} else if len(reservationId) == 0 {
 		return nil, errors.New("咨询已下架")
-	} else if strings.EqualFold(teacherFullname, "") {
+	} else if len(teacherFullname) == 0 {
 		return nil, errors.New("咨询师姓名为空")
-	} else if strings.EqualFold(teacherId, "") {
+	} else if len(teacherId) == 0 {
 		return nil, errors.New("咨询师工作证号为空")
-	} else if strings.EqualFold(studentName, "") {
+	} else if len(studentName) == 0 {
 		return nil, errors.New("学生姓名为空")
-	} else if strings.EqualFold(problem, "") {
+	} else if len(problem) == 0 {
 		return nil, errors.New("咨询问题为空")
-	} else if strings.EqualFold(solution, "") {
+	} else if len(solution) == 0 {
 		return nil, errors.New("解决方法为空")
-	} else if strings.EqualFold(adviceToCenter, "") {
+	} else if len(adviceToCenter) == 0 {
 		return nil, errors.New("工作建议为空")
 	}
 	teacher, err := models.GetUserById(userId)
@@ -260,11 +260,11 @@ func (tl *TeacherLogic) SubmitFeedbackByTeacher(reservationId string, teacherFul
 
 // 咨询师查看学生信息
 func (tl *TeacherLogic) GetStudentInfoByTeacher(reservationId string, userId string, userType models.UserType) (*models.StudentInfo, error) {
-	if strings.EqualFold(userId, "") {
+	if len(userId) == 0 {
 		return nil, errors.New("请先登录")
 	} else if userType != models.TEACHER {
 		return nil, errors.New("权限不足")
-	} else if strings.EqualFold(reservationId, "") {
+	} else if len(reservationId) == 0 {
 		return nil, errors.New("咨询已下架")
 	}
 	teacher, err := models.GetUserById(userId)

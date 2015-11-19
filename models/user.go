@@ -28,5 +28,5 @@ type User struct {
 	Password string        `bson:"password"`
 	Fullname string        `bson:"fullname"`
 	Mobile   string        `bson:"mobile"`
-	UserType UserType      `bson:"userType"`
+	UserType UserType      `bson:"userType_GO"`
 }
