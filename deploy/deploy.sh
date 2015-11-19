@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/bash
 echo "#update git"
 cd $GOPATH/src/github.com/shudiwsh2009/reservation_thxx_go
 echo "git fetch..."
@@ -12,6 +12,10 @@ echo "#set system env"
 source ./profile
 
 echo "#deploy website"
+echo "go update dependency"
+go get -u github.com/gorilla/mux
+go get -u gopkg.in/mgo.v2
+go get -u github.com/tealeg/xlsx
 echo "go build"
 go build
 echo "supervisorctl restart reservation_thxx_go"
