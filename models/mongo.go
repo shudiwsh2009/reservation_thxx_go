@@ -138,7 +138,7 @@ func GetReservationsBetweenTime(from time.Time, to time.Time) ([]*Reservation, e
 	collection := Mongo.C("appointment")
 	var reservations []*Reservation
 	if err := collection.Find(bson.M{"startTime": bson.M{"$gte": from, "$lte": to},
-		"status": bson.M{"$ne": DELETED}}).Sort("startTime").All(&reservations); err != nil {
+		"status_GO": bson.M{"$ne": DELETED}}).Sort("startTime").All(&reservations); err != nil {
 		return nil, err
 	}
 	return reservations, nil
@@ -148,7 +148,7 @@ func GetReservationsAfterTime(from time.Time) ([]*Reservation, error) {
 	collection := Mongo.C("appointment")
 	var reservations []*Reservation
 	if err := collection.Find(bson.M{"startTime": bson.M{"$gte": from},
-		"status": bson.M{"$ne": DELETED}}).Sort("startTime").All(&reservations); err != nil {
+		"status_GO": bson.M{"$ne": DELETED}}).Sort("startTime").All(&reservations); err != nil {
 		return nil, err
 	}
 	return reservations, nil
