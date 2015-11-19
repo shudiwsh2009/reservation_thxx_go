@@ -33,7 +33,6 @@ function queryReservations() {
 		dataType: "json",
 		success: function(data) {
 			if (data.state === "SUCCESS") {
-				console.log(data);
 				reservations = data.reservations;
 				refreshDataTable(reservations);
 				optimize();

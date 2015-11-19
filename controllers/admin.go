@@ -7,6 +7,8 @@ import (
 	"github.com/shudiwsh2009/reservation_thxx_go/utils"
 	"net/http"
 	"time"
+	"net/url"
+	"errors"
 )
 
 func ViewReservationsByAdmin(w http.ResponseWriter, r *http.Request, userId string, userType models.UserType) {
@@ -45,7 +47,12 @@ func ViewReservationsByAdmin(w http.ResponseWriter, r *http.Request, userId stri
 }
 
 func ViewMonthlyReservationsByAdmin(w http.ResponseWriter, r *http.Request, userId string, userType models.UserType) {
-	fromTime := r.PostFormValue("from_time")
+	queryForm, err := url.ParseQuery(r.URL.RawQuery)
+	if err != nil || len(queryForm["from_time"]) == 0 {
+		ErrorHandler(w, r, errors.New("参数错误"))
+		return
+	}
+	fromTime := queryForm["from_time"][0]
 
 	var result = map[string]interface{}{"state": "SUCCESS"}
 	var rl = buslogic.ReservationLogic{}
