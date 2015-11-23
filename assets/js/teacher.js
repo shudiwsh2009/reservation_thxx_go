@@ -399,26 +399,39 @@ function getFeedback(index) {
 
 function showFeedback(index, feedback) {
 	$("body").append("\
-		<div class='fankui_tch' id='feedback_table_" + index + "' style='font-size:11px;text-align:left;top:100px;height:300px;width:200px;left:100px'>\
+		<div class='fankui_tch' id='feedback_table_" + index + "' style='text-align:left; top:100px; height:420px; width:400px; left:100px'>\
 			咨询师反馈表<br>\
-			问题评估：<br>\
-			<textarea id='problem' style='width:180px;height:80px'></textarea><br>\
-			咨询记录：<br>\
-			<textarea id='record' style='width:180px;height:80px'></textarea><br>\
+			您的姓名：<input id='teacher_fullname'/><br>\
+			工作证号：<input id='teacher_username'/><br>\
+			来访者姓名：<input id='student_fullname'/><br>\
+			来访者问题描述：<br>\
+			<textarea id='problem' style='width:350px;height:80px'></textarea><br>\
+			咨询师提供的问题解决方法：<br>\
+			<textarea id='solution' style='width:350px;height:80px'></textarea><br>\
+			对中心的工作建议：<br>\
+			<textarea id='advice' style='width:350px;height:80px'></textarea><br>\
 			<button type='button' onclick='submitFeedback(" + index + ");'>提交</button>\
 			<button type='button' onclick='$(\".fankui_tch\").remove();'>取消</button>\
 		</div>\
 	");
-	$("#problem").val(feedback.problem);
-	$("#record").val(feedback.record);
+	$("#teacher_fullname").val(feedback.teacher_fullname)
+	$("#teacher_username").val(feedback.teacher_username)
+	$("#student_fullname").val(feedback.student_fullname)
+	$("#problem").val(feedback.problem)
+	$("#solution").val(feedback.solution)
+	$("#advice").val(feedback.advice)
 	optimize(".fankui_tch");
 }
 
 function submitFeedback(index) {
 	var payload = {
 		reservation_id: reservations[index].reservation_id,
+		teacher_fullname: $("#teacher_fullname").val(),
+		teacher_username: $("#teacher_username").val(),
+		student_fullname: $("#student_fullname").val(),
 		problem: $("#problem").val(),
-		record: $("#record").val(),
+		solution: $("#solution").val(),
+		advice: $("#advice").val(),
 	};
 	$.ajax({
 		type: "POST",
