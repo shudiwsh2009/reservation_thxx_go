@@ -399,17 +399,17 @@ function getFeedback(index) {
 
 function showFeedback(index, feedback) {
 	$("body").append("\
-		<div class='fankui_tch' id='feedback_table_" + index + "' style='text-align:left; top:100px; height:420px; width:400px; left:100px'>\
+		<div class='fankui_tch' id='feedback_table_" + index + "' style='text-align:left; top:100px; height:420px; width:200px; left:100px'>\
 			咨询师反馈表<br>\
 			您的姓名：<input id='teacher_fullname'/><br>\
 			工作证号：<input id='teacher_username'/><br>\
 			来访者姓名：<input id='student_fullname'/><br>\
 			来访者问题描述：<br>\
-			<textarea id='problem' style='width:350px;height:80px'></textarea><br>\
+			<textarea id='problem' style='padding:0px;height:60px;'></textarea><br>\
 			咨询师提供的问题解决方法：<br>\
-			<textarea id='solution' style='width:350px;height:80px'></textarea><br>\
+			<textarea id='solution' style='padding:0px;height:60px;'></textarea><br>\
 			对中心的工作建议：<br>\
-			<textarea id='advice' style='width:350px;height:80px'></textarea><br>\
+			<textarea id='advice' style='padding:0px;height:60px;'></textarea><br>\
 			<button type='button' onclick='submitFeedback(" + index + ");'>提交</button>\
 			<button type='button' onclick='$(\".fankui_tch\").remove();'>取消</button>\
 		</div>\
