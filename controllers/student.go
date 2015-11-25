@@ -93,7 +93,11 @@ func GetFeedbackByStudent(w http.ResponseWriter, r *http.Request, userId string,
 	} else {
 		feedbackJson["name"] = reservation.StudentFeedback.Name
 	}
-	feedbackJson["problem"] = reservation.StudentFeedback.Problem
+	if len(reservation.StudentFeedback.Problem) == 0 {
+		feedbackJson["problem"] = reservation.StudentInfo.Problem
+	} else {
+		feedbackJson["problem"] = reservation.StudentFeedback.Problem
+	}
 	feedbackJson["choices"] = reservation.StudentFeedback.Choices
 	feedbackJson["score"] = reservation.StudentFeedback.Score
 	feedbackJson["feedback"] = reservation.StudentFeedback.Feedback
