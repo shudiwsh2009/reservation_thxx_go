@@ -32,6 +32,10 @@ func LoginPage(w http.ResponseWriter, r *http.Request, username string, userType
 }
 
 func TeacherPage(w http.ResponseWriter, r *http.Request, username string, userType models.UserType) {
+	if userType == models.ADMIN {
+		http.Redirect(w, r, "/appointment/admin", http.StatusFound)
+		return
+	}
 	t := template.Must(template.ParseFiles("templates/teacher.html"))
 	err := t.Execute(w, nil)
 	if err != nil {
@@ -40,6 +44,10 @@ func TeacherPage(w http.ResponseWriter, r *http.Request, username string, userTy
 }
 
 func AdminPage(w http.ResponseWriter, r *http.Request, username string, userType models.UserType) {
+	if userType == models.TEACHER {
+		http.Redirect(w, r, "/appointment/teacher", http.StatusFound)
+		return
+	}
 	t := template.Must(template.ParseFiles("templates/admin.html"))
 	err := t.Execute(w, nil)
 	if err != nil {
