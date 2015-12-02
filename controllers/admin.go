@@ -2,13 +2,13 @@ package controllers
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/shudiwsh2009/reservation_thxx_go/buslogic"
 	"github.com/shudiwsh2009/reservation_thxx_go/models"
 	"github.com/shudiwsh2009/reservation_thxx_go/utils"
 	"net/http"
-	"time"
 	"net/url"
-	"errors"
+	"time"
 )
 
 func ViewReservationsByAdmin(w http.ResponseWriter, r *http.Request, userId string, userType models.UserType) {

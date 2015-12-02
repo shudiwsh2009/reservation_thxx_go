@@ -81,7 +81,7 @@ func (tl *TeacherLogic) EditReservationByTeacher(reservationId string, startTime
 		return nil, errors.New("咨询师手机号格式不正确")
 	}
 	reservation, err := models.GetReservationById(reservationId)
-	if err != nil || reservation.Status == models.DELETED  {
+	if err != nil || reservation.Status == models.DELETED {
 		return nil, errors.New("咨询已下架")
 	} else if reservation.Status == models.RESERVATED {
 		return nil, errors.New("不能编辑已被预约的咨询")
