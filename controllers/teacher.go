@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"encoding/json"
 	"github.com/shudiwsh2009/reservation_thxx_go/buslogic"
 	"github.com/shudiwsh2009/reservation_thxx_go/models"
 	"github.com/shudiwsh2009/reservation_thxx_go/utils"
@@ -9,7 +8,7 @@ import (
 	"time"
 )
 
-func ViewReservationsByTeacher(w http.ResponseWriter, r *http.Request, userId string, userType models.UserType) {
+func ViewReservationsByTeacher(w http.ResponseWriter, r *http.Request, userId string, userType models.UserType) interface{} {
 	var result = map[string]interface{}{"state": "SUCCESS"}
 	var ul = buslogic.UserLogic{}
 	var rl = buslogic.ReservationLogic{}
@@ -17,7 +16,7 @@ func ViewReservationsByTeacher(w http.ResponseWriter, r *http.Request, userId st
 	teacher, err := ul.GetUserById(userId)
 	if err != nil {
 		ErrorHandler(w, r, err)
-		return
+		return nil
 	}
 	var teacherJson = make(map[string]interface{})
 	teacherJson["teacher_fullname"] = teacher.Fullname
@@ -27,7 +26,7 @@ func ViewReservationsByTeacher(w http.ResponseWriter, r *http.Request, userId st
 	reservations, err := rl.GetReservationsByTeacher(userId, userType)
 	if err != nil {
 		ErrorHandler(w, r, err)
-		return
+		return nil
 	}
 	var array = make([]interface{}, 0)
 	for _, res := range reservations {
@@ -48,13 +47,10 @@ func ViewReservationsByTeacher(w http.ResponseWriter, r *http.Request, userId st
 	}
 	result["reservations"] = array
 
-	if data, err := json.Marshal(result); err == nil {
-		w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-		w.Write(data)
-	}
+	return result
 }
 
-func AddReservationByTeacher(w http.ResponseWriter, r *http.Request, userId string, userType models.UserType) {
+func AddReservationByTeacher(w http.ResponseWriter, r *http.Request, userId string, userType models.UserType) interface{} {
 	startTime := r.PostFormValue("start_time")
 	endTime := r.PostFormValue("end_time")
 	teacherFullname := r.PostFormValue("teacher_fullname")
@@ -67,7 +63,7 @@ func AddReservationByTeacher(w http.ResponseWriter, r *http.Request, userId stri
 	reservation, err := tl.AddReservationByTeacher(startTime, endTime, teacherFullname, teacherMobile, userId, userType)
 	if err != nil {
 		ErrorHandler(w, r, err)
-		return
+		return nil
 	}
 	reservationJson["reservation_id"] = reservation.Id
 	reservationJson["start_time"] = reservation.StartTime.In(utils.Location).Format(utils.TIME_PATTERN)
@@ -76,13 +72,10 @@ func AddReservationByTeacher(w http.ResponseWriter, r *http.Request, userId stri
 	reservationJson["teacher_mobile"] = reservation.TeacherMobile
 	result["reservation"] = reservationJson
 
-	if data, err := json.Marshal(result); err == nil {
-		w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-		w.Write(data)
-	}
+	return result
 }
 
-func EditReservationByTeacher(w http.ResponseWriter, r *http.Request, userId string, userType models.UserType) {
+func EditReservationByTeacher(w http.ResponseWriter, r *http.Request, userId string, userType models.UserType) interface{} {
 	reservationId := r.PostFormValue("reservation_id")
 	startTime := r.PostFormValue("start_time")
 	endTime := r.PostFormValue("end_time")
@@ -97,7 +90,7 @@ func EditReservationByTeacher(w http.ResponseWriter, r *http.Request, userId str
 		userId, userType)
 	if err != nil {
 		ErrorHandler(w, r, err)
-		return
+		return nil
 	}
 	reservationJson["reservation_id"] = reservation.Id
 	reservationJson["start_time"] = reservation.StartTime.In(utils.Location).Format(utils.TIME_PATTERN)
@@ -106,13 +99,10 @@ func EditReservationByTeacher(w http.ResponseWriter, r *http.Request, userId str
 	reservationJson["teacher_mobile"] = reservation.TeacherMobile
 	result["reservation"] = reservationJson
 
-	if data, err := json.Marshal(result); err == nil {
-		w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-		w.Write(data)
-	}
+	return result
 }
 
-func RemoveReservationByTeacher(w http.ResponseWriter, r *http.Request, userId string, userType models.UserType) {
+func RemoveReservationByTeacher(w http.ResponseWriter, r *http.Request, userId string, userType models.UserType) interface{} {
 	r.ParseForm()
 	reservationIds := []string(r.Form["reservation_ids"])
 
@@ -122,17 +112,14 @@ func RemoveReservationByTeacher(w http.ResponseWriter, r *http.Request, userId s
 	removed, err := tl.RemoveReservationsByTeacher(reservationIds, userId, userType)
 	if err != nil {
 		ErrorHandler(w, r, err)
-		return
+		return nil
 	}
 	result["removed_count"] = removed
 
-	if data, err := json.Marshal(result); err == nil {
-		w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-		w.Write(data)
-	}
+	return result
 }
 
-func CancelReservationByTeacher(w http.ResponseWriter, r *http.Request, userId string, userType models.UserType) {
+func CancelReservationByTeacher(w http.ResponseWriter, r *http.Request, userId string, userType models.UserType) interface{} {
 	r.ParseForm()
 	reservationIds := []string(r.Form["reservation_ids"])
 
@@ -142,17 +129,14 @@ func CancelReservationByTeacher(w http.ResponseWriter, r *http.Request, userId s
 	removed, err := tl.CancelReservationsByTeacher(reservationIds, userId, userType)
 	if err != nil {
 		ErrorHandler(w, r, err)
-		return
+		return nil
 	}
 	result["removed_count"] = removed
 
-	if data, err := json.Marshal(result); err == nil {
-		w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-		w.Write(data)
-	}
+	return result
 }
 
-func GetFeedbackByTeacher(w http.ResponseWriter, r *http.Request, userId string, userType models.UserType) {
+func GetFeedbackByTeacher(w http.ResponseWriter, r *http.Request, userId string, userType models.UserType) interface{} {
 	reservationId := r.PostFormValue("reservation_id")
 
 	var result = map[string]interface{}{"state": "SUCCESS"}
@@ -162,7 +146,7 @@ func GetFeedbackByTeacher(w http.ResponseWriter, r *http.Request, userId string,
 	reservation, err := tl.GetFeedbackByTeacher(reservationId, userId, userType)
 	if err != nil {
 		ErrorHandler(w, r, err)
-		return
+		return nil
 	}
 	if len(reservation.TeacherFeedback.TeacherFullname) == 0 {
 		feedback["teacher_fullname"] = reservation.TeacherFullname
@@ -184,13 +168,10 @@ func GetFeedbackByTeacher(w http.ResponseWriter, r *http.Request, userId string,
 	feedback["advice"] = reservation.TeacherFeedback.AdviceToCenter
 	result["feedback"] = feedback
 
-	if data, err := json.Marshal(result); err == nil {
-		w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-		w.Write(data)
-	}
+	return result
 }
 
-func SubmitFeedbackByTeacher(w http.ResponseWriter, r *http.Request, userId string, userType models.UserType) {
+func SubmitFeedbackByTeacher(w http.ResponseWriter, r *http.Request, userId string, userType models.UserType) interface{} {
 	reservationId := r.PostFormValue("reservation_id")
 	teacherUsername := r.PostFormValue("teacher_username")
 	teacherFullname := r.PostFormValue("teacher_fullname")
@@ -206,16 +187,13 @@ func SubmitFeedbackByTeacher(w http.ResponseWriter, r *http.Request, userId stri
 		problem, solution, advice, userId, userType)
 	if err != nil {
 		ErrorHandler(w, r, err)
-		return
+		return nil
 	}
 
-	if data, err := json.Marshal(result); err == nil {
-		w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-		w.Write(data)
-	}
+	return result
 }
 
-func GetStudentInfoByTeacher(w http.ResponseWriter, r *http.Request, userId string, userType models.UserType) {
+func GetStudentInfoByTeacher(w http.ResponseWriter, r *http.Request, userId string, userType models.UserType) interface{} {
 	reservationId := r.PostFormValue("reservation_id")
 
 	var result = map[string]interface{}{"state": "SUCCESS"}
@@ -225,7 +203,7 @@ func GetStudentInfoByTeacher(w http.ResponseWriter, r *http.Request, userId stri
 	studentInfo, err := tl.GetStudentInfoByTeacher(reservationId, userId, userType)
 	if err != nil {
 		ErrorHandler(w, r, err)
-		return
+		return nil
 	}
 	studentJson["name"] = studentInfo.Name
 	studentJson["gender"] = studentInfo.Gender
@@ -238,8 +216,5 @@ func GetStudentInfoByTeacher(w http.ResponseWriter, r *http.Request, userId stri
 	studentJson["problem"] = studentInfo.Problem
 	result["student_info"] = studentJson
 
-	if data, err := json.Marshal(result); err == nil {
-		w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-		w.Write(data)
-	}
+	return result
 }

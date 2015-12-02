@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"encoding/json"
 	"github.com/shudiwsh2009/reservation_thxx_go/buslogic"
 	"github.com/shudiwsh2009/reservation_thxx_go/models"
 	"github.com/shudiwsh2009/reservation_thxx_go/utils"
@@ -9,14 +8,14 @@ import (
 	"time"
 )
 
-func ViewReservationsByStudent(w http.ResponseWriter, r *http.Request, userId string, userType models.UserType) {
+func ViewReservationsByStudent(w http.ResponseWriter, r *http.Request, userId string, userType models.UserType) interface{} {
 	var result = map[string]interface{}{"state": "SUCCESS"}
 	var rl = buslogic.ReservationLogic{}
 
 	reservations, err := rl.GetReservationsByStudent()
 	if err != nil {
 		ErrorHandler(w, r, err)
-		return
+		return nil
 	}
 	var array = make([]interface{}, 0)
 	for _, res := range reservations {
@@ -36,13 +35,10 @@ func ViewReservationsByStudent(w http.ResponseWriter, r *http.Request, userId st
 	}
 	result["reservations"] = array
 
-	if data, err := json.Marshal(result); err == nil {
-		w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-		w.Write(data)
-	}
+	return result
 }
 
-func MakeReservationByStudent(w http.ResponseWriter, r *http.Request, userId string, userType models.UserType) {
+func MakeReservationByStudent(w http.ResponseWriter, r *http.Request, userId string, userType models.UserType) interface{} {
 	reservationId := r.PostFormValue("reservation_id")
 	name := r.PostFormValue("name")
 	gender := r.PostFormValue("gender")
@@ -62,20 +58,17 @@ func MakeReservationByStudent(w http.ResponseWriter, r *http.Request, userId str
 		mobile, email, experience, problem)
 	if err != nil {
 		ErrorHandler(w, r, err)
-		return
+		return nil
 	}
 	reservationJson["start_time"] = reservation.StartTime.In(utils.Location).Format(utils.TIME_PATTERN)
 	reservationJson["end_time"] = reservation.EndTime.In(utils.Location).Format(utils.TIME_PATTERN)
 	reservationJson["teacher_fullname"] = reservation.TeacherFullname
 	result["reservation"] = reservationJson
 
-	if data, err := json.Marshal(result); err == nil {
-		w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-		w.Write(data)
-	}
+	return result
 }
 
-func GetFeedbackByStudent(w http.ResponseWriter, r *http.Request, userId string, userType models.UserType) {
+func GetFeedbackByStudent(w http.ResponseWriter, r *http.Request, userId string, userType models.UserType) interface{} {
 	reservationId := r.PostFormValue("reservation_id")
 	studentId := r.PostFormValue("student_id")
 
@@ -86,7 +79,7 @@ func GetFeedbackByStudent(w http.ResponseWriter, r *http.Request, userId string,
 	reservation, err := sl.GetFeedbackByStudent(reservationId, studentId)
 	if err != nil {
 		ErrorHandler(w, r, err)
-		return
+		return nil
 	}
 	if len(reservation.StudentFeedback.Name) == 0 {
 		feedbackJson["name"] = reservation.StudentInfo.Name
@@ -103,13 +96,10 @@ func GetFeedbackByStudent(w http.ResponseWriter, r *http.Request, userId string,
 	feedbackJson["feedback"] = reservation.StudentFeedback.Feedback
 	result["feedback"] = feedbackJson
 
-	if data, err := json.Marshal(result); err == nil {
-		w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-		w.Write(data)
-	}
+	return result
 }
 
-func SubmitFeedbackByStudent(w http.ResponseWriter, r *http.Request, userId string, userType models.UserType) {
+func SubmitFeedbackByStudent(w http.ResponseWriter, r *http.Request, userId string, userType models.UserType) interface{} {
 	reservationId := r.PostFormValue("reservation_id")
 	name := r.PostFormValue("name")
 	problem := r.PostFormValue("problem")
@@ -124,11 +114,8 @@ func SubmitFeedbackByStudent(w http.ResponseWriter, r *http.Request, userId stri
 	_, err := sl.SubmitFeedbackByStudent(reservationId, name, problem, choices, score, feedback, studentId)
 	if err != nil {
 		ErrorHandler(w, r, err)
-		return
+		return nil
 	}
 
-	if data, err := json.Marshal(result); err == nil {
-		w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-		w.Write(data)
-	}
+	return result
 }

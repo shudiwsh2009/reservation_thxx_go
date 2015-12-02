@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/shudiwsh2009/reservation_thxx_go/buslogic"
 	"github.com/shudiwsh2009/reservation_thxx_go/models"
@@ -9,7 +8,7 @@ import (
 	"time"
 )
 
-func Login(w http.ResponseWriter, r *http.Request, userId string, userType models.UserType) {
+func Login(w http.ResponseWriter, r *http.Request, userId string, userType models.UserType) interface{} {
 	username := r.PostFormValue("username")
 	password := r.PostFormValue("password")
 
@@ -19,7 +18,7 @@ func Login(w http.ResponseWriter, r *http.Request, userId string, userType model
 	user, err := ul.Login(username, password)
 	if err != nil {
 		ErrorHandler(w, r, err)
-		return
+		return nil
 	}
 	http.SetCookie(w, &http.Cookie{
 		Name:    "user_id",
@@ -51,13 +50,10 @@ func Login(w http.ResponseWriter, r *http.Request, userId string, userType model
 		result["url"] = "/appointment/entry"
 	}
 
-	if data, err := json.Marshal(result); err == nil {
-		w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-		w.Write(data)
-	}
+	return result
 }
 
-func Logout(w http.ResponseWriter, r *http.Request, userId string, userType models.UserType) {
+func Logout(w http.ResponseWriter, r *http.Request, userId string, userType models.UserType) interface{} {
 	var result = map[string]interface{}{"state": "SUCCESS"}
 
 	if userType == models.ADMIN {
@@ -81,8 +77,5 @@ func Logout(w http.ResponseWriter, r *http.Request, userId string, userType mode
 		MaxAge: -1,
 	})
 
-	if data, err := json.Marshal(result); err == nil {
-		w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-		w.Write(data)
-	}
+	return result
 }

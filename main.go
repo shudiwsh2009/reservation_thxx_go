@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/shudiwsh2009/reservation_thxx_go/controllers"
@@ -16,12 +17,17 @@ import (
 
 var needUserPath = regexp.MustCompile("^(/appointment/(teacher|admin)|/(user/logout|(teacher|admin)/))")
 
-func handleWithCookie(fn func(http.ResponseWriter, *http.Request, string, models.UserType)) http.HandlerFunc {
+func handleWithCookie(fn func(http.ResponseWriter, *http.Request, string, models.UserType) interface{}) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// check url to see whether there is "/teacher/" or "/admin/" or "/logout"
 		m := needUserPath.FindStringSubmatch(r.URL.Path)
 		if len(m) == 0 {
-			fn(w, r, "", 0)
+			if result := fn(w, r, "", 0); result != nil {
+				if data, err := json.Marshal(result); err == nil {
+					w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+					w.Write(data)
+				}
+			}
 			return
 		}
 		var userId string
@@ -47,7 +53,12 @@ func handleWithCookie(fn func(http.ResponseWriter, *http.Request, string, models
 				userType = models.UserType(ut)
 			}
 		}
-		fn(w, r, userId, userType)
+		if result := fn(w, r, userId, userType); result != nil {
+			if data, err := json.Marshal(result); err == nil {
+				w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+				w.Write(data)
+			}
+		}
 	}
 }
 
