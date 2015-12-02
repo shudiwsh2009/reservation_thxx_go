@@ -96,7 +96,7 @@ func (al *AdminLogic) EditReservationByAdmin(reservationId string, startTime str
 		return nil, errors.New("管理员账户出错,请联系技术支持")
 	}
 	reservation, err := models.GetReservationById(reservationId)
-	if err != nil {
+	if err != nil || reservation.Status == models.DELETED {
 		return nil, errors.New("咨询已下架")
 	} else if reservation.Status == models.RESERVATED {
 		return nil, errors.New("不能编辑已被预约的咨询")
@@ -111,6 +111,8 @@ func (al *AdminLogic) EditReservationByAdmin(reservationId string, startTime str
 	}
 	if start.After(end) {
 		return nil, errors.New("开始时间不能晚于结束时间")
+	} else if end.Before(time.Now().In(utils.Location)) {
+		return nil, errors.New("不能编辑已过期咨询")
 	}
 	teacher, err := models.GetUserByUsername(teacherUsername)
 	if err != nil {
@@ -250,9 +252,7 @@ func (al *AdminLogic) SubmitFeedbackByAdmin(reservationId string, teacherFullnam
 	} else if !strings.EqualFold(teacherUsername, reservation.TeacherUsername) {
 		return nil, errors.New("咨询师工号不匹配")
 	}
-	if reservation.TeacherFeedback.IsEmpty() && reservation.StudentFeedback.IsEmpty() {
-		utils.SendFeedbackSMS(reservation)
-	}
+	sendFeedbackSMS := reservation.TeacherFeedback.IsEmpty() && reservation.StudentFeedback.IsEmpty()
 	reservation.TeacherFeedback = models.TeacherFeedback{
 		TeacherFullname: teacherFullname,
 		TeacherUsername: teacherUsername,
@@ -263,6 +263,9 @@ func (al *AdminLogic) SubmitFeedbackByAdmin(reservationId string, teacherFullnam
 	}
 	if err = models.UpsertReservation(reservation); err != nil {
 		return nil, errors.New("数据获取失败")
+	}
+	if sendFeedbackSMS {
+		utils.SendFeedbackSMS(reservation)
 	}
 	return reservation, nil
 }
