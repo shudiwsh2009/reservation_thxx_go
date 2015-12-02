@@ -54,11 +54,11 @@ func (al *AdminLogic) AddReservationByAdmin(startTime string, endTime string, te
 		}
 	} else if teacher.UserType != models.TEACHER {
 		return nil, errors.New("权限不足")
-	} else {
+	} else if !strings.EqualFold(teacher.Fullname, teacherFullname) || !strings.EqualFold(teacher.Mobile, teacherMobile) {
 		teacher.Fullname = teacherFullname
 		teacher.Mobile = teacherMobile
 		if err = models.UpsertUser(teacher); err != nil {
-			return nil, errors.New("获取数据失败")
+			return nil, errors.New("数据获取失败")
 		}
 	}
 	reservation, err := models.AddReservation(start, end, teacher.Fullname, teacher.Username, teacher.Mobile)
@@ -122,11 +122,11 @@ func (al *AdminLogic) EditReservationByAdmin(reservationId string, startTime str
 		}
 	} else if teacher.UserType != models.TEACHER {
 		return nil, errors.New("权限不足")
-	} else {
+	} else if !strings.EqualFold(teacher.Fullname, teacherFullname) || !strings.EqualFold(teacher.Mobile, teacherMobile) {
 		teacher.Fullname = teacherFullname
 		teacher.Mobile = teacherMobile
 		if err = models.UpsertUser(teacher); err != nil {
-			return nil, errors.New("获取数据失败")
+			return nil, errors.New("数据获取失败")
 		}
 	}
 	reservation.StartTime = start

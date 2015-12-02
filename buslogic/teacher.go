@@ -46,10 +46,12 @@ func (tl *TeacherLogic) AddReservationByTeacher(startTime string, endTime string
 	} else if teacher.UserType != models.TEACHER {
 		return nil, errors.New("权限不足")
 	}
-	teacher.Fullname = teacherFullname
-	teacher.Mobile = teacherMobile
-	if err = models.UpsertUser(teacher); err != nil {
-		return nil, errors.New("数据获取失败")
+	if !strings.EqualFold(teacher.Fullname, teacherFullname) || !strings.EqualFold(teacher.Mobile, teacherMobile) {
+		teacher.Fullname = teacherFullname
+		teacher.Mobile = teacherMobile
+		if err = models.UpsertUser(teacher); err != nil {
+			return nil, errors.New("数据获取失败")
+		}
 	}
 	reservation, err := models.AddReservation(start, end, teacher.Fullname, teacher.Username, teacher.Mobile)
 	if err != nil {
@@ -79,7 +81,7 @@ func (tl *TeacherLogic) EditReservationByTeacher(reservationId string, startTime
 		return nil, errors.New("咨询师手机号格式不正确")
 	}
 	reservation, err := models.GetReservationById(reservationId)
-	if err != nil {
+	if err != nil || reservation.Status == models.DELETED  {
 		return nil, errors.New("咨询已下架")
 	} else if reservation.Status == models.RESERVATED {
 		return nil, errors.New("不能编辑已被预约的咨询")
@@ -94,6 +96,8 @@ func (tl *TeacherLogic) EditReservationByTeacher(reservationId string, startTime
 	}
 	if start.After(end) {
 		return nil, errors.New("开始时间不能晚于结束时间")
+	} else if end.Before(time.Now().In(utils.Location)) {
+		return nil, errors.New("不能编辑已过期咨询")
 	}
 	teacher, err := models.GetUserById(userId)
 	if err != nil {
@@ -103,10 +107,12 @@ func (tl *TeacherLogic) EditReservationByTeacher(reservationId string, startTime
 	} else if !strings.EqualFold(teacher.Username, reservation.TeacherUsername) {
 		return nil, errors.New("只能编辑本人开设的咨询")
 	}
-	teacher.Fullname = teacherFullname
-	teacher.Mobile = teacherMobile
-	if err = models.UpsertUser(teacher); err != nil {
-		return nil, errors.New("数据获取失败")
+	if !strings.EqualFold(teacher.Fullname, teacherFullname) || !strings.EqualFold(teacher.Mobile, teacherMobile) {
+		teacher.Fullname = teacherFullname
+		teacher.Mobile = teacherMobile
+		if err = models.UpsertUser(teacher); err != nil {
+			return nil, errors.New("数据获取失败")
+		}
 	}
 	reservation.StartTime = start
 	reservation.EndTime = end

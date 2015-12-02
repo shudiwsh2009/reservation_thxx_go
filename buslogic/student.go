@@ -43,7 +43,7 @@ func (sl *StudentLogic) MakeReservationByStudent(reservationId string, name stri
 		return nil, errors.New("邮箱格式不正确")
 	}
 	reservation, err := models.GetReservationById(reservationId)
-	if err != nil {
+	if err != nil || reservation.Status == models.DELETED {
 		return nil, errors.New("咨询已下架")
 	} else if reservation.StartTime.Before(time.Now().In(utils.Location)) {
 		return nil, errors.New("咨询已过期")
@@ -92,7 +92,7 @@ func (sl *StudentLogic) GetFeedbackByStudent(reservationId string, studentId str
 		return nil, errors.New("学号不正确")
 	}
 	reservation, err := models.GetReservationById(reservationId)
-	if err != nil {
+	if err != nil || reservation.Status == models.DELETED {
 		return nil, errors.New("咨询已下架")
 	} else if reservation.StartTime.After(time.Now().In(utils.Location)) {
 		return nil, errors.New("咨询未开始,暂不能反馈")
@@ -123,7 +123,7 @@ func (sl *StudentLogic) SubmitFeedbackByStudent(reservationId string, name strin
 		return nil, errors.New("学号不正确")
 	}
 	reservation, err := models.GetReservationById(reservationId)
-	if err != nil {
+	if err != nil || reservation.Status == models.DELETED {
 		return nil, errors.New("咨询已下架")
 	} else if reservation.StartTime.After(time.Now().In(utils.Location)) {
 		return nil, errors.New("咨询未开始,暂不能反馈")
