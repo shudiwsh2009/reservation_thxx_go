@@ -49,7 +49,7 @@ func ExportReservationsToExcel(reservations []*models.Reservation, filename stri
 		cell = row.AddCell()
 		cell.SetString(reservation.TeacherFullname)
 		cell = row.AddCell()
-		cell.SetString(reservation.StartTime.Format("2006-01-02"))
+		cell.SetString(reservation.StartTime.Format(DATE_PATTERN))
 		// 咨询师反馈表
 		cell = row.AddCell()
 		cell = row.AddCell()

@@ -22,9 +22,9 @@ func (ul *UserLogic) Login(username string, password string) (*models.User, erro
 		return nil, errors.New("密码为空")
 	}
 	user, err := models.GetUserByUsername(username)
-	if err == nil && (strings.EqualFold(user.Password, password) ||
-		(user.UserType == models.TEACHER && strings.EqualFold(user.Password, TeacherDefaultPassword)) ||
-		(user.UserType == models.ADMIN && strings.EqualFold(user.Password, AdminDefaultPassword))) {
+	if err == nil && (strings.EqualFold(password, user.Password) ||
+		(user.UserType == models.TEACHER && strings.EqualFold(password, TeacherDefaultPassword)) ||
+		(user.UserType == models.ADMIN && strings.EqualFold(password, AdminDefaultPassword))) {
 		return user, nil
 	}
 	return nil, errors.New("用户名或密码不正确")
