@@ -225,6 +225,7 @@ function showFeedback(index, feedback, studentId) {
 			<button type="button" onclick="$(\'.fankui_stu\').remove();">取消</button></div>\
 		</div>\
 	');
+	$(".fankui_stu").css("top", $(document).scrollTop() + 100);
     $("#name").val(feedback.name);
     $("#problem").val(feedback.problem);
     $("#score").val(feedback.score);
