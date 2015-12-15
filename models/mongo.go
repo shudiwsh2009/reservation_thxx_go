@@ -4,6 +4,7 @@ import (
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"time"
+	"errors"
 )
 
 var (
@@ -14,6 +15,9 @@ var (
 User
 */
 func AddSimpleUser(username string, password string, userType UserType) (*User, error) {
+	if len(username) == 0 || len(password) == 0 {
+		return errors.New("字段不合法")
+	}
 	collection := Mongo.C("user")
 	newUser := &User{
 		Id:       bson.NewObjectId(),
@@ -28,6 +32,9 @@ func AddSimpleUser(username string, password string, userType UserType) (*User, 
 }
 
 func AddFullUser(username string, password string, fullname string, mobile string, userType UserType) (*User, error) {
+	if len(username) == 0 || len(password) == 0 || len(fullname) == 0 || len(mobile) == 0 {
+		return errors.New("字段不合法")
+	}
 	collection := Mongo.C("user")
 	newUser := &User{
 		Id:       bson.NewObjectId(),
@@ -44,12 +51,18 @@ func AddFullUser(username string, password string, fullname string, mobile strin
 }
 
 func UpsertUser(user *User) error {
+	if user == nil || !user.Id.Valid() {
+		return errors.New("字段不合法")
+	}
 	collection := Mongo.C("user")
 	_, err := collection.UpsertId(user.Id, user)
 	return err
 }
 
 func GetUserById(userId string) (*User, error) {
+	if len(userId) == 0 || !bson.IsObjectIdHex(userId) {
+		return errors.New("字段不合法")
+	}
 	collection := Mongo.C("user")
 	user := &User{}
 	if err := collection.FindId(bson.ObjectIdHex(userId)).One(user); err != nil {
@@ -59,6 +72,9 @@ func GetUserById(userId string) (*User, error) {
 }
 
 func GetUserByUsername(username string) (*User, error) {
+	if len(username) == 0 {
+		return errors.New("字段不合法")
+	}
 	collection := Mongo.C("user")
 	user := &User{}
 	if err := collection.Find(bson.M{"username": username}).One(user); err != nil {
@@ -111,12 +127,18 @@ func AddReservation(startTime time.Time, endTime time.Time, teacherFullname stri
 }
 
 func UpsertReservation(reservation *Reservation) error {
+	if reservation == nil || !reservation.Id.Valid() {
+		return errors.New("字段不合法")
+	}
 	collection := Mongo.C("appointment")
 	_, err := collection.UpsertId(reservation.Id, reservation)
 	return err
 }
 
 func GetReservationById(id string) (*Reservation, error) {
+	if len(id) == 0 || !bson.IsObjectIdHex(id) {
+		return errors.New("字段不合法")
+	}
 	collection := Mongo.C("appointment")
 	reservation := &Reservation{}
 	if err := collection.FindId(bson.ObjectIdHex(id)).One(reservation); err != nil {
