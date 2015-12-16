@@ -16,7 +16,7 @@ User
 */
 func AddSimpleUser(username string, password string, userType UserType) (*User, error) {
 	if len(username) == 0 || len(password) == 0 {
-		return errors.New("字段不合法")
+		return nil, errors.New("字段不合法")
 	}
 	collection := Mongo.C("user")
 	newUser := &User{
@@ -33,7 +33,7 @@ func AddSimpleUser(username string, password string, userType UserType) (*User, 
 
 func AddFullUser(username string, password string, fullname string, mobile string, userType UserType) (*User, error) {
 	if len(username) == 0 || len(password) == 0 || len(fullname) == 0 || len(mobile) == 0 {
-		return errors.New("字段不合法")
+		return nil, errors.New("字段不合法")
 	}
 	collection := Mongo.C("user")
 	newUser := &User{
@@ -61,7 +61,7 @@ func UpsertUser(user *User) error {
 
 func GetUserById(userId string) (*User, error) {
 	if len(userId) == 0 || !bson.IsObjectIdHex(userId) {
-		return errors.New("字段不合法")
+		return nil, errors.New("字段不合法")
 	}
 	collection := Mongo.C("user")
 	user := &User{}
@@ -73,7 +73,7 @@ func GetUserById(userId string) (*User, error) {
 
 func GetUserByUsername(username string) (*User, error) {
 	if len(username) == 0 {
-		return errors.New("字段不合法")
+		return nil, errors.New("字段不合法")
 	}
 	collection := Mongo.C("user")
 	user := &User{}
@@ -137,7 +137,7 @@ func UpsertReservation(reservation *Reservation) error {
 
 func GetReservationById(id string) (*Reservation, error) {
 	if len(id) == 0 || !bson.IsObjectIdHex(id) {
-		return errors.New("字段不合法")
+		return nil, errors.New("字段不合法")
 	}
 	collection := Mongo.C("appointment")
 	reservation := &Reservation{}
