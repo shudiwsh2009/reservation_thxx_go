@@ -1,4 +1,7 @@
 .idea
 *.iml
 .DS_Store
+~$*
+*.swp
+*~
 reservation_thxx_go
