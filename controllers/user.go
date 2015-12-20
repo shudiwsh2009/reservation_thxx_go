@@ -26,6 +26,7 @@ func Login(w http.ResponseWriter, r *http.Request, userId string, userType model
 		Path:    "/",
 		Expires: time.Now().Local().AddDate(1, 0, 0),
 		MaxAge:  365 * 24 * 60 * 60,
+		HttpOnly: true,
 	})
 	http.SetCookie(w, &http.Cookie{
 		Name:    "username",
@@ -33,6 +34,7 @@ func Login(w http.ResponseWriter, r *http.Request, userId string, userType model
 		Path:    "/",
 		Expires: time.Now().Local().AddDate(1, 0, 0),
 		MaxAge:  365 * 24 * 60 * 60,
+		HttpOnly: true,
 	})
 	http.SetCookie(w, &http.Cookie{
 		Name:    "user_type",
@@ -40,6 +42,7 @@ func Login(w http.ResponseWriter, r *http.Request, userId string, userType model
 		Path:    "/",
 		Expires: time.Now().Local().AddDate(1, 0, 0),
 		MaxAge:  365 * 24 * 60 * 60,
+		HttpOnly: true,
 	})
 	switch user.UserType {
 	case models.ADMIN:
