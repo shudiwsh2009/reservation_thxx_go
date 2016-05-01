@@ -152,9 +152,7 @@ func (sl *StudentLogic) GetTeacherInfoByStudent(reservationId string) (*models.U
 	reservation, err := models.GetReservationById(reservationId)
 	if err != nil || reservation.Status == models.DELETED {
 		return nil, errors.New("咨询已下架")
-	} else if reservation.StartTime.Before(time.Now().In(utils.Location)) {
-		return nil, errors.New("咨询已过期")
-	}
+	} 
 	teacher, err := models.GetUserByUsername(reservation.TeacherUsername)
 	if err != nil || teacher.UserType != models.TEACHER {
 		return nil, errors.New("咨询师不存在")
