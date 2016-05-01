@@ -102,11 +102,11 @@ function refreshDataTable(reservations) {
 		$("#col_time").append("<div class='table_cell' id='cell_time_" + i + "' onclick='editReservation("
 			+ i + ")'>" + reservations[i].start_time + "至" + reservations[i].end_time + "</div>");
 		$("#col_teacher_fullname").append("<div class='table_cell' id='cell_teacher_fullname_"
-			+ i + "'>" + reservations[i].teacher_fullname + "</div>");
+			+ i + "' onclick='getTeacher(" + i + ")'>" + reservations[i].teacher_fullname + "</div>");
 		$("#col_teacher_username").append("<div class='table_cell' id='cell_teacher_username_"
-			+ i + "'>" + reservations[i].teacher_username + "</div>");
+			+ i + "' onclick='getTeacher(" + i + ")'>" + reservations[i].teacher_username + "</div>");
 		$("#col_teacher_mobile").append("<div class='table_cell' id='cell_teacher_mobile_"
-			+ i + "'>" + reservations[i].teacher_mobile + "</div>");
+			+ i + "' onclick='getTeacher(" + i + ")'>" + reservations[i].teacher_mobile + "</div>");
 		if (reservations[i].status === "AVAILABLE") {
 			$("#col_status").append("<div class='table_cell' id='cell_status_" + i + "'>未预约</div>");
 			$("#col_student").append("<div class='table_cell' id='cell_student_" + i + "'>" 
@@ -578,4 +578,71 @@ function showStudent(student) {
 		</div>\
 	");
 	optimize(".admin_chakan");
+}
+
+function getTeacher(index) {
+	var payload = {
+		teacher_username: reservations[index].teacher_username,
+	};
+	$.ajax({
+		type: "POST",
+		async: false,
+		url: "/admin/teacher/get",
+		data: payload, 
+		dataType: "json",
+		success: function(data) {
+			if (data.state === "SUCCESS") {
+				console.log(data.teacher);
+				showTeacher(data.teacher);
+			} else {
+				alert(data.message);
+			}
+		}
+	});
+}
+
+function showTeacher(teacher) {
+	$("body").append("\
+		<div class='admin_chakan' style='text-align: left'>\
+			姓　　名：<input id='show_teacher_fullname' value='" + teacher.fullname + "'><br>\
+			性　　别：<select id='show_teacher_gender'><option value=''>请选择</option><option value='男'>男</option><option value='女'>女</option></select><br>\
+			专业背景：<input id='show_teacher_major' value='" + teacher.major + "'><br>\
+			学　　历：<input id='show_teacher_academic' value='" + teacher.academic + "'><br>\
+			资　　质：<input id='show_teacher_aptitude' value='" + teacher.aptitude + "'><br>\
+			可咨询的问题：<br>\
+			<textarea id='show_teacher_problem' style='width:70%; height:60px;'></textarea><br>\
+			<button type='button' onclick='editTeacher(" + teacher.teacher_username + ");'>保存</button>\
+			<button type='button' onclick='$(\".admin_chakan\").remove();'>关闭</button>\
+			<span id='edit_tip' style='color: red'></span>\
+		</div>\
+	");
+	$('#show_teacher_gender').val(teacher.gender);
+	$('#show_teacher_problem').val(teacher.problem);
+	optimize(".admin_chakan");
+}
+
+function editTeacher(teacherUsername) {
+	var payload = {
+		teacher_username: teacherUsername,
+		fullname: $('#show_teacher_fullname').val(),
+		gender: $('#show_teacher_gender').val(),
+		major: $('#show_teacher_major').val(),
+		academic: $('#show_teacher_academic').val(),
+		aptitude: $('#show_teacher_aptitude').val(),
+		problem: $('#show_teacher_problem').val(),
+	};
+	$.ajax({
+		type: "POST",
+		async: false,
+		url: "/admin/teacher/edit",
+		data: payload, 
+		dataType: "json",
+		success: function(data) {
+			if (data.state === "SUCCESS") {
+				$('#edit_tip').text("更新成功！");
+			} else {
+				alert(data.message);
+			}
+		}
+	});
 }

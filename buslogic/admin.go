@@ -386,3 +386,53 @@ func (al *AdminLogic) SearchTeacherByAdmin(teacherFullname string, teacherUserna
 	}
 	return nil, errors.New("用户不存在")
 }
+
+func (al *AdminLogic) GetTeacherInfoByAdmin(teacherUsername string, userId string, userType models.UserType) (*models.User, error) {
+	if len(userId) == 0 {
+		return nil, errors.New("请先登录")
+	} else if userType != models.ADMIN {
+		return nil, errors.New("权限不足")
+	} else if len(teacherUsername) == 0 {
+		return nil, errors.New("咨询师工作证号为空")
+	}
+	admin, err := models.GetUserById(userId)
+	if err != nil || admin.UserType != models.ADMIN {
+		return nil, errors.New("管理员账户出错,请联系技术支持")
+	}
+	teacher, err := models.GetUserByUsername(teacherUsername)
+	if err != nil || teacher.UserType != models.TEACHER {
+		return nil, errors.New("咨询师不存在")
+	}
+	return teacher, nil
+}
+
+func (al *AdminLogic) EditTeacherInfoByAdmin(teacherUsername string, fullname string, gender string, major string,
+	academic string, aptitude string, problem string, userId string, userType models.UserType) (*models.User, error) {
+	if len(userId) == 0 {
+		return nil, errors.New("请先登录")
+	} else if userType != models.ADMIN {
+		return nil, errors.New("权限不足")
+	} else if len(teacherUsername) == 0 {
+		return nil, errors.New("咨询师工作证号为空")
+	} else if len(fullname) == 0 {
+		return nil, errors.New("咨询师姓名为空")
+	}
+	admin, err := models.GetUserById(userId)
+	if err != nil || admin.UserType != models.ADMIN {
+		return nil, errors.New("管理员账户出错,请联系技术支持")
+	}
+	teacher, err := models.GetUserByUsername(teacherUsername)
+	if err != nil || teacher.UserType != models.TEACHER {
+		return nil, errors.New("咨询师不存在")
+	}
+	teacher.Fullname = fullname
+	teacher.Gender = gender
+	teacher.Major = major
+	teacher.Academic = academic
+	teacher.Aptitude = aptitude
+	teacher.Problem = problem
+	if err = models.UpsertUser(teacher); err != nil {
+		return nil, errors.New("获取数据失败")
+	}
+	return teacher, nil
+}

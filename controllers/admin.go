@@ -294,3 +294,48 @@ func SearchTeacherByAdmin(w http.ResponseWriter, r *http.Request, userId string,
 
 	return result
 }
+
+func GetTeacherInfoByAdmin(w http.ResponseWriter, r *http.Request, userId string, userType models.UserType) interface{} {
+	teacherUsername := r.PostFormValue("teacher_username")
+
+	var result = map[string]interface{}{"state": "SUCCESS"}
+	var al = buslogic.AdminLogic{}
+
+	var teacherJson = make(map[string]interface{})
+	teacher, err := al.GetTeacherInfoByAdmin(teacherUsername, userId, userType)
+	if err != nil {
+		ErrorHandler(w, r, err)
+		return nil
+	}
+	teacherJson["teacher_username"] = teacher.Username
+	teacherJson["fullname"] = teacher.Fullname
+	teacherJson["gender"] = teacher.Gender
+	teacherJson["major"] = teacher.Major
+	teacherJson["academic"] = teacher.Academic
+	teacherJson["aptitude"] = teacher.Aptitude
+	teacherJson["problem"] = teacher.Problem
+	result["teacher"] = teacherJson
+
+	return result
+}
+
+func EditTeacherInfoByAdmin(w http.ResponseWriter, r *http.Request, userId string, userType models.UserType) interface{} {
+	teacherUsername := r.PostFormValue("teacher_username")
+	fullname := r.PostFormValue("fullname")
+	gender := r.PostFormValue("gender")
+	major := r.PostFormValue("major")
+	academic := r.PostFormValue("academic")
+	aptitude := r.PostFormValue("aptitude")
+	problem := r.PostFormValue("problem")
+
+	var result = map[string]interface{}{"state": "SUCCESS"}
+	var al = buslogic.AdminLogic{}
+
+	_, err := al.EditTeacherInfoByAdmin(teacherUsername, fullname, gender, major, academic, aptitude, problem, userId, userType)
+	if err != nil {
+		ErrorHandler(w, r, err)
+		return nil
+	}
+
+	return result
+}

@@ -119,3 +119,27 @@ func SubmitFeedbackByStudent(w http.ResponseWriter, r *http.Request, userId stri
 
 	return result
 }
+
+func GetTeacherInfoByStudent(w http.ResponseWriter, r *http.Request, userId string, userType models.UserType) interface{} {
+	reservationId := r.PostFormValue("reservation_id")
+
+	var result = map[string]interface{}{"state": "SUCCESS"}
+	var sl = buslogic.StudentLogic{}
+
+	var teacherJson = make(map[string]interface{})
+	teacher, err := sl.GetTeacherInfoByStudent(reservationId)
+	if err != nil {
+		ErrorHandler(w, r, err)
+		return nil
+	}
+	teacherJson["teacher_username"] = teacher.Username
+	teacherJson["fullname"] = teacher.Fullname
+	teacherJson["gender"] = teacher.Gender
+	teacherJson["major"] = teacher.Major
+	teacherJson["academic"] = teacher.Academic
+	teacherJson["aptitude"] = teacher.Aptitude
+	teacherJson["problem"] = teacher.Problem
+	result["teacher"] = teacherJson
+
+	return result
+}

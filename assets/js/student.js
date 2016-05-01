@@ -38,8 +38,8 @@ function refreshDataTable(reservations) {
 		$("#col_time").append("<div class='table_cell' id='cell_time_" + i + "'>"
 			+ reservations[i].start_time.substr(2) + "-"
 			+ reservations[i].end_time.split(" ")[1] + "</div>");
-		$("#col_teacher").append("<div class='table_cell' id='cell_teacher_" + i + "'>"
-			+ reservations[i].teacher_fullname + "</div>");
+		$("#col_teacher").append("<div class='table_cell' id='cell_teacher_" + i + "' onclick='getTeacher(" + i + 
+			")'>" + reservations[i].teacher_fullname + "</div>");
 		if (reservations[i].status === "AVAILABLE") {
 			$("#col_status").append("<div class='table_cell' id='cell_status_" + i
 				+ "'><button type='button' id='cell_status_b_" + i + "' onclick='makeReservation(" + i
@@ -276,4 +276,42 @@ function successFeedback() {
 		</div>\
 	");
 	optimize(".fankui_stu_success");
+}
+
+function getTeacher(index) {
+	var payload = {
+		reservation_id: reservations[index].reservation_id,
+	};
+	$.ajax({
+		type: "POST",
+		async: false,
+		url: "/student/teacher/get",
+		data: payload, 
+		dataType: "json",
+		success: function(data) {
+			if (data.state === "SUCCESS") {
+				console.log(data.teacher);
+				showTeacher(data.teacher);
+			} else {
+				alert(data.message);
+			}
+		}
+	});
+}
+
+function showTeacher(teacher) {
+	$("body").append("\
+		<div class='yuyue_stu_pre' style='text-align: left;'>\
+			姓　　名：" + teacher.fullname + "<br>\
+			性　　别：" + teacher.gender + "<br>\
+			专业背景：" + teacher.major + "<br>\
+			学　　历：" + teacher.academic + "<br>\
+			资　　质：" + teacher.aptitude + "<br>\
+			可咨询的问题：<br>\
+			" + teacher.problem + "\
+			<br>\
+			<button type='button' onclick='$(\".yuyue_stu_pre\").remove();'>关闭</button>\
+		</div>\
+	");
+	optimize(".yuyue_stu_pre");
 }

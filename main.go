@@ -99,6 +99,7 @@ func main() {
 	studentRouter.HandleFunc("/reservation/make", handleWithCookie(controllers.MakeReservationByStudent)).Methods("POST")
 	studentRouter.HandleFunc("/reservation/feedback/get", handleWithCookie(controllers.GetFeedbackByStudent)).Methods("POST")
 	studentRouter.HandleFunc("/reservation/feedback/submit", handleWithCookie(controllers.SubmitFeedbackByStudent)).Methods("POST")
+	studentRouter.HandleFunc("/teacher/get", handleWithCookie(controllers.GetTeacherInfoByStudent)).Methods("POST")
 	teacherRouter := router.PathPrefix("/teacher").Subrouter()
 	teacherRouter.HandleFunc("/reservation/view", handleWithCookie(controllers.ViewReservationsByTeacher)).Methods("GET")
 	teacherRouter.HandleFunc("/reservation/add", handleWithCookie(controllers.AddReservationByTeacher)).Methods("POST")
@@ -120,6 +121,8 @@ func main() {
 	adminRouter.HandleFunc("/reservation/export", handleWithCookie(controllers.ExportReservationsByAdmin)).Methods("POST")
 	adminRouter.HandleFunc("/student/get", handleWithCookie(controllers.GetStudentInfoByAdmin)).Methods("POST")
 	adminRouter.HandleFunc("/teacher/search", handleWithCookie(controllers.SearchTeacherByAdmin)).Methods("POST")
+	adminRouter.HandleFunc("/teacher/get", handleWithCookie(controllers.GetTeacherInfoByAdmin)).Methods("POST")
+	adminRouter.HandleFunc("/teacher/edit", handleWithCookie(controllers.EditTeacherInfoByAdmin)).Methods("POST")
 	// http加载处理器
 	http.Handle("/", router)
 	http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets/"))))
