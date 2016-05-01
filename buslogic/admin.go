@@ -61,6 +61,22 @@ func (al *AdminLogic) AddReservationByAdmin(startTime string, endTime string, te
 			return nil, errors.New("数据获取失败")
 		}
 	}
+	// 检查当天的咨询师时间是否有冲突
+	theDay := time.Date(start.Year(), start.Month(), start.Day(), 0, 0, 0, 0, utils.Location)
+	nextDay := theDay.AddDate(0, 0, 1)
+	theDayReservations, err := models.GetReservationsBetweenTime(theDay, nextDay)
+	if err != nil {
+		return nil, errors.New("数据获取失败")
+	}
+	for _, r := range theDayReservations {
+		if strings.EqualFold(r.TeacherUsername, teacher.Username) {
+			if (start.After(r.StartTime) && start.Before(r.EndTime)) ||
+				(end.After(r.StartTime) && end.Before(r.EndTime)) ||
+				(!start.After(r.StartTime) && !end.Before(r.EndTime)) {
+				return nil, errors.New("咨询师时间有冲突")
+			}
+		}
+	}
 	reservation, err := models.AddReservation(start, end, teacher.Fullname, teacher.Username, teacher.Mobile)
 	if err != nil {
 		return nil, errors.New("数据获取失败")
@@ -127,6 +143,22 @@ func (al *AdminLogic) EditReservationByAdmin(reservationId string, startTime str
 		teacher.Mobile = teacherMobile
 		if err = models.UpsertUser(teacher); err != nil {
 			return nil, errors.New("数据获取失败")
+		}
+	}
+	// 检查当天的咨询师时间是否有冲突
+	theDay := time.Date(start.Year(), start.Month(), start.Day(), 0, 0, 0, 0, utils.Location)
+	nextDay := theDay.AddDate(0, 0, 1)
+	theDayReservations, err := models.GetReservationsBetweenTime(theDay, nextDay)
+	if err != nil {
+		return nil, errors.New("数据获取失败")
+	}
+	for _, r := range theDayReservations {
+		if strings.EqualFold(r.TeacherUsername, teacher.Username) {
+			if (start.After(r.StartTime) && start.Before(r.EndTime)) ||
+			(end.After(r.StartTime) && end.Before(r.EndTime)) ||
+			(!start.After(r.StartTime) && !end.Before(r.EndTime)) {
+				return nil, errors.New("咨询师时间有冲突")
+			}
 		}
 	}
 	reservation.StartTime = start
