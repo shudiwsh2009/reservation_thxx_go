@@ -138,7 +138,8 @@ func (tl *TeacherLogic) EditReservationByTeacher(reservationId string, startTime
 		return nil, errors.New("数据获取失败")
 	}
 	for _, r := range theDayReservations {
-		if strings.EqualFold(r.TeacherUsername, teacher.Username) {
+		if !strings.EqualFold(r.Id.Hex(), reservation.Id.Hex()) &&
+			strings.EqualFold(r.TeacherUsername, teacher.Username) {
 			if (start.After(r.StartTime) && start.Before(r.EndTime)) ||
 			(end.After(r.StartTime) && end.Before(r.EndTime)) ||
 			(!start.After(r.StartTime) && !end.Before(r.EndTime)) {
