@@ -89,7 +89,7 @@ function optimize(t){
 function makeReservation(index) {
 	$("body").append("\
 		<div class='yuyue_stu_pre'>\
-			确定预约后请准确填写个人信息，方便心理咨询中心老师与你取得联系。\
+			确定预约后请准确填写个人信息，方便咨询中心老师与你取得联系。\
 			<br>\
 			<button type='button' onclick='$(\".yuyue_stu_pre\").remove();makeReservationData(" + index + ");'>\
 				立即预约</button>\
