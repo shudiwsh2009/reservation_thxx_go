@@ -49,6 +49,8 @@ func (sl *StudentLogic) MakeReservationByStudent(reservationId string, name stri
 		return nil, errors.New("咨询已过期")
 	} else if reservation.Status != models.AVAILABLE {
 		return nil, errors.New("咨询已被预约")
+	} else if time.Now().In(utils.Location).Add(3 * time.Hour).After(reservation.StartTime) {
+		return nil, errors.New("距咨询开始不足3小时，无法预约")
 	}
 	studentReservations, err := models.GetReservationsByStudentId(studentId)
 	if err != nil {
