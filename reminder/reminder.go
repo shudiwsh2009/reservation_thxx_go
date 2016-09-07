@@ -10,9 +10,13 @@ import (
 )
 
 func main() {
-	utils.APP_ENV = *flag.String("app-env", "STAGING", "app environment")
-	utils.SMS_UID = *flag.String("sms-uid", "", "sms uid")
-	utils.SMS_KEY = *flag.String("sms-key", "", "sms key")
+	appEnv := flag.String("app-env", "STAGING", "app environment")
+	smsUid := flag.String("sms-uid", "", "sms uid")
+	smsKey := flag.String("sms-key", "", "sms key")
+	flag.Parse()
+	utils.APP_ENV = *appEnv
+	utils.SMS_UID = *smsUid
+	utils.SMS_KEY = *smsKey
 	// 数据库连接
 	session, err := mgo.Dial("127.0.0.1:27017")
 	if err != nil {
