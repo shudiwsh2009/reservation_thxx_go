@@ -1,18 +1,24 @@
 #!/bin/bash
 echo "#update git"
-go get -u github.com/shudiwsh2009/reservation_thxx_go
-go get -u github.com/shudiwsh2009/reservation_thxx_go_reminder
+cd $GOPATH/src/github.com/shudiwsh2009/reservation_thxx_go
+git reset --hard
+git fetch $1
+git checkout $1/$2
 
 echo "#deploy website"
-supervisorctl stop reservation_thxx_go
+cd ~/thxxfzzx_go
+go install reservation_thxx_go/server
+kill -9 $(lsof -t -i:8080)
 sleep 5
-cd $GOPATH/src/github.com/shudiwsh2009/reservation_thxx_go
-go build
-supervisorctl start reservation_thxx_go
+now=$(date +"%Y_%m_%d_%T")
+mv ~/thxxfzzx_go/server.log ~/thxxfzzx_go/server-${now}.log
+cp $GOPATH/bin/server ./server.run
+chmod a+x ./server.run
+nohup ./server.run --app-env="ONLINE" --sms-uid="shudiwsh2009" --sms-key="946fee2e7ad699b065f1" > server.log 2>&1 & echo $! > ~/thxxfzzx_go/run.pid &
 
 echo "#deploy reminder"
-cd $GOPATH/src/github.com/shudiwsh2009/reservation_thxx_go_reminder
-go build
+cd ~/thxxfzzx_go
+go build -o ./reminder.run $GOPATH/src/github.com/shudiwsh2009/reservation_thxx_go/reminder
 echo "restart cron"
 service cron restart
 
