@@ -7,7 +7,7 @@ git checkout $1/$2
 
 echo "#deploy website"
 cd ~/thxxfzzx_go
-go install reservation_thxx_go/server
+go install github.com/shudiwsh2009/reservation_thxx_go/server
 kill -9 $(lsof -t -i:8080)
 sleep 5
 now=$(date +"%Y_%m_%d_%T")
