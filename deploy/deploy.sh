@@ -19,6 +19,8 @@ nohup ./server.run --app-env="ONLINE" --sms-uid="shudiwsh2009" --sms-key="946fee
 echo "#deploy reminder"
 cd ~/thxxfzzx_go
 go build -o ./reminder.run $GOPATH/src/github.com/shudiwsh2009/reservation_thxx_go/reminder
+chmod a+x ./reminder.run
+#0 20 * * * ~/thxxfzzx_go/reminder.run --app-env="ONLINE" --sms-uid="shudiwsh2009" --sms-key="946fee2e7ad699b065f1"
 echo "restart cron"
 service cron restart
 
