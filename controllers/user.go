@@ -21,27 +21,27 @@ func Login(w http.ResponseWriter, r *http.Request, userId string, userType model
 		return nil
 	}
 	http.SetCookie(w, &http.Cookie{
-		Name:    "user_id",
-		Value:   fmt.Sprintf("%x", string(user.Id)),
-		Path:    "/",
-		Expires: time.Now().Local().AddDate(1, 0, 0),
-		MaxAge:  365 * 24 * 60 * 60,
+		Name:     "user_id",
+		Value:    fmt.Sprintf("%x", string(user.Id)),
+		Path:     "/",
+		Expires:  time.Now().Local().AddDate(1, 0, 0),
+		MaxAge:   365 * 24 * 60 * 60,
 		HttpOnly: true,
 	})
 	http.SetCookie(w, &http.Cookie{
-		Name:    "username",
-		Value:   user.Username,
-		Path:    "/",
-		Expires: time.Now().Local().AddDate(1, 0, 0),
-		MaxAge:  365 * 24 * 60 * 60,
+		Name:     "username",
+		Value:    user.Username,
+		Path:     "/",
+		Expires:  time.Now().Local().AddDate(1, 0, 0),
+		MaxAge:   365 * 24 * 60 * 60,
 		HttpOnly: true,
 	})
 	http.SetCookie(w, &http.Cookie{
-		Name:    "user_type",
-		Value:   fmt.Sprintf("%d", user.UserType),
-		Path:    "/",
-		Expires: time.Now().Local().AddDate(1, 0, 0),
-		MaxAge:  365 * 24 * 60 * 60,
+		Name:     "user_type",
+		Value:    fmt.Sprintf("%d", user.UserType),
+		Path:     "/",
+		Expires:  time.Now().Local().AddDate(1, 0, 0),
+		MaxAge:   365 * 24 * 60 * 60,
 		HttpOnly: true,
 	})
 	switch user.UserType {

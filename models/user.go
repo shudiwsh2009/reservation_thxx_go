@@ -29,9 +29,9 @@ type User struct {
 	Fullname string        `bson:"fullname"`
 	Mobile   string        `bson:"mobile"`
 	UserType UserType      `bson:"userType_GO"`
-	Gender	string `bson:"gender"`
-	Major	string `bson:"major"`
-	Academic string `bson:"academic"`
-	Aptitude string `bson:"aptitude"`
-	Problem string `bson:"problem"`
+	Gender   string        `bson:"gender"`
+	Major    string        `bson:"major"`
+	Academic string        `bson:"academic"`
+	Aptitude string        `bson:"aptitude"`
+	Problem  string        `bson:"problem"`
 }

@@ -8,7 +8,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"os"
 	"strconv"
 	"strings"
 )
@@ -19,6 +18,12 @@ const (
 	SMS_REMINDER_STUDENT = "温馨提示：%s你好，你已成功预约明天%s-%s咨询，地点：紫荆C楼407室。电话：62792453。"
 	SMS_REMINDER_TEACHER = "温馨提示：%s您好，%s已预约您明天%s-%s咨询，地点：紫荆C楼407室。电话：62792453。"
 	SMS_FEEDBACK_STUDENT = "温馨提示：%s你好，感谢使用我们的一对一咨询服务，请再次登录乐学预约界面，为咨询师反馈评分，帮助我们成长。"
+)
+
+var (
+	APP_ENV = ""
+	SMS_UID = ""
+	SMS_KEY = ""
 )
 
 func SendSuccessSMS(reservation *models.Reservation) error {
@@ -63,17 +68,14 @@ func sendSMS(mobile string, content string) error {
 	if m := IsMobile(mobile); !m {
 		return errors.New("手机号格式不正确")
 	}
-	appEnv := os.Getenv("RESERVATION_THXX_ENV")
-	uid := os.Getenv("RESERVATION_THXX_SMS_UID")
-	key := os.Getenv("RESERVATION_THXX_SMS_KEY")
-	if !strings.EqualFold(appEnv, "ONLINE") || len(uid) == 0 || len(key) == 0 {
+	if !strings.EqualFold(APP_ENV, "ONLINE") || len(SMS_UID) == 0 || len(SMS_KEY) == 0 {
 		fmt.Printf("Send SMS: \"%s\" to %s.\n", content, mobile)
 		return nil
 	}
 	requestUrl := "http://utf8.sms.webchinese.cn"
 	payload := url.Values{
-		"Uid":     {uid},
-		"Key":     {key},
+		"Uid":     {SMS_UID},
+		"Key":     {SMS_KEY},
 		"smsMob":  {mobile},
 		"smsText": {content},
 	}

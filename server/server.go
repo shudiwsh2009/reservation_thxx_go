@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/shudiwsh2009/reservation_thxx_go/controllers"
@@ -63,6 +64,9 @@ func handleWithCookie(fn func(http.ResponseWriter, *http.Request, string, models
 }
 
 func main() {
+	utils.APP_ENV = *flag.String("app-env", "STAGING", "app environment")
+	utils.SMS_UID = *flag.String("sms-uid", "", "sms uid")
+	utils.SMS_KEY = *flag.String("sms-key", "", "sms key")
 	// 数据库连接
 	session, err := mgo.Dial("127.0.0.1:27017")
 	if err != nil {

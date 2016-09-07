@@ -63,8 +63,8 @@ func (tl *TeacherLogic) AddReservationByTeacher(startTime string, endTime string
 	for _, r := range theDayReservations {
 		if strings.EqualFold(r.TeacherUsername, teacher.Username) {
 			if (start.After(r.StartTime) && start.Before(r.EndTime)) ||
-			(end.After(r.StartTime) && end.Before(r.EndTime)) ||
-			(!start.After(r.StartTime) && !end.Before(r.EndTime)) {
+				(end.After(r.StartTime) && end.Before(r.EndTime)) ||
+				(!start.After(r.StartTime) && !end.Before(r.EndTime)) {
 				return nil, errors.New("咨询师时间有冲突")
 			}
 		}
@@ -141,8 +141,8 @@ func (tl *TeacherLogic) EditReservationByTeacher(reservationId string, startTime
 		if !strings.EqualFold(r.Id.Hex(), reservation.Id.Hex()) &&
 			strings.EqualFold(r.TeacherUsername, teacher.Username) {
 			if (start.After(r.StartTime) && start.Before(r.EndTime)) ||
-			(end.After(r.StartTime) && end.Before(r.EndTime)) ||
-			(!start.After(r.StartTime) && !end.Before(r.EndTime)) {
+				(end.After(r.StartTime) && end.Before(r.EndTime)) ||
+				(!start.After(r.StartTime) && !end.Before(r.EndTime)) {
 				return nil, errors.New("咨询师时间有冲突")
 			}
 		}

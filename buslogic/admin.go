@@ -156,8 +156,8 @@ func (al *AdminLogic) EditReservationByAdmin(reservationId string, startTime str
 		if !strings.EqualFold(r.Id.Hex(), reservation.Id.Hex()) &&
 			strings.EqualFold(r.TeacherUsername, teacher.Username) {
 			if (start.After(r.StartTime) && start.Before(r.EndTime)) ||
-			(end.After(r.StartTime) && end.Before(r.EndTime)) ||
-			(!start.After(r.StartTime) && !end.Before(r.EndTime)) {
+				(end.After(r.StartTime) && end.Before(r.EndTime)) ||
+				(!start.After(r.StartTime) && !end.Before(r.EndTime)) {
 				return nil, errors.New("咨询师时间有冲突")
 			}
 		}
