@@ -13,6 +13,8 @@ sleep 5
 now=$(date +"%Y_%m_%d_%T")
 mv ~/thxxfzzx_go/server.log ~/thxxfzzx_go/server-${now}.log
 cp $GOPATH/bin/server ./server.run
+cp -r $GOPATH/src/github.com/shudiwsh2009/reservation_thxx_go/templates ./templates
+cp -r $GOPATH/src/github.com/shudiwsh2009/reservation_thxx_go/assets ./assets
 chmod a+x ./server.run
 nohup ./server.run --app-env="ONLINE" --sms-uid="shudiwsh2009" --sms-key="946fee2e7ad699b065f1" > server.log 2>&1 & echo $! > ~/thxxfzzx_go/run.pid &
 
