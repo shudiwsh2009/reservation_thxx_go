@@ -9,7 +9,7 @@ import (
 
 const (
 	DefaultReservationExportExcelFilename = "export_template.xlsx"
-	ExportFolder                          = "assets/export/"
+	ExportFolder                          = "../assets/export/"
 	ExcelSuffix                           = ".xlsx"
 )
 
