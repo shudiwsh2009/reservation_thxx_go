@@ -133,7 +133,7 @@ func main() {
 	adminRouter.HandleFunc("/teacher/edit", handleWithCookie(controllers.EditTeacherInfoByAdmin)).Methods("POST")
 	// http加载处理器
 	http.Handle("/", router)
-	http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets/"))))
+	http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("../assets/"))))
 	if err := http.ListenAndServe(":8080", nil); err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}

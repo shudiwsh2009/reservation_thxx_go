@@ -8,7 +8,7 @@ import (
 )
 
 func EntryPage(w http.ResponseWriter, r *http.Request, username string, userType models.UserType) interface{} {
-	t := template.Must(template.ParseFiles("templates/entry.html"))
+	t := template.Must(template.ParseFiles("../templates/entry.html"))
 	err := t.Execute(w, nil)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -17,7 +17,7 @@ func EntryPage(w http.ResponseWriter, r *http.Request, username string, userType
 }
 
 func StudentPage(w http.ResponseWriter, r *http.Request, username string, userType models.UserType) interface{} {
-	t := template.Must(template.ParseFiles("templates/student.html"))
+	t := template.Must(template.ParseFiles("../templates/student.html"))
 	err := t.Execute(w, nil)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -26,7 +26,7 @@ func StudentPage(w http.ResponseWriter, r *http.Request, username string, userTy
 }
 
 func LoginPage(w http.ResponseWriter, r *http.Request, username string, userType models.UserType) interface{} {
-	t := template.Must(template.ParseFiles("templates/login.html"))
+	t := template.Must(template.ParseFiles("../templates/login.html"))
 	err := t.Execute(w, nil)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -39,7 +39,7 @@ func TeacherPage(w http.ResponseWriter, r *http.Request, username string, userTy
 		http.Redirect(w, r, "/appointment/admin", http.StatusFound)
 		return nil
 	}
-	t := template.Must(template.ParseFiles("templates/teacher.html"))
+	t := template.Must(template.ParseFiles("../templates/teacher.html"))
 	err := t.Execute(w, nil)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -52,7 +52,7 @@ func AdminPage(w http.ResponseWriter, r *http.Request, username string, userType
 		http.Redirect(w, r, "/appointment/teacher", http.StatusFound)
 		return nil
 	}
-	t := template.Must(template.ParseFiles("templates/admin.html"))
+	t := template.Must(template.ParseFiles("../templates/admin.html"))
 	err := t.Execute(w, nil)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
