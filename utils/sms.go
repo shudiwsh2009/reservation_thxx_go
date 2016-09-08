@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
-	"strings"
 )
 
 const (
@@ -68,7 +67,7 @@ func sendSMS(mobile string, content string) error {
 	if m := IsMobile(mobile); !m {
 		return errors.New("手机号格式不正确")
 	}
-	if !strings.EqualFold(APP_ENV, "ONLINE") || len(SMS_UID) == 0 || len(SMS_KEY) == 0 {
+	if APP_ENV != "ONLINE" || SMS_UID == "" || SMS_KEY == "" {
 		fmt.Printf("Send SMS: \"%s\" to %s.\n", content, mobile)
 		return nil
 	}
