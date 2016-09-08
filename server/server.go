@@ -71,6 +71,7 @@ func main() {
 	utils.APP_ENV = *appEnv
 	utils.SMS_UID = *smsUid
 	utils.SMS_KEY = *smsKey
+	fmt.Println(utils.APP_ENV, utils.SMS_UID, utils.SMS_KEY)
 	// 数据库连接
 	session, err := mgo.Dial("127.0.0.1:27017")
 	if err != nil {
