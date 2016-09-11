@@ -18,9 +18,22 @@ func main() {
 	utils.SMS_UID = *smsUid
 	utils.SMS_KEY = *smsKey
 	// 数据库连接
-	session, err := mgo.Dial("127.0.0.1:27017")
+	mongoDbDialInfo := mgo.DialInfo{
+		Addrs:		[]string{"127.0.0.1:27017"},
+		Timeout:	60 * time.Second,
+		Database:	"admin",
+		Username:	"admin",
+		Password:	"THXXFZZX",
+	}
+	var session *mgo.Session
+	var err error
+	if utils.APP_ENV == "ONLINE" {
+		session, err = mgo.DialWithInfo(&mongoDbDialInfo)
+	} else {
+		session, err = mgo.Dial("127.0.0.1:27017")
+	}
 	if err != nil {
-		fmt.Errorf("连接数据库失败：%v", err)
+		fmt.Printf("连接数据库失败：%v\n", err)
 		return
 	}
 	defer session.Close()
@@ -29,7 +42,7 @@ func main() {
 	// 时区
 	location, err := time.LoadLocation("Asia/Shanghai")
 	if err != nil {
-		fmt.Errorf("初始化时区失败：%v", err)
+		fmt.Printf("初始化时区失败：%v\n", err)
 		return
 	}
 	// Reminder
