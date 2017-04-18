@@ -34,4 +34,5 @@ type User struct {
 	Academic string        `bson:"academic"`
 	Aptitude string        `bson:"aptitude"`
 	Problem  string        `bson:"problem"`
+	Address  string        `bson:"address"` // 咨询师地址
 }

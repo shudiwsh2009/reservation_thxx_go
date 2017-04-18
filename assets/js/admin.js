@@ -87,6 +87,9 @@ function refreshDataTable(reservations) {
 		<div class='table_col' id='col_teacher_mobile'>\
 			<div class='table_head table_cell'>咨询师手机</div>\
 		</div>\
+		\<div class='table_col' id='col_teacher_address'>\
+			<div class='table_head table_cell'>咨询师地址</div>\
+		</div>\
 		<div class='table_col' id='col_status'>\
 			<div class='table_head table_cell'>状态</div>\
 		</div>\
@@ -107,6 +110,8 @@ function refreshDataTable(reservations) {
 			+ i + "' onclick='getTeacher(" + i + ")'>" + reservations[i].teacher_username + "</div>");
 		$("#col_teacher_mobile").append("<div class='table_cell' id='cell_teacher_mobile_"
 			+ i + "' onclick='getTeacher(" + i + ")'>" + reservations[i].teacher_mobile + "</div>");
+		$("#col_teacher_address").append("<div class='table_cell' id='cell_teacher_address_"
+			+ i + "' onclick='getTeacher(" + i + ")'>" + reservations[i].teacher_address + "</div>");
 		if (reservations[i].status === "AVAILABLE") {
 			$("#col_status").append("<div class='table_cell' id='cell_status_" + i + "'>未预约</div>");
 			$("#col_student").append("<div class='table_cell' id='cell_student_" + i + "'>" 
@@ -131,6 +136,7 @@ function refreshDataTable(reservations) {
 	$("#col_teacher_fullname").append("<div class='table_cell' id='cell_teacher_fullname_add'></div>");
 	$("#col_teacher_username").append("<div class='table_cell' id='cell_teacher_username_add'></div>");
 	$("#col_teacher_mobile").append("<div class='table_cell' id='cell_teacher_mobile_add'></div>");
+	$("#col_teacher_address").append("<div class='table_cell' id='cell_teacher_address_add'></div>");
 	$("#col_status").append("<div class='table_cell' id='cell_status_add'></div>");
 	$("#col_student").append("<div class='table_cell' id='cell_student_add'></div>");
 }
@@ -141,6 +147,7 @@ function optimize(t) {
 	$("#col_teacher_fullname").width(120);
 	$("#col_teacher_username").width(160);
 	$("#col_teacher_mobile").width(160);
+	$("#col_teacher_address").width(200);
 	$("#col_status").width(85);
 	$("#col_student").width(85);
 	// $('#col0').css('margin-left',width*0.02+'px')
@@ -151,6 +158,7 @@ function optimize(t) {
 				$("#cell_teacher_fullname_" + i).height(),
 				$("#cell_teacher_username_" + i).height(),
 				$("#cell_teacher_mobile_" + i).height(),
+				$("#cell_teacher_address_" + i).height(),
 				$("#cell_status_" + i).height(),
 				$("#cell_student_" + i).height()
 			);
@@ -159,6 +167,7 @@ function optimize(t) {
 		$("#cell_teacher_fullname_" + i).height(maxHeight);
 		$("#cell_teacher_username_" + i).height(maxHeight);
 		$("#cell_teacher_mobile_" + i).height(maxHeight);
+		$("#cell_teacher_address_" + i).height(maxHeight);
 		$("#cell_status_" + i).height(maxHeight);
 		$("#cell_student_" + i).height(maxHeight);
 
@@ -168,6 +177,7 @@ function optimize(t) {
 			$("#cell_teacher_fullname_" + i).css("background-color", "white");
 			$("#cell_teacher_username_" + i).css("background-color", "white");
 			$("#cell_teacher_mobile_" + i).css("background-color", "white");
+			$("#cell_teacher_address_" + i).css("background-color", "white");
 			$("#cell_status_" + i).css("background-color", "white");
 			$("#cell_student_" + i).css("background-color", "white");
 		} else {
@@ -176,6 +186,7 @@ function optimize(t) {
 			$("#cell_teacher_fullname_" + i).css("background-color", "#f3f3ff");
 			$("#cell_teacher_username_" + i).css("background-color", "#f3f3ff");
 			$("#cell_teacher_mobile_" + i).css("background-color", "#f3f3ff");
+			$("#cell_teacher_address_" + i).css("background-color", "#f3f3ff");
 			$("#cell_status_" + i).css("background-color", "#f3f3ff");
 			$("#cell_student_" + i).css("background-color", "#f3f3ff");
 		}
@@ -185,6 +196,7 @@ function optimize(t) {
 	$("#cell_teacher_fullname_add").height(28);
 	$("#cell_teacher_username_add").height(28);
 	$("#cell_teacher_mobile_add").height(28);
+	$("#cell_teacher_address_add").height(28);
 	$("#cell_status_add").height(28);
 	$("#cell_student_add").height(28);
 
@@ -192,7 +204,7 @@ function optimize(t) {
 	$(t).css("left", (width - $(t).width()) / 2 - 11 + "px");
 	$(t).css("top", (height - $(t).height()) / 2 - 11 + "px");
 	$("#page_maintable").css("margin-left", 0.5 * ($(window).width() 
-		- (40 + 405 + 120 + 85 + 85 + 320)) + "px");
+		- (40 + 405 + 120 + 160 + 160 +200 + 85 + 85)) + "px");
 }
 
 function addReservation() {
@@ -204,6 +216,7 @@ function addReservation() {
 		+ "<button type='button' onclick='searchTeacher();'>搜索</button>";
 	$("#cell_teacher_username_add")[0].innerHTML = "<input id='teacher_username' style='width:120px'/>";
 	$("#cell_teacher_mobile_add")[0].innerHTML = "<input id='teacher_mobile' style='width:120px'/>";
+	$("#cell_teacher_address_add")[0].innerHTML = "<input id='teacher_address' style='width:180px'/>";
 	$("#cell_status_add")[0].innerHTML = "<button type='button' onclick='addReservationConfirm();'>确认</button>";
 	$("#cell_student_add")[0].innerHTML = "<button type='button' onclick='window.location.reload();'>取消</button>";
 	$("#input_date").DatePicker({
@@ -257,6 +270,7 @@ function addReservationConfirm() {
 		teacher_username: $("#teacher_username").val(),
 		teacher_fullname: $("#teacher_fullname").val(),
 		teacher_mobile: $("#teacher_mobile").val(),
+		teacher_address: $("#teacher_address").val(),
 	};
 	console.log(payload);
 	$.ajax({
@@ -280,13 +294,19 @@ function editReservation(index) {
 	$("#cell_time_" + index)[0].innerHTML = "<input type='text' id='input_date' style='width: 80px'/>日，"
 		+ "<input style='width:20px' id='start_hour'/>时<input style='width:20px' id='start_minute'/>分"
 		+ "至<input style='width:20px' id='end_hour'/>时<input style='width:20px' id='end_minute'/>分";
+	$("#cell_teacher_fullname_" + index)[0].onclick = "";
 	$("#cell_teacher_fullname_" + index)[0].innerHTML = "<input id='teacher_fullname" + index + "' style='width:60px' "
 		+ "value='" + reservations[index].teacher_fullname + "''></input>"
-		+ "<button type='button' onclick='searchTeacher();'>搜索</button>";
+		+ "<button type='button' onclick='searchTeacher(" + index + ");'>搜索</button>";
+	$("#cell_teacher_username_" + index)[0].onclick = "";
 	$("#cell_teacher_username_" + index)[0].innerHTML = "<input id='teacher_username" + index + "' style='width:120px' "
 		+ "value='" + reservations[index].teacher_username + "'/>";
+	$("#cell_teacher_mobile_" + index)[0].onclick = "";
 	$("#cell_teacher_mobile_" + index)[0].innerHTML = "<input id='teacher_mobile" + index + "' style='width:120px' "
 		+ "value='" + reservations[index].teacher_mobile + "'/>";
+	$("#cell_teacher_address_" + index)[0].onclick = "";
+	$("#cell_teacher_address_" + index)[0].innerHTML = "<input id='teacher_address" + index + "' style='width:180px' "
+		+ "value='" + (reservations[index].teacher_address === "" ? "紫荆C楼407室" : reservations[index].teacher_address) + "'/>";
 	$("#cell_status_" + index)[0].innerHTML = "<button type='button' onclick='editReservationConfirm(" + index + ");'>确认</button>";
 	$("#cell_student_" + index)[0].innerHTML = "<button type='button' onclick='window.location.reload();'>取消</button>";
 	$("#input_date").DatePicker({
@@ -341,6 +361,7 @@ function editReservationConfirm(index) {
 		teacher_username: $("#teacher_username" + index).val(),
 		teacher_fullname: $("#teacher_fullname" + index).val(),
 		teacher_mobile: $("#teacher_mobile" + index).val(),
+		teacher_address: $("#teacher_address" + index).val(),
 	};
 	console.log(payload);
 	$.ajax({
@@ -376,6 +397,7 @@ function searchTeacher(index) {
 				$("#teacher_username" + (index === undefined ? "" : index)).val(data.teacher.teacher_username);
 				$("#teacher_fullname" + (index === undefined ? "" : index)).val(data.teacher.teacher_fullname);
 				$("#teacher_mobile" + (index === undefined ? "" : index)).val(data.teacher.teacher_mobile);
+				$("#teacher_address" + (index === undefined ? "" : index)).val(data.teacher.teacher_address === '' ? '紫荆C楼407室' : data.teacher.teacher_address);
 			}
 		}
 	});

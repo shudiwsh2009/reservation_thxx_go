@@ -69,7 +69,7 @@ func (tl *TeacherLogic) AddReservationByTeacher(startTime string, endTime string
 			}
 		}
 	}
-	reservation, err := models.AddReservation(start, end, teacher.Fullname, teacher.Username, teacher.Mobile)
+	reservation, err := models.AddReservation(start, end, teacher.Fullname, teacher.Username, teacher.Mobile, teacher.Address)
 	if err != nil {
 		return nil, errors.New("数据获取失败")
 	}

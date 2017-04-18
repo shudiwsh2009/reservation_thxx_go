@@ -12,10 +12,12 @@ import (
 )
 
 const (
-	SMS_SUCCESS_STUDENT  = "%s你好，你已成功预约星期%s（%d月%d日）%s-%s咨询，地点：紫荆C楼407室。电话：62792453。"
-	SMS_SUCCESS_TEACHER  = "%s您好，%s已预约您星期%s（%d月%d日）%s-%s咨询，地点：紫荆C楼407室。电话：62792453。"
-	SMS_REMINDER_STUDENT = "温馨提示：%s你好，你已成功预约明天%s-%s咨询，地点：紫荆C楼407室。电话：62792453。"
-	SMS_REMINDER_TEACHER = "温馨提示：%s您好，%s已预约您明天%s-%s咨询，地点：紫荆C楼407室。电话：62792453。"
+	DEFAULT_ADDRESS = "紫荆C楼407室"
+
+	SMS_SUCCESS_STUDENT  = "%s你好，你已成功预约星期%s（%d月%d日）%s-%s咨询，地点：%s。电话：62792453。"
+	SMS_SUCCESS_TEACHER  = "%s您好，%s已预约您星期%s（%d月%d日）%s-%s咨询，地点：%s。电话：62792453。"
+	SMS_REMINDER_STUDENT = "温馨提示：%s你好，你已成功预约明天%s-%s咨询，地点：%s。电话：62792453。"
+	SMS_REMINDER_TEACHER = "温馨提示：%s您好，%s已预约您明天%s-%s咨询，地点：%s。电话：62792453。"
 	SMS_FEEDBACK_STUDENT = "温馨提示：%s你好，感谢使用我们的一对一咨询服务，请再次登录乐学预约界面，为咨询师反馈评分，帮助我们成长。"
 )
 
@@ -26,15 +28,19 @@ var (
 )
 
 func SendSuccessSMS(reservation *models.Reservation) error {
+	address := reservation.TeacherAddress
+	if address == "" {
+		address = DEFAULT_ADDRESS
+	}
 	studentSMS := fmt.Sprintf(SMS_SUCCESS_STUDENT, reservation.StudentInfo.Name, Weekdays[reservation.StartTime.Weekday()],
 		reservation.StartTime.Month(), reservation.StartTime.Day(), reservation.StartTime.Format("15:04"),
-		reservation.EndTime.Format("15:04"))
+		reservation.EndTime.Format("15:04"), address)
 	if err := sendSMS(reservation.StudentInfo.Mobile, studentSMS); err != nil {
 		return err
 	}
 	teacherSMS := fmt.Sprintf(SMS_SUCCESS_TEACHER, reservation.TeacherFullname, reservation.StudentInfo.Name,
 		Weekdays[reservation.StartTime.Weekday()], reservation.StartTime.Month(), reservation.StartTime.Day(),
-		reservation.StartTime.Format("15:04"), reservation.EndTime.Format("15:04"))
+		reservation.StartTime.Format("15:04"), reservation.EndTime.Format("15:04"), address)
 	if err := sendSMS(reservation.TeacherMobile, teacherSMS); err != nil {
 		return err
 	}
@@ -42,13 +48,17 @@ func SendSuccessSMS(reservation *models.Reservation) error {
 }
 
 func SendReminderSMS(reservation *models.Reservation) error {
+	address := reservation.TeacherAddress
+	if address == "" {
+		address = DEFAULT_ADDRESS
+	}
 	studentSMS := fmt.Sprintf(SMS_REMINDER_STUDENT, reservation.StudentInfo.Name, reservation.StartTime.Format("15:04"),
-		reservation.EndTime.Format("15:04"))
+		reservation.EndTime.Format("15:04"), address)
 	if err := sendSMS(reservation.StudentInfo.Mobile, studentSMS); err != nil {
 		return err
 	}
 	teacherSMS := fmt.Sprintf(SMS_REMINDER_TEACHER, reservation.TeacherFullname, reservation.StudentInfo.Name,
-		reservation.StartTime.Format("15:04"), reservation.EndTime.Format("15:04"))
+		reservation.StartTime.Format("15:04"), reservation.EndTime.Format("15:04"), address)
 	if err := sendSMS(reservation.TeacherMobile, teacherSMS); err != nil {
 		return err
 	}

@@ -13,7 +13,8 @@ type AdminLogic struct {
 
 // 管理员添加咨询
 func (al *AdminLogic) AddReservationByAdmin(startTime string, endTime string, teacherUsername string,
-	teacherFullname string, teacherMobile string, userId string, userType models.UserType) (*models.Reservation, error) {
+	teacherFullname string, teacherMobile string, teacherAddress string,
+	userId string, userType models.UserType) (*models.Reservation, error) {
 	if len(userId) == 0 {
 		return nil, errors.New("请先登录")
 	} else if userType != models.ADMIN {
@@ -28,6 +29,8 @@ func (al *AdminLogic) AddReservationByAdmin(startTime string, endTime string, te
 		return nil, errors.New("咨询师姓名为空")
 	} else if len(teacherMobile) == 0 {
 		return nil, errors.New("咨询师手机号为空")
+	} else if len(teacherAddress) == 0 {
+		return nil, errors.New("咨询师地址为空")
 	} else if !utils.IsMobile(teacherMobile) {
 		return nil, errors.New("咨询师手机号格式不正确")
 	}
@@ -54,9 +57,10 @@ func (al *AdminLogic) AddReservationByAdmin(startTime string, endTime string, te
 		}
 	} else if teacher.UserType != models.TEACHER {
 		return nil, errors.New("权限不足")
-	} else if !strings.EqualFold(teacher.Fullname, teacherFullname) || !strings.EqualFold(teacher.Mobile, teacherMobile) {
+	} else if teacher.Fullname != teacherFullname || teacher.Mobile != teacherMobile || teacher.Address != teacherAddress {
 		teacher.Fullname = teacherFullname
 		teacher.Mobile = teacherMobile
+		teacher.Address = teacherAddress
 		if err = models.UpsertUser(teacher); err != nil {
 			return nil, errors.New("数据获取失败")
 		}
@@ -77,7 +81,7 @@ func (al *AdminLogic) AddReservationByAdmin(startTime string, endTime string, te
 			}
 		}
 	}
-	reservation, err := models.AddReservation(start, end, teacher.Fullname, teacher.Username, teacher.Mobile)
+	reservation, err := models.AddReservation(start, end, teacher.Fullname, teacher.Username, teacher.Mobile, teacher.Address)
 	if err != nil {
 		return nil, errors.New("数据获取失败")
 	}
@@ -86,8 +90,8 @@ func (al *AdminLogic) AddReservationByAdmin(startTime string, endTime string, te
 
 // 管理员编辑咨询
 func (al *AdminLogic) EditReservationByAdmin(reservationId string, startTime string, endTime string,
-	teacherUsername string, teacherFullname string, teacherMobile string, userId string,
-	userType models.UserType) (*models.Reservation, error) {
+	teacherUsername string, teacherFullname string, teacherMobile string, teacherAddress string,
+	userId string, userType models.UserType) (*models.Reservation, error) {
 	if len(userId) == 0 {
 		return nil, errors.New("请先登录")
 	} else if userType != models.ADMIN {
@@ -104,6 +108,8 @@ func (al *AdminLogic) EditReservationByAdmin(reservationId string, startTime str
 		return nil, errors.New("咨询师姓名为空")
 	} else if len(teacherMobile) == 0 {
 		return nil, errors.New("咨询师手机号为空")
+	} else if len(teacherAddress) == 0 {
+		return nil, errors.New("咨询师地址为空")
 	} else if !utils.IsMobile(teacherMobile) {
 		return nil, errors.New("咨询师手机号格式不正确")
 	}
@@ -138,9 +144,10 @@ func (al *AdminLogic) EditReservationByAdmin(reservationId string, startTime str
 		}
 	} else if teacher.UserType != models.TEACHER {
 		return nil, errors.New("权限不足")
-	} else if !strings.EqualFold(teacher.Fullname, teacherFullname) || !strings.EqualFold(teacher.Mobile, teacherMobile) {
+	} else if teacher.Fullname != teacherFullname || teacher.Mobile != teacherMobile || teacher.Address != teacherAddress {
 		teacher.Fullname = teacherFullname
 		teacher.Mobile = teacherMobile
+		teacher.Address = teacherAddress
 		if err = models.UpsertUser(teacher); err != nil {
 			return nil, errors.New("数据获取失败")
 		}
@@ -167,6 +174,7 @@ func (al *AdminLogic) EditReservationByAdmin(reservationId string, startTime str
 	reservation.TeacherUsername = teacher.Username
 	reservation.TeacherFullname = teacher.Fullname
 	reservation.TeacherMobile = teacher.Mobile
+	reservation.TeacherAddress = teacher.Address
 	if err = models.UpsertReservation(reservation); err != nil {
 		return nil, errors.New("数据获取失败")
 	}

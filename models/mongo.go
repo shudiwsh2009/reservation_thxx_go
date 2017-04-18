@@ -106,7 +106,7 @@ Reservation
 */
 
 func AddReservation(startTime time.Time, endTime time.Time, teacherFullname string, teacherUsername string,
-	teacherMobile string) (*Reservation, error) {
+	teacherMobile string, teacherAddress string) (*Reservation, error) {
 	collection := Mongo.C("appointment")
 	newReservation := &Reservation{
 		Id:              bson.NewObjectId(),
@@ -116,6 +116,7 @@ func AddReservation(startTime time.Time, endTime time.Time, teacherFullname stri
 		TeacherFullname: teacherFullname,
 		TeacherUsername: teacherUsername,
 		TeacherMobile:   teacherMobile,
+		TeacherAddress:  teacherAddress,
 		StudentInfo:     StudentInfo{},
 		StudentFeedback: StudentFeedback{},
 		TeacherFeedback: TeacherFeedback{},

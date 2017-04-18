@@ -28,6 +28,7 @@ func ViewReservationsByAdmin(w http.ResponseWriter, r *http.Request, userId stri
 		resJson["teacher_username"] = res.TeacherUsername
 		resJson["teacher_fullname"] = res.TeacherFullname
 		resJson["teacher_mobile"] = res.TeacherMobile
+		resJson["teacher_address"] = res.TeacherAddress
 		if res.Status == models.AVAILABLE {
 			resJson["status"] = models.AVAILABLE.String()
 		} else if res.Status == models.RESERVATED && res.StartTime.Before(time.Now().In(utils.Location)) {
@@ -67,6 +68,7 @@ func ViewMonthlyReservationsByAdmin(w http.ResponseWriter, r *http.Request, user
 		resJson["teacher_username"] = res.TeacherUsername
 		resJson["teacher_fullname"] = res.TeacherFullname
 		resJson["teacher_mobile"] = res.TeacherMobile
+		resJson["teacher_address"] = res.TeacherAddress
 		if res.Status == models.AVAILABLE {
 			resJson["status"] = models.AVAILABLE.String()
 		} else if res.Status == models.RESERVATED && res.StartTime.Before(time.Now().In(utils.Location)) {
@@ -87,13 +89,14 @@ func AddReservationByAdmin(w http.ResponseWriter, r *http.Request, userId string
 	teacherUsername := r.PostFormValue("teacher_username")
 	teacherFullname := r.PostFormValue("teacher_fullname")
 	teacherMobile := r.PostFormValue("teacher_mobile")
+	teacherAddress := r.PostFormValue("teacher_address")
 
 	var result = map[string]interface{}{"state": "SUCCESS"}
 	var al = buslogic.AdminLogic{}
 
 	var reservationJson = make(map[string]interface{})
 	reservation, err := al.AddReservationByAdmin(startTime, endTime, teacherUsername, teacherFullname,
-		teacherMobile, userId, userType)
+		teacherMobile, teacherAddress, userId, userType)
 	if err != nil {
 		ErrorHandler(w, r, err)
 		return nil
@@ -104,6 +107,7 @@ func AddReservationByAdmin(w http.ResponseWriter, r *http.Request, userId string
 	reservationJson["teacher_username"] = reservation.TeacherUsername
 	reservationJson["teacher_fullname"] = reservation.TeacherFullname
 	reservationJson["teacher_mobile"] = reservation.TeacherMobile
+	reservationJson["teacher_address"] = reservation.TeacherAddress
 	result["reservation"] = reservationJson
 
 	return result
@@ -116,13 +120,14 @@ func EditReservationByAdmin(w http.ResponseWriter, r *http.Request, userId strin
 	teacherUsername := r.PostFormValue("teacher_username")
 	teacherFullname := r.PostFormValue("teacher_fullname")
 	teacherMobile := r.PostFormValue("teacher_mobile")
+	teacherAddress := r.PostFormValue("teacher_address")
 
 	var result = map[string]interface{}{"state": "SUCCESS"}
 	var al = buslogic.AdminLogic{}
 
 	var reservationJson = make(map[string]interface{})
 	reservation, err := al.EditReservationByAdmin(reservationId, startTime, endTime, teacherUsername,
-		teacherFullname, teacherMobile, userId, userType)
+		teacherFullname, teacherMobile, teacherAddress, userId, userType)
 	if err != nil {
 		ErrorHandler(w, r, err)
 		return nil
@@ -133,6 +138,7 @@ func EditReservationByAdmin(w http.ResponseWriter, r *http.Request, userId strin
 	reservationJson["teacher_username"] = reservation.TeacherUsername
 	reservationJson["teacher_fullname"] = reservation.TeacherFullname
 	reservationJson["teacher_mobile"] = reservation.TeacherMobile
+	reservationJson["teacher_address"] = reservation.TeacherAddress
 	result["reservation"] = reservationJson
 
 	return result
@@ -290,6 +296,7 @@ func SearchTeacherByAdmin(w http.ResponseWriter, r *http.Request, userId string,
 	teacherJson["teacher_username"] = teacher.Username
 	teacherJson["teacher_fullname"] = teacher.Fullname
 	teacherJson["teacher_mobile"] = teacher.Mobile
+	teacherJson["teacher_address"] = teacher.Address
 	result["teacher"] = teacherJson
 
 	return result
@@ -314,6 +321,7 @@ func GetTeacherInfoByAdmin(w http.ResponseWriter, r *http.Request, userId string
 	teacherJson["academic"] = teacher.Academic
 	teacherJson["aptitude"] = teacher.Aptitude
 	teacherJson["problem"] = teacher.Problem
+	teacherJson["address"] = teacher.Address
 	result["teacher"] = teacherJson
 
 	return result

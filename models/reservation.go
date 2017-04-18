@@ -72,6 +72,7 @@ type Reservation struct {
 	TeacherUsername string            `bson:"teacherUsername"`
 	TeacherFullname string            `bson:"teacher"`
 	TeacherMobile   string            `bson:"teacherMobile"`
+	TeacherAddress  string            `bson:"teacherAddress"`
 	StudentInfo     StudentInfo       `bson:"studentInfo"`
 	StudentFeedback StudentFeedback   `bson:"studentFeedback"`
 	TeacherFeedback TeacherFeedback   `bson:"teacherFeedback"`
