@@ -1,7 +1,12 @@
 .idea
-*.iml
 .DS_Store
-~$*
 *.swp
-*~
+.pid
+deploy/
+tools/
 reservation_thxx_go
+reservation_thxx_go-*
+reservation_thxx_go.iml
+node_modules/
+public/bundles
+webpack-assets.json

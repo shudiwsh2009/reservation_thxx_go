@@ -1,0 +1,24 @@
+{{ define "title" }}
+<title>学习与发展指导中心预约系统</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+<link type="text/css" href="/static/legacy/assets/css/style.css" rel="stylesheet">
+<script type="text/javascript" src="/static/legacy/assets/js/jquery-3.2.1.min.js"></script>
+{{ end }}
+
+{{ define "content" }}
+<div id="page_title">
+    学习与发展指导中心预约系统<br>管理员登录
+</div>
+
+<div class="login">
+    请用工号和密码登录
+    <br><br>
+    工　号：<input id="username"/>
+    <br>
+    密　码：<input id="password" type="password"/>
+    <br><br>
+    <button class="btn btn-primary" type="button" onclick="adminLogin();">登录</button>
+</div>
+<div id="page_bottom"><br><br>清华大学学生学习发展指导中心<br>联系方式：62792453(欧老师)</div>
+<script type="text/javascript" src="/static/legacy/assets/js/user.js"></script>
+{{ end }}
