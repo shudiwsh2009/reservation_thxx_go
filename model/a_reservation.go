@@ -1,4 +1,4 @@
-package models
+package model
 
 import (
 	"gopkg.in/mgo.v2/bson"
@@ -25,7 +25,7 @@ func (rs ReservationStatus) String() string {
 	return reservationStatuses[rs-1]
 }
 
-type StudentInfo struct {
+type LegacyStudentInfo struct {
 	Name       string `bson:"name"`
 	Gender     string `bson:"gender"`
 	StudentId  string `bson:"studentId"`
@@ -37,7 +37,7 @@ type StudentInfo struct {
 	Problem    string `bson:"problem"`
 }
 
-type StudentFeedback struct {
+type LegacyStudentFeedback struct {
 	Name     string `bson:"name"`
 	Problem  string `bson:"problem"`
 	Choices  string `bson:"choices"`
@@ -45,12 +45,12 @@ type StudentFeedback struct {
 	Feedback string `bson:"feedback"`
 }
 
-func (sf StudentFeedback) IsEmpty() bool {
+func (sf LegacyStudentFeedback) IsEmpty() bool {
 	return len(sf.Name) == 0 || len(sf.Problem) == 0 || len(sf.Choices) == 0 ||
 		len(sf.Score) == 0 || len(sf.Feedback) == 0
 }
 
-type TeacherFeedback struct {
+type LegacyTeacherFeedback struct {
 	TeacherFullname string `bson:"teacherName"`
 	TeacherUsername string `bson:"teacherId"`
 	StudentFullname string `bson:"studentName"`
@@ -59,21 +59,27 @@ type TeacherFeedback struct {
 	AdviceToCenter  string `bson:"adviceToCenter"`
 }
 
-func (tf TeacherFeedback) IsEmpty() bool {
+func (tf LegacyTeacherFeedback) IsEmpty() bool {
 	return len(tf.TeacherFullname) == 0 || len(tf.TeacherUsername) == 0 || len(tf.StudentFullname) == 0 ||
 		len(tf.Problem) == 0 || len(tf.Solution) == 0 || len(tf.AdviceToCenter) == 0
 }
 
-type Reservation struct {
-	Id              bson.ObjectId     `bson:"_id"`
-	StartTime       time.Time         `bson:"startTime"`
-	EndTime         time.Time         `bson:"endTime"`
-	Status          ReservationStatus `bson:"status_GO"`
-	TeacherUsername string            `bson:"teacherUsername"`
-	TeacherFullname string            `bson:"teacher"`
-	TeacherMobile   string            `bson:"teacherMobile"`
-	TeacherAddress  string            `bson:"teacherAddress"`
-	StudentInfo     StudentInfo       `bson:"studentInfo"`
-	StudentFeedback StudentFeedback   `bson:"studentFeedback"`
-	TeacherFeedback TeacherFeedback   `bson:"teacherFeedback"`
+type LegacyReservation struct {
+	Id              bson.ObjectId         `bson:"_id"`
+	StartTime       time.Time             `bson:"startTime"`
+	EndTime         time.Time             `bson:"endTime"`
+	Status          ReservationStatus     `bson:"status_GO"`
+	TeacherUsername string                `bson:"teacherUsername"`
+	TeacherFullname string                `bson:"teacher"`
+	TeacherMobile   string                `bson:"teacherMobile"`
+	TeacherAddress  string                `bson:"teacherAddress"`
+	StudentInfo     LegacyStudentInfo     `bson:"studentInfo"`
+	StudentFeedback LegacyStudentFeedback `bson:"studentFeedback"`
+	TeacherFeedback LegacyTeacherFeedback `bson:"teacherFeedback"`
+}
+
+func (m *LegacyMongoClient) GetAllLegacyReservations() ([]*LegacyReservation, error) {
+	var reservations []*LegacyReservation
+	err := dbLegacyReservation.Find(bson.M{}).All(&reservations)
+	return reservations, err
 }

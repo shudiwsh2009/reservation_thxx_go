@@ -77,7 +77,7 @@ func (m *MongoClient) EnsureAllIndexes() error {
 	}
 
 	err = dbReservation.EnsureIndex(mgo.Index{
-		Key: []string{"student_info.student_username", "status"},
+		Key: []string{"student_info.username", "status"},
 	})
 	if err != nil {
 		return err

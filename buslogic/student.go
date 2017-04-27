@@ -65,7 +65,7 @@ func (w *Workflow) MakeReservationByStudent(reservationId string, fullname strin
 	reservation.StudentInfo = model.StudentInfo{
 		Fullname:        fullname,
 		Gender:          gender,
-		StudentUsername: username,
+		Username: username,
 		School:          school,
 		Hometown:        hometown,
 		Mobile:          mobile,
@@ -99,7 +99,7 @@ func (w *Workflow) GetFeedbackByStudent(reservationId string, username string) (
 		return nil, re.NewRErrorCode("cannot get feedback of future reservation", nil, re.ErrorFeedbackFutureReservation)
 	} else if reservation.Status == model.ReservationStatusAvailable {
 		return nil, re.NewRErrorCode("cannot get feedback of available reservation", nil, re.ErrorFeedbackAvailableReservation)
-	} else if reservation.StudentInfo.StudentUsername != username {
+	} else if reservation.StudentInfo.Username != username {
 		return nil, re.NewRErrorCode("cannot get feedback of other one's reservation", nil, re.ErrorFeedbackOtherReservation)
 	}
 	return reservation, nil
@@ -132,7 +132,7 @@ func (w *Workflow) SubmitFeedbackByStudent(reservationId string, fullname string
 		return nil, re.NewRErrorCode("cannot get feedback of future reservation", nil, re.ErrorFeedbackFutureReservation)
 	} else if reservation.Status == model.ReservationStatusAvailable {
 		return nil, re.NewRErrorCode("cannot get feedback of available reservation", nil, re.ErrorFeedbackAvailableReservation)
-	} else if reservation.StudentInfo.StudentUsername != username {
+	} else if reservation.StudentInfo.Username != username {
 		return nil, re.NewRErrorCode("cannot get feedback of other one's reservation", nil, re.ErrorFeedbackOtherReservation)
 	}
 
@@ -172,7 +172,7 @@ func (w *Workflow) WrapStudenInfo(studentInfo *model.StudentInfo) map[string]int
 	}
 	result["fullname"] = studentInfo.Fullname
 	result["gender"] = studentInfo.Gender
-	result["username"] = studentInfo.StudentUsername
+	result["username"] = studentInfo.Username
 	result["school"] = studentInfo.School
 	result["hometown"] = studentInfo.Hometown
 	result["mobile"] = studentInfo.Mobile

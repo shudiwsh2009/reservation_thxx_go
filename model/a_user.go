@@ -1,4 +1,4 @@
-package models
+package model
 
 import "gopkg.in/mgo.v2/bson"
 
@@ -22,7 +22,7 @@ func (ut UserType) String() string {
 	return userTypes[ut]
 }
 
-type User struct {
+type LegacyUser struct {
 	Id       bson.ObjectId `bson:"_id"`
 	Username string        `bson:"username"`
 	Password string        `bson:"password"`
@@ -35,4 +35,10 @@ type User struct {
 	Aptitude string        `bson:"aptitude"`
 	Problem  string        `bson:"problem"`
 	Address  string        `bson:"address"` // 咨询师地址
+}
+
+func (m *LegacyMongoClient) GetAllLegacyUsers() ([]*LegacyUser, error) {
+	var users []*LegacyUser
+	err := dbLegacyUser.Find(bson.M{}).All(&users)
+	return users, err
 }

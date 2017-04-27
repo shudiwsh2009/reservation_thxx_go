@@ -43,6 +43,12 @@ func main() {
 			log.Errorf("fail to add new admin: %+v", err)
 			return
 		}
+	} else if *method == "data-transfer-201704" {
+		err := workflow.DataTransfer201704()
+		if err != nil {
+			log.Error(err.Error())
+			return
+		}
 	}
 	log.Info("Success")
 }

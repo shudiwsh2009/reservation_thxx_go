@@ -8,8 +8,9 @@ import (
 )
 
 type Workflow struct {
-	mongoClient *model.MongoClient
-	redisClient *redis.Client
+	mongoClient       *model.MongoClient
+	legacyMongoClient *model.LegacyMongoClient
+	redisClient       *redis.Client
 }
 
 func NewWorkflow() *Workflow {
@@ -18,14 +19,19 @@ func NewWorkflow() *Workflow {
 		log.Fatalf("初始化时区失败：%v", err)
 	}
 	ret := &Workflow{
-		mongoClient: model.NewMongoClient(),
-		redisClient: model.NewRedisClient(),
+		mongoClient:       model.NewMongoClient(),
+		legacyMongoClient: model.NewLegacyMongoClient(),
+		redisClient:       model.NewRedisClient(),
 	}
 	return ret
 }
 
 func (w *Workflow) MongoClient() *model.MongoClient {
 	return w.mongoClient
+}
+
+func (w *Workflow) LegacyMongoClient() *model.LegacyMongoClient {
+	return w.legacyMongoClient
 }
 
 func (w *Workflow) RedisClient() *redis.Client {

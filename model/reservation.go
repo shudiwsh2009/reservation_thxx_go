@@ -33,15 +33,15 @@ type Reservation struct {
 }
 
 type StudentInfo struct {
-	Fullname        string `bson:"fullname"`
-	Gender          string `bson:"gender"`
-	StudentUsername string `bson:"student_username"`
-	School          string `bson:"school`
-	Hometown        string `bson:"hometown"`
-	Mobile          string `bson:"mobile"`
-	Email           string `bson:"email"`
-	Experience      string `bson:"experience"`
-	Problem         string `bson:"problem"`
+	Fullname   string `bson:"fullname"`
+	Gender     string `bson:"gender"`
+	Username   string `bson:"username"`
+	School     string `bson:"school`
+	Hometown   string `bson:"hometown"`
+	Mobile     string `bson:"mobile"`
+	Email      string `bson:"email"`
+	Experience string `bson:"experience"`
+	Problem    string `bson:"problem"`
 }
 
 type StudentFeedback struct {

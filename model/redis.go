@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	RedisKeyLogin = "thxlfzzx#user_login_%d_%s_%s"
+	RedisKeyLogin = "thxxfzzx#user_login_%d_%s_%s"
 )
 
 func NewRedisClient() *redis.Client {
