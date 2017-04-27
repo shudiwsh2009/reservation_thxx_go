@@ -9,7 +9,6 @@ import (
 
 type Workflow struct {
 	mongoClient       *model.MongoClient
-	legacyMongoClient *model.LegacyMongoClient
 	redisClient       *redis.Client
 }
 
@@ -20,7 +19,6 @@ func NewWorkflow() *Workflow {
 	}
 	ret := &Workflow{
 		mongoClient:       model.NewMongoClient(),
-		legacyMongoClient: model.NewLegacyMongoClient(),
 		redisClient:       model.NewRedisClient(),
 	}
 	return ret
@@ -28,10 +26,6 @@ func NewWorkflow() *Workflow {
 
 func (w *Workflow) MongoClient() *model.MongoClient {
 	return w.mongoClient
-}
-
-func (w *Workflow) LegacyMongoClient() *model.LegacyMongoClient {
-	return w.legacyMongoClient
 }
 
 func (w *Workflow) RedisClient() *redis.Client {
