@@ -1,0 +1,75 @@
+{{ define "title" }}
+<title>
+    学习与发展指导中心预约系统
+</title>
+<link type="text/css" href="/static/legacy/assets/css/style.css" rel="stylesheet">
+<script type="text/javascript" src="/static/legacy/assets/js/jquery-3.2.1.min.js"></script>
+<style>
+    .title{
+        background-color: rgb(245,246,251);
+        color:rgb(204,207,214);
+        width: 100%;
+        padding: 4mm 0 4mm 6mm;
+    }
+    #page_bottom{
+        position: fixed;
+        bottom: 0px;
+        background-color: white;
+        padding: 3mm 0 3mm 0;
+        width: 100%;
+    }
+    .choose_mode{
+        width: 100%;
+        height: 20mm;
+    }
+    .user_type{
+        padding: 8mm 0 0 1em;
+        float: left;
+        color: #888;
+    }
+    .enter{
+        float: right;
+        padding: 8mm 4mm 0 0;
+        color: #ddd;
+    }
+    .main_container{
+        background-color: white;
+        border-top:0.5mm solid rgb(224,227,224);
+        border-bottom:0.5mm solid rgb(224,227,224);
+        padding: 0 0 0 3mm;
+    }
+    body{
+        background-color: rgb(243,247,248);
+        font-size: 4mm;
+    }
+    .clearfix{
+        clear: both;
+    }
+
+</style>
+{{ end }}
+
+{{ define "content" }}
+<div class="title">
+    学习与发展指导中心预约系统
+</div>
+<div class="main_container">
+    <a href="/appointment/student">
+        <div class="choose_mode">
+            <img style="float:left;height:20mm;" src="/static/legacy/assets/img/student.png"><div class="user_type">我是学生</div><div class="enter">进入 ＞</div>
+            <div class="clearfix"></div>
+        </div>
+    </a>
+
+    <div style="border-bottom:1px solid #ddd;text-align:center;"></div>
+
+    <a href="/appointment/teacher">
+        <div class="choose_mode">
+            <img style="float:left;height:20mm;" src="/static/legacy/assets/img/teacher.png"><div class="user_type">我是咨询师</div><div class="enter">进入 ＞</div>
+            <div class="clearfix"></div>
+        </div>
+    </a>
+
+</div>
+<div id="page_bottom">清华大学学习与发展指导中心预约系统<br>联系方式：62792453(欧老师)</div>
+{{ end }}

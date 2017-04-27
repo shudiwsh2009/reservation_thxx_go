@@ -1,0 +1,45 @@
+{
+  "name": "reservation_thxx_go",
+  "version": "1.0.0",
+  "description": "Reservation system for Tsinghua XXZXZX using go language",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/shudiwsh2009/reservation_thxx_go.git"
+  },
+  "author": "Shudi Wang",
+  "license": "ISC",
+  "homepage": "https://github.com/shudiwsh2009/reservation_thxx_go#readme",
+  "dependencies": {
+    "react": "15.4.2",
+    "react-dom": "15.4.2"
+  },
+  "devDependencies": {
+    "assets-webpack-plugin": "3.5.1",
+    "babel-core": "6.24.0",
+    "babel-eslint": "7.2.1",
+    "babel-loader": "6.4.1",
+    "babel-preset-es2015": "6.24.0",
+    "babel-preset-react": "6.23.0",
+    "babel-preset-react-hmre": "1.1.1",
+    "babel-preset-stage-0": "6.22.0",
+    "clean-webpack-plugin": "0.1.16",
+    "css-loader": "0.28.0",
+    "extract-text-webpack-plugin": "2.1.0",
+    "file-loader": "0.11.1",
+    "html-loader": "0.4.5",
+    "node-sass": "4.5.2",
+    "progress-bar-webpack-plugin": "1.9.3",
+    "react-hot-loader": "1.3.1",
+    "sass-loader": "6.0.3",
+    "style-loader": "0.16.1",
+    "stylus": "0.54.5",
+    "stylus-loader": "3.0.1",
+    "url-loader": "0.5.8",
+    "webpack": "2.3.2",
+    "webpack-dev-server": "2.4.2"
+  }
+}

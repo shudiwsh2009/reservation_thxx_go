@@ -1,0 +1,30 @@
+{{ define "title" }}
+<meta charset="UTF-8">
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta content="telephone=no" name="format-detection">
+<meta name="viewport" content="width=device-width, maximum-scale=1, initial-scale=1, user-scalable=no">
+<title>
+    学习与发展指导中心预约系统
+</title>
+<link type="text/css" href="/static/legacy/assets/css/style.css" rel="stylesheet">
+<script type="text/javascript" src="/static/legacy/assets/js/jquery-3.2.1.min.js"></script>
+{{ end }}
+
+{{ define "content" }}
+<body background="/static/legacy/assets/img/bg.png">
+<div id="page_title">
+    <img id="titleImage" style="width:100%;" src="/static/legacy/assets/img/xxfzzdzx.jpg">
+    <br><br>欢迎使用咨询预约系统<br>请根据您的需要选择相应咨询师和时间段进行预约<br>
+    <span style="font-size: 18px; color: black">(点击咨询师姓名查看详细信息)</span>
+</div>
+<div id="page_maintable" style="text-align:center;">
+
+</div>
+<div id="page_bottom"><br><br>清华大学学生学习发展指导中心<br>联系方式：62792453(欧老师)</div>
+</body>
+<script type="text/javascript" src="/static/legacy/assets/js/student.js"></script>
+<script type="text/javascript">
+    viewGroupedReservations();
+</script>
+{{ end }}

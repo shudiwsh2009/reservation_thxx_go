@@ -1,6 +1,8 @@
 package utils
 
-import "time"
+import (
+	"time"
+)
 
 var Weekdays = [...]string{
 	"日",
@@ -12,12 +14,19 @@ var Weekdays = [...]string{
 	"六",
 }
 
-const (
-	TIME_PATTERN  = "2006-01-02 15:04"
-	DATE_PATTERN  = "2006-01-02"
-	CLOCK_PATTERN = "15:04"
-)
+func ConcatTime(date time.Time, clock time.Time) time.Time {
+	return time.Date(date.Year(), date.Month(), date.Day(), clock.Hour(), clock.Minute(),
+		clock.Second(), clock.Nanosecond(), time.Local)
+}
 
-var (
-	Location *time.Location
-)
+func BeginOfDay(tm time.Time) time.Time {
+	return time.Date(tm.Year(), tm.Month(), tm.Day(), 0, 0, 0, 0, tm.Location())
+}
+
+func BeginOfYesterday(tm time.Time) time.Time {
+	return BeginOfDay(tm.Add(-24 * time.Hour))
+}
+
+func BeginOfTomorrow(tm time.Time) time.Time {
+	return BeginOfDay(tm.Add(24 * time.Hour))
+}

@@ -1,9 +1,10 @@
 package buslogic
 
 import (
-	"errors"
-	"github.com/shudiwsh2009/reservation_thxx_go/models"
-	"strings"
+	"fmt"
+	"github.com/shudiwsh2009/reservation_thxx_go/model"
+	re "github.com/shudiwsh2009/reservation_thxx_go/rerror"
+	"time"
 )
 
 const (
@@ -11,44 +12,136 @@ const (
 	TeacherDefaultPassword = "thxxfzzx"
 )
 
-type UserLogic struct {
+var (
+	UserLoginMaxCount = map[int]int{
+		model.UserTypeAdmin:   1,
+		model.UserTypeTeacher: 1,
+		model.UserTypeStudent: 5,
+	}
+	UserLoginExpire = map[int]time.Duration{
+		model.UserTypeAdmin:   time.Hour * 24 * 7,
+		model.UserTypeTeacher: time.Hour * 24 * 7,
+		model.UserTypeStudent: time.Hour * 24 * 30,
+	}
+)
+
+// 咨询师登录
+func (w *Workflow) TeacherLogin(username string, password string) (*model.Teacher, error) {
+	if username == "" {
+		return nil, re.NewRErrorCodeContext("username is empty", nil, re.ErrorMissingParam, "username")
+	} else if password == "" {
+		return nil, re.NewRErrorCodeContext("password is empty", nil, re.ErrorMissingParam, "password")
+	}
+	teacher, err := w.mongoClient.GetTeacherByUsername(username)
+	if err == nil && teacher != nil && teacher.Password == model.EncodePassword(teacher.Salt, password) {
+		return teacher, nil
+	}
+	return nil, re.NewRErrorCode("wrong password", nil, re.ERROR_LOGIN_PASSWORD_WRONG)
 }
 
-// 学生登录
-func (ul *UserLogic) Login(username string, password string) (*models.User, error) {
-	if len(username) == 0 {
-		return nil, errors.New("用户名为空")
-	} else if len(password) == 0 {
-		return nil, errors.New("密码为空")
+// 管理员登录
+func (w *Workflow) AdminLogin(username string, password string) (*model.Admin, error) {
+	if username == "" {
+		return nil, re.NewRErrorCodeContext("username is empty", nil, re.ErrorMissingParam, "username")
+	} else if password == "" {
+		return nil, re.NewRErrorCodeContext("password is empty", nil, re.ErrorMissingParam, "password")
 	}
-	user, err := models.GetUserByUsername(username)
-	if err == nil && (strings.EqualFold(password, user.Password) ||
-		(user.UserType == models.TEACHER && strings.EqualFold(password, TeacherDefaultPassword)) ||
-		(user.UserType == models.ADMIN && strings.EqualFold(password, AdminDefaultPassword))) {
-		return user, nil
+	admin, err := w.mongoClient.GetAdminByUsername(username)
+	if err == nil && admin != nil && admin.Password == model.EncodePassword(admin.Salt, password) {
+		return admin, nil
 	}
-	return nil, errors.New("用户名或密码不正确")
+	return nil, re.NewRErrorCode("wrong password", nil, re.ERROR_LOGIN_PASSWORD_WRONG)
 }
 
-// 获取用户
-func (ul *UserLogic) GetUserByUsername(username string) (*models.User, error) {
-	if len(username) == 0 {
-		return nil, errors.New("请先登录")
+// 更新session
+func (w *Workflow) UpdateSession(userId string, userType int) (map[string]interface{}, error) {
+	if userId == "" {
+		return nil, re.NewRErrorCode("user not login", nil, re.ErrorNoLogin)
 	}
-	user, err := models.GetUserByUsername(username)
+	result := make(map[string]interface{})
+	switch userType {
+	case model.UserTypeAdmin:
+		admin, err := w.mongoClient.GetAdminById(userId)
+		if err != nil || admin == nil || admin.UserType != userType {
+			return nil, re.NewRErrorCode("fail to get admin", err, re.ErrorDatabase)
+		}
+		//result["user"] = w.WrapAdmin(admin)
+	case model.UserTypeTeacher:
+		teacher, err := w.mongoClient.GetTeacherById(userId)
+		if err != nil || teacher == nil || teacher.UserType != userType {
+			return nil, re.NewRErrorCode("fail to get teacher", err, re.ErrorDatabase)
+		}
+		result["teacher"] = w.WrapTeacher(teacher)
+	default:
+		return nil, re.NewRErrorCode("fail to get user", nil, re.ErrorNoUser)
+	}
+	return result, nil
+}
+
+// external: 重置账户密码
+func (w *Workflow) ResetUserPassword(username string, userType int, password string) error {
+	if username == "" || password == "" {
+		return re.NewRError("missing parameters", nil)
+	}
+	var err error
+	var userId string
+	switch userType {
+	case model.UserTypeTeacher:
+		teacher, err := w.mongoClient.GetTeacherByUsername(username)
+		if err != nil || teacher == nil || teacher.UserType != userType {
+			return re.NewRError("fail to get teacher", err)
+		}
+		teacher.Password = password
+		teacher.PreInsert()
+		err = w.mongoClient.UpdateTeacher(teacher)
+		userId = teacher.Id.Hex()
+	case model.UserTypeAdmin:
+		admin, err := w.mongoClient.GetAdminByUsername(username)
+		if err != nil || admin == nil || admin.UserType != userType {
+			return re.NewRError("fail to get admin", err)
+		}
+		admin.Password = password
+		admin.PreInsert()
+		err = w.mongoClient.UpdateAdmin(admin)
+		userId = admin.Id.Hex()
+	default:
+		return re.NewRError(fmt.Sprintf("unknown user_type: %d", userType), nil)
+	}
 	if err != nil {
-		return nil, errors.New("用户不存在")
+		return re.NewRError("fail to update user", err)
 	}
-	return user, nil
+	return w.ClearUserLoginRedisKey(userId, userType)
 }
 
-func (ul *UserLogic) GetUserById(userId string) (*models.User, error) {
-	if len(userId) == 0 {
-		return nil, errors.New("请先登录")
-	}
-	user, err := models.GetUserById(userId)
+func (w *Workflow) ClearUserLoginRedisKey(userId string, userType int) error {
+	redisKeys, err := w.redisClient.Keys(fmt.Sprintf(model.RedisKeyLogin, userType, userId, "*")).Result()
 	if err != nil {
-		return nil, errors.New("用户不存在")
+		return re.NewRError("fail to get user login session keys from redis", err)
 	}
-	return user, nil
+	for _, k := range redisKeys {
+		if err := w.redisClient.Del(k).Err(); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// external: 添加新管理员
+func (w *Workflow) AddNewAdmin(username string, password string) (*model.Admin, error) {
+	if username == "" || password == "" {
+		return nil, re.NewRError("missing parameters", nil)
+	}
+	oldAdmin, err := w.mongoClient.GetAdminByUsername(username)
+	if err != nil {
+		return nil, re.NewRError("fail to get old admin", err)
+	} else if oldAdmin != nil && oldAdmin.UserType == model.UserTypeAdmin {
+		return oldAdmin, re.NewRError(fmt.Sprintf("admin already exists: %+v", oldAdmin), nil)
+	}
+	newAdmin := &model.Admin{
+		Username: username,
+		Password: password,
+		UserType: model.UserTypeAdmin,
+	}
+	err = w.mongoClient.InsertAdmin(newAdmin)
+	return newAdmin, err
 }
