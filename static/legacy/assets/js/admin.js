@@ -60,7 +60,7 @@ function exportReservations() {
         dataType: "json",
         success: function(data) {
             if (data.status === "OK") {
-                window.open(data.url);
+                window.open(data.payload.url);
             } else {
                 alert(data.err_msg);
             }

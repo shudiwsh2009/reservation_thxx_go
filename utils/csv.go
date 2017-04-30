@@ -9,12 +9,7 @@ import (
 	"path/filepath"
 )
 
-var EXPORT_FOLDER = filepath.Join("static", "export")
-
-const (
-	EXCEL_FILE_SUFFIX = ".xlsx"
-	CSV_FILE_SUFFIX   = ".csv"
-)
+var ExportFolder = filepath.Join("static", "export")
 
 func WriteToCSV(data [][]string, path string) error {
 	// 写入文件

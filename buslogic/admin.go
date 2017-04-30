@@ -1,9 +1,13 @@
 package buslogic
 
 import (
+	"fmt"
 	"github.com/shudiwsh2009/reservation_thxx_go/model"
 	re "github.com/shudiwsh2009/reservation_thxx_go/rerror"
 	"github.com/shudiwsh2009/reservation_thxx_go/utils"
+	"github.com/tealeg/xlsx"
+	"path/filepath"
+	"sort"
 	"time"
 )
 
@@ -423,4 +427,103 @@ func (w *Workflow) EditTeacherInfoByAdmin(username string, fullname string, gend
 		return nil, re.NewRErrorCode("fail to update teacher", err, re.ErrorDatabase)
 	}
 	return teacher, nil
+}
+
+func (w *Workflow) ExportReservationsByAdmin(reservationIds []string, userId string, userType int) (string, error) {
+	if userId == "" {
+		return "", re.NewRErrorCode("admin not login", nil, re.ErrorNoLogin)
+	} else if userType != model.UserTypeAdmin {
+		return "", re.NewRErrorCode("user is not admin", nil, re.ErrorNotAuthorized)
+	}
+	reservations := make([]*model.Reservation, 0)
+	for _, rId := range reservationIds {
+		reservation, err := w.mongoClient.GetReservationById(rId)
+		if err == nil && reservation != nil && reservation.Status != model.ReservationStatusDeleted {
+			reservations = append(reservations, reservation)
+		}
+	}
+	sort.Sort(ByStartTimeOfReservation(reservations))
+	if len(reservations) == 0 {
+		return "", re.NewRErrorCode("no exportable reservations", nil, re.ErrorAdminNoExportableReservations)
+	}
+	path := filepath.Join(utils.ExportFolder, fmt.Sprintf("export_%s.xlsx", time.Now().Format("20060102")))
+	if err := w.ExportReservationsToFile(reservations, path); err != nil {
+		return "", re.NewRErrorCode("fail to export reservations", err, re.ErrorAdminExportReservationFailure)
+	}
+	return path, nil
+}
+
+func (w *Workflow) ExportReservationsToFile(reservations []*model.Reservation, path string) error {
+	var file *xlsx.File
+	var sheet *xlsx.Sheet
+	var row *xlsx.Row
+	var cell *xlsx.Cell
+	var err error
+	file, err = xlsx.OpenFile(filepath.Join(utils.ExportFolder, "export_template.xlsx"))
+	if err != nil {
+		return re.NewRError("fail to oepn export template", err)
+	}
+	sheet = file.Sheet["export"]
+	if sheet == nil {
+		return re.NewRError("fail to open sheet", err)
+	}
+	for _, res := range reservations {
+		row = sheet.AddRow()
+		// 学生申请表
+		cell = row.AddCell()
+		cell.SetString(res.StudentInfo.Fullname)
+		cell = row.AddCell()
+		cell.SetString(res.StudentInfo.Gender)
+		cell = row.AddCell()
+		cell.SetString(res.StudentInfo.Username)
+		cell = row.AddCell()
+		cell = row.AddCell()
+		cell.SetString(res.StudentInfo.School)
+		cell = row.AddCell()
+		cell.SetString(res.StudentInfo.Hometown)
+		cell = row.AddCell()
+		cell.SetString(res.StudentInfo.Mobile)
+		cell = row.AddCell()
+		cell.SetString(res.StudentInfo.Email)
+		cell = row.AddCell()
+		cell = row.AddCell()
+		cell.SetString(res.StudentInfo.Problem)
+		// 预约信息
+		cell = row.AddCell()
+		cell.SetString(res.TeacherFullname)
+		cell = row.AddCell()
+		cell.SetString(res.StartTime.Format("2006-01-02"))
+		// 咨询师反馈表
+		cell = row.AddCell()
+		cell = row.AddCell()
+		cell = row.AddCell()
+		cell.SetString(res.TeacherFeedback.Problem)
+		cell = row.AddCell()
+		cell.SetString(res.TeacherFeedback.Solution)
+		// 学生反馈表
+		cell = row.AddCell()
+		cell = row.AddCell()
+		cell.SetString(res.StudentFeedback.Score)
+		cell = row.AddCell()
+		cell.SetString(res.StudentFeedback.Feedback)
+		if res.StudentFeedback.Choices != "" {
+			for i := 0; i < len(res.StudentFeedback.Choices); i++ {
+				cell = row.AddCell()
+				switch res.StudentFeedback.Choices[i] {
+				case 'A':
+					cell.SetString("非常同意")
+				case 'B':
+					cell.SetString("一般")
+				case 'C':
+					cell.SetString("不同意")
+				default:
+				}
+			}
+		}
+	}
+	err = file.Save(path)
+	if err != nil {
+		return re.NewRError("fail to save to file", err)
+	}
+	return nil
 }

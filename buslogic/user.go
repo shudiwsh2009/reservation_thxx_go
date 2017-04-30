@@ -36,7 +36,7 @@ func (w *Workflow) TeacherLogin(username string, password string) (*model.Teache
 	if err == nil && teacher != nil && teacher.Password == model.EncodePassword(teacher.Salt, password) {
 		return teacher, nil
 	}
-	return nil, re.NewRErrorCode("wrong password", nil, re.ERROR_LOGIN_PASSWORD_WRONG)
+	return nil, re.NewRErrorCode("wrong password", nil, re.ErrorLoginPasswordWrong)
 }
 
 // 管理员登录
@@ -50,7 +50,7 @@ func (w *Workflow) AdminLogin(username string, password string) (*model.Admin, e
 	if err == nil && admin != nil && admin.Password == model.EncodePassword(admin.Salt, password) {
 		return admin, nil
 	}
-	return nil, re.NewRErrorCode("wrong password", nil, re.ERROR_LOGIN_PASSWORD_WRONG)
+	return nil, re.NewRErrorCode("wrong password", nil, re.ErrorLoginPasswordWrong)
 }
 
 // 更新session
