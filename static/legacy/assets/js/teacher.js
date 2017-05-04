@@ -354,7 +354,7 @@ function removeReservationsConfirm() {
 	var reservationIds = [];
 	for (var i = 0; i < reservations.length; ++i) {
 		if ($("#cell_checkbox_" + i)[0].checked) {
-			reservationIds.push(reservations[i].reservation_id);
+			reservationIds.push(reservations[i].id);
 		}
 	}
 	var payload = {
@@ -393,7 +393,7 @@ function cancelReservationsConfirm() {
 	var reservationIds = [];
 	for (var i = 0; i < reservations.length; ++i) {
 		if ($("#cell_checkbox_" + i)[0].checked) {
-			reservationIds.push(reservations[i].reservation_id);
+			reservationIds.push(reservations[i].id);
 		}
 	}
 	var payload = {
