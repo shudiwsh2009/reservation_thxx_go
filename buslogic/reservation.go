@@ -10,7 +10,7 @@ import (
 
 func (w *Workflow) GetReservationsByStudent() ([]*model.Reservation, error) {
 	from := time.Now().AddDate(0, 0, -7)
-	to := time.Now().AddDate(0, 0, 7).Add(-90 * time.Minute)
+	to := time.Now().AddDate(0, 0, 8)
 	reservations, err := w.mongoClient.GetReservationsBetweenTime(from, to)
 	if err != nil {
 		return nil, re.NewRErrorCode("fail to get reservations", err, re.ErrorDatabase)
