@@ -110,7 +110,7 @@ func (m *MongoClient) GetReservationById(id string) (*Reservation, error) {
 
 func (m *MongoClient) GetReservationsByStudentUsername(studentUsername string) ([]*Reservation, error) {
 	var reservations []*Reservation
-	err := dbReservation.Find(bson.M{"student_info.student_username": studentUsername,
+	err := dbReservation.Find(bson.M{"student_info.username": studentUsername,
 		"status": bson.M{"$ne": ReservationStatusDeleted}}).Sort("start_time").All(&reservations)
 	return reservations, err
 }
