@@ -32,6 +32,35 @@ type Reservation struct {
 	UpdatedAt       time.Time       `bson:"updated_at"`
 }
 
+type ByStartTimeOfReservation []*Reservation
+
+func (rs ByStartTimeOfReservation) Len() int {
+	return len(rs)
+}
+
+func (rs ByStartTimeOfReservation) Swap(i, j int) {
+	rs[i], rs[j] = rs[j], rs[i]
+}
+
+func (rs ByStartTimeOfReservation) Less(i, j int) bool {
+	if rs[i].StartTime.Equal(rs[j].StartTime) {
+		return rs[i].TeacherUsername < rs[j].TeacherUsername
+	}
+	return rs[i].StartTime.Before(rs[j].StartTime)
+}
+
+func (r Reservation) GetStartAndEndTimeForArrangement() (time.Time, time.Time) {
+	start := r.StartTime
+	for start.Minute() != 30 && start.Minute() != 0 {
+		start = start.Add(-time.Minute)
+	}
+	end := r.EndTime
+	for end.Minute() != 30 && end.Minute() != 0 {
+		end = end.Add(time.Minute)
+	}
+	return start, end
+}
+
 type StudentInfo struct {
 	Fullname   string `bson:"fullname"`
 	Gender     string `bson:"gender"`

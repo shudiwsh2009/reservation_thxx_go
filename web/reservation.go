@@ -46,6 +46,7 @@ func (rc *ReservationController) MuxHandlers(m JsonMuxer) {
 	m.PostJson(kAdminApiBaseUrl+"/teacher/get", "GetTeacherInfoByAdmin", RoleCookieInjection(rc.GetTeacherInfoByAdmin))
 	m.PostJson(kAdminApiBaseUrl+"/teacher/edit", "EditTeacherInfoByAdmin", RoleCookieInjection(rc.EditTeacherInfoByAdmin))
 	m.PostJson(kAdminApiBaseUrl+"/reservation/export", "ExportReservationsByAdmin", RoleCookieInjection(rc.ExportReservationsByAdmin))
+	m.PostJson(kAdminApiBaseUrl+"/reservation/export/arrangements", "ExportReservationArrangementsByAdmin", RoleCookieInjection(rc.ExportReservationArrangementsByAdmin))
 }
 
 func (rc *ReservationController) ViewReservationsByStudent(w http.ResponseWriter, r *http.Request, userId string, userType int) (int, interface{}) {
@@ -526,6 +527,20 @@ func (rc *ReservationController) ExportReservationsByAdmin(w http.ResponseWriter
 		return http.StatusOK, wrapJsonError(err)
 	}
 	result["url"] = "/" + path
+
+	return http.StatusOK, wrapJsonOk(result)
+}
+
+func (rc *ReservationController) ExportReservationArrangementsByAdmin(w http.ResponseWriter, r *http.Request, userId string, userType int) (int, interface{}) {
+	fromDate := form.ParamString(r, "from_date", "")
+
+	var result = make(map[string]interface{})
+
+	url, err := service.Workflow().ExportReservationArrangementsByAdmin(fromDate, userId, userType)
+	if err != nil {
+		return http.StatusOK, wrapJsonError(err)
+	}
+	result["url"] = "/" + url
 
 	return http.StatusOK, wrapJsonOk(result)
 }

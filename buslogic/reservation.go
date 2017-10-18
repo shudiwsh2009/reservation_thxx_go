@@ -22,7 +22,7 @@ func (w *Workflow) GetReservationsByStudent() ([]*model.Reservation, error) {
 		}
 		result = append(result, r)
 	}
-	sort.Sort(ByStartTimeOfReservation(result))
+	sort.Sort(model.ByStartTimeOfReservation(result))
 	return result, nil
 }
 
@@ -49,7 +49,7 @@ func (w *Workflow) GetReservationsByTeacher(userId string, userType int) (*model
 			result = append(result, r)
 		}
 	}
-	sort.Sort(ByStartTimeOfReservation(result))
+	sort.Sort(model.ByStartTimeOfReservation(result))
 	return teacher, result, nil
 }
 
@@ -75,7 +75,7 @@ func (w *Workflow) GetReservationsByAdmin(userId string, userType int) (*model.A
 		}
 		result = append(result, r)
 	}
-	sort.Sort(ByStartTimeOfReservation(result))
+	sort.Sort(model.ByStartTimeOfReservation(result))
 	return admin, result, nil
 }
 
@@ -105,7 +105,7 @@ func (w *Workflow) GetReservationsMonthlyByAdmin(fromDate string, userId string,
 		}
 		result = append(result, r)
 	}
-	sort.Sort(ByStartTimeOfReservation(result))
+	sort.Sort(model.ByStartTimeOfReservation(result))
 	return admin, result, nil
 }
 
@@ -124,23 +124,6 @@ func (w *Workflow) ShiftReservationTimeInDays(days int) error {
 		}
 	}
 	return nil
-}
-
-type ByStartTimeOfReservation []*model.Reservation
-
-func (rs ByStartTimeOfReservation) Len() int {
-	return len(rs)
-}
-
-func (rs ByStartTimeOfReservation) Swap(i, j int) {
-	rs[i], rs[j] = rs[j], rs[i]
-}
-
-func (rs ByStartTimeOfReservation) Less(i, j int) bool {
-	if rs[i].StartTime.Equal(rs[j].StartTime) {
-		return rs[i].TeacherUsername < rs[j].TeacherUsername
-	}
-	return rs[i].StartTime.Before(rs[j].StartTime)
 }
 
 type ReservationGroup struct {

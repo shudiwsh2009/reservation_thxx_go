@@ -68,6 +68,18 @@ function exportReservations() {
     });
 }
 
+function exportReservationArrangements() {
+    $.post('/api/admin/reservation/export/arrangements', {
+        from_date: $('#arrangement_date').val()
+    }, function(json, textStatus) {
+        if (json.status === 'OK') {
+            window.open(json.payload.url);
+        } else {
+            alert(json.err_msg);
+        }
+    });
+}
+
 function refreshDataTable(reservations) {
 	$("#page_maintable")[0].innerHTML = "\
 		<div class='table_col' id='col_select'>\
@@ -219,21 +231,14 @@ function addReservation() {
 	$("#cell_teacher_address_add")[0].innerHTML = "<input id='teacher_address' style='width:180px' value='紫荆C楼407室'/>";
 	$("#cell_status_add")[0].innerHTML = "<button type='button' onclick='addReservationConfirm();'>确认</button>";
 	$("#cell_student_add")[0].innerHTML = "<button type='button' onclick='window.location.reload();'>取消</button>";
-	$("#input_date").DatePicker({
-		format: "YY-m-dd",
-		date: $("#input_date").val(),
-		current: $("#input_date").val(),
-		starts: 1,
-		position: "r",
-		onBeforeShow: function() {
-			$("#input_date").DatePickerSetDate($("#input_date").val(), true);
-		},
-		onChange: function(formated, dates) {
-			$("#input_date").val(formated);
-			$("#input_date").val($("#input_date").val().substr(4, 10));
-			$("#input_date").DatePickerHide();
-		},
-	});
+	$("#input_date").datepicker({
+        showOtherMonths: true,
+        selectOtherMonths: true,
+        showButtonPanel: true,
+        dateFormat: 'yy-mm-dd',
+        showWeek: true,
+        firstDay: 1
+    });
 	optimize();
 }
 
@@ -336,21 +341,14 @@ function editReservation(index) {
 		+ "value='" + reservations[index].teacher_address + "'/>";
 	$("#cell_status_" + index)[0].innerHTML = "<button type='button' onclick='editReservationConfirm(" + index + ");'>确认</button>";
 	$("#cell_student_" + index)[0].innerHTML = "<button type='button' onclick='window.location.reload();'>取消</button>";
-	$("#input_date").DatePicker({
-		format: "YY-m-dd",
-		date: $("#input_date").val(),
-		current: $("#input_date").val(),
-		starts: 1,
-		position: "r",
-		onBeforeShow: function() {
-			$("#input_date").DatePickerSetDate($("#input_date").val(), true);
-		},
-		onChange: function(formated, dates) {
-			$("#input_date").val(formated);
-			$("#input_date").val($("#input_date").val().substr(4, 10));
-			$("#input_date").DatePickerHide();
-		},
-	});
+	$("#input_date").datepicker({
+        showOtherMonths: true,
+        selectOtherMonths: true,
+        showButtonPanel: true,
+        dateFormat: 'yy-mm-dd',
+        showWeek: true,
+        firstDay: 1
+    });
 	optimize();
 }
 

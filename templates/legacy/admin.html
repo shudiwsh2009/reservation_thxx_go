@@ -7,10 +7,10 @@
 <title>
     学习与发展指导中心预约系统
 </title>
-<link rel="stylesheet" href="/static/legacy/assets/css/datepicker.css" type="text/css" />
 <link type="text/css" href="/static/legacy/assets/css/style.css" rel="stylesheet">
 <script type="text/javascript" src="/static/legacy/assets/js/jquery-3.2.1.min.js"></script>
-<script type="text/javascript" src="/static/legacy/assets/js/datepicker.js"></script>
+<script type="text/javascript" src="/static/legacy/assets/js/jquery-ui.min.js"></script>
+<link rel="stylesheet" href="/static/legacy/assets/js/jquery-ui.min.css" type="text/css">
 {{ end }}
 
 {{ define "content" }}
@@ -25,7 +25,10 @@
     <button onclick="logout();" style="margin-left:50px">退出登录</button>
     <div style="padding-top:10px">
         <input type="text" id="query_date" style="width:80px"/>
-        <button onclick="queryReservations();">查询</button>
+        <button onclick="queryReservations();" style="margin-right: 20px;">查询</button>
+        日期<input type="text" id="arrangement_date" style="width:80px;"/>
+        <button onclick="exportReservationArrangements();">导出咨询安排表</button>
+        (留空默认导出当天安排表)
     </div>
     <div id="page_maintable">
 
@@ -36,20 +39,21 @@
 <script type="text/javascript" src="/static/legacy/assets/js/admin.js"></script>
 <script type="text/javascript">
 	viewReservations();
-	$("#query_date").DatePicker({
-		format: "YY-m-dd",
-		date: $("#query_date").val(),
-		current: $("#query_date").val(),
-		starts: 1,
-		position: "r",
-		onBeforeShow: function() {
-			$("#query_date").DatePickerSetDate($("#query_date").val(), true);
-		},
-		onChange: function(formated, dates) {
-			$("#query_date").val(formated);
-			$("#query_date").val($("#query_date").val().substr(4, 10));
-			$("#query_date").DatePickerHide();
-		},
-	});
+    $('#arrangement_date').datepicker({
+        showOtherMonths: true,
+        selectOtherMonths: true,
+        showButtonPanel: true,
+        dateFormat: 'yy-mm-dd',
+        showWeek: true,
+        firstDay: 1
+    });
+    $('#query_date').datepicker({
+        showOtherMonths: true,
+        selectOtherMonths: true,
+        showButtonPanel: true,
+        dateFormat: 'yy-mm-dd',
+        showWeek: true,
+        firstDay: 1
+    });
 </script>
 {{ end }}
