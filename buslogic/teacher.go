@@ -137,7 +137,7 @@ func (w *Workflow) EditReservationByTeacher(reservationId string, startTime stri
 		return nil, re.NewRErrorCode("fail to get the day reservations", err, re.ErrorDatabase)
 	}
 	for _, r := range theDayReservations {
-		if r.TeacherUsername == teacher.Username {
+		if r.TeacherUsername == teacher.Username && r.Id.Hex() != reservation.Id.Hex() {
 			if start.After(r.StartTime) && start.Before(r.EndTime) ||
 				(end.After(r.StartTime) && end.Before(r.EndTime)) ||
 				(!start.After(r.StartTime) && !end.Before(r.EndTime)) {

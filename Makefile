@@ -15,7 +15,7 @@ PORT ?= 9000
 #webpack-dev-server port
 DEV_HOT_PORT ?= 8090
 
-build: clean $(BUNDLE) $(MAC_TARGET) $(MAC_EXTERNAL) $(LINUX_TARGET) $(LINUX_EXTERNAL)
+build: clean $(BUNDLE) $(MAC_TARGET) $(MAC_EXTERNAL)
 
 clean:
 	@rm -rf public/bundles
@@ -56,7 +56,7 @@ restart: kill $(MAC_TARGET)
 	@printf "\n\nrestart the app .........\n\n"
 	@$(MAC_TARGET) -debug --web=:$(PORT) --devWeb=:$(DEV_HOT_PORT) & echo $$! > $(PID)
 
-dist: clean $(MAC_TARGET) $(MAC_EXTERNAL) $(LINUX_TARGET) $(LINUX_EXTERNAL)
+dist: clean $(LINUX_TARGET) $(LINUX_EXTERNAL)
 	@NODE_ENV=production $(NODE_BIN)/webpack --progress --colors
-	@zip -r -v $(APP_NAME)-$(APP_VERSION).zip $(MAC_TARGET) $(MAC_EXTERNAL) $(LINUX_TARGET) $(LINUX_EXTERNAL) \
+	@zip -r -v $(APP_NAME)-$(APP_VERSION).zip $(LINUX_TARGET) $(LINUX_EXTERNAL) \
     	webpack-assets.json public templates static deploy tools

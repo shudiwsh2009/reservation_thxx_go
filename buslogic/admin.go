@@ -5,7 +5,6 @@ import (
 	"github.com/shudiwsh2009/reservation_thxx_go/model"
 	re "github.com/shudiwsh2009/reservation_thxx_go/rerror"
 	"github.com/shudiwsh2009/reservation_thxx_go/utils"
-	"github.com/tealeg/xlsx"
 	"path/filepath"
 	"sort"
 	"time"
@@ -179,7 +178,7 @@ func (w *Workflow) EditReservationByAdmin(reservationId string, startTime string
 		return nil, re.NewRErrorCode("fail to get the day reservations", err, re.ErrorDatabase)
 	}
 	for _, r := range theDayReservations {
-		if r.TeacherUsername == teacher.Username {
+		if r.TeacherUsername == teacher.Username && r.Id.Hex() != reservation.Id.Hex() {
 			if start.After(r.StartTime) && start.Before(r.EndTime) ||
 				(end.After(r.StartTime) && end.Before(r.EndTime)) ||
 				(!start.After(r.StartTime) && !end.Before(r.EndTime)) {
@@ -442,7 +441,7 @@ func (w *Workflow) ExportReservationsByAdmin(reservationIds []string, userId str
 			reservations = append(reservations, reservation)
 		}
 	}
-	sort.Sort(ByStartTimeOfReservation(reservations))
+	sort.Sort(model.ByStartTimeOfReservation(reservations))
 	if len(reservations) == 0 {
 		return "", re.NewRErrorCode("no exportable reservations", nil, re.ErrorAdminNoExportableReservations)
 	}
@@ -453,77 +452,43 @@ func (w *Workflow) ExportReservationsByAdmin(reservationIds []string, userId str
 	return path, nil
 }
 
-func (w *Workflow) ExportReservationsToFile(reservations []*model.Reservation, path string) error {
-	var file *xlsx.File
-	var sheet *xlsx.Sheet
-	var row *xlsx.Row
-	var cell *xlsx.Cell
-	var err error
-	file, err = xlsx.OpenFile(filepath.Join(utils.ExportFolder, "export_template.xlsx"))
-	if err != nil {
-		return re.NewRError("fail to oepn export template", err)
+// 管理员导出咨询安排表
+func (w *Workflow) ExportReservationArrangementsByAdmin(fromDate string, userId string, userType int) (string, error) {
+	if userId == "" {
+		return "", re.NewRErrorCode("admin not login", nil, re.ErrorNoLogin)
+	} else if userType != model.UserTypeAdmin {
+		return "", re.NewRErrorCode("user is not admin", nil, re.ErrorNotAuthorized)
 	}
-	sheet = file.Sheet["export"]
-	if sheet == nil {
-		return re.NewRError("fail to open sheet", err)
+	admin, err := w.mongoClient.GetAdminById(userId)
+	if err != nil || admin == nil || admin.UserType != model.UserTypeAdmin {
+		return "", re.NewRErrorCode("fail to get admin", err, re.ErrorDatabase)
 	}
-	for _, res := range reservations {
-		row = sheet.AddRow()
-		// 学生申请表
-		cell = row.AddCell()
-		cell.SetString(res.StudentInfo.Fullname)
-		cell = row.AddCell()
-		cell.SetString(res.StudentInfo.Gender)
-		cell = row.AddCell()
-		cell.SetString(res.StudentInfo.Username)
-		cell = row.AddCell()
-		cell = row.AddCell()
-		cell.SetString(res.StudentInfo.School)
-		cell = row.AddCell()
-		cell.SetString(res.StudentInfo.Hometown)
-		cell = row.AddCell()
-		cell.SetString(res.StudentInfo.Mobile)
-		cell = row.AddCell()
-		cell.SetString(res.StudentInfo.Email)
-		cell = row.AddCell()
-		cell = row.AddCell()
-		cell.SetString(res.StudentInfo.Problem)
-		// 预约信息
-		cell = row.AddCell()
-		cell.SetString(res.TeacherFullname)
-		cell = row.AddCell()
-		cell.SetString(res.StartTime.Format("2006-01-02"))
-		// 咨询师反馈表
-		cell = row.AddCell()
-		cell = row.AddCell()
-		cell = row.AddCell()
-		cell.SetString(res.TeacherFeedback.Problem)
-		cell = row.AddCell()
-		cell.SetString(res.TeacherFeedback.Solution)
-		// 学生反馈表
-		cell = row.AddCell()
-		cell = row.AddCell()
-		cell.SetString(res.StudentFeedback.Score)
-		cell = row.AddCell()
-		cell.SetString(res.StudentFeedback.Feedback)
-		if res.StudentFeedback.Choices != "" {
-			for i := 0; i < len(res.StudentFeedback.Choices); i++ {
-				cell = row.AddCell()
-				switch res.StudentFeedback.Choices[i] {
-				case 'A':
-					cell.SetString("非常同意")
-				case 'B':
-					cell.SetString("一般")
-				case 'C':
-					cell.SetString("不同意")
-				default:
-				}
-			}
+	from := utils.BeginOfDay(time.Now())
+	if fromDate != "" {
+		from, err = time.ParseInLocation("2006-01-02", fromDate, time.Local)
+		if err != nil {
+			return "", re.NewRErrorCodeContext("from date is not valid", err, re.ErrorInvalidParam, "from_date")
 		}
 	}
-	err = file.Save(path)
+	to := from.AddDate(0, 0, 1)
+	reservations, err := w.mongoClient.GetReservationsBetweenTime(from, to)
 	if err != nil {
-		return re.NewRError("fail to save to file", err)
+		return "", re.NewRErrorCode("fail to get reservations", err, re.ErrorDatabase)
 	}
-	return nil
+	filteredReservations := make([]*model.Reservation, 0, len(reservations))
+	for _, r := range reservations {
+		if r.Status == model.ReservationStatusReservated {
+			filteredReservations = append(filteredReservations, r)
+		}
+	}
+	sort.Sort(model.ByStartTimeOfReservation(filteredReservations))
+	if len(filteredReservations) == 0 {
+		return "", re.NewRErrorCode("no reservations", nil, re.ErrorAdminNoExportableReservations)
+	}
+	path := filepath.Join(utils.ExportFolder, fmt.Sprintf("timetable_%s_%s.xlsx",
+		from.Format("20060102"), time.Now().Format("20060102150405")))
+	if err = w.ExportReservationArrangementsToFile(filteredReservations, path); err != nil {
+		return "", err
+	}
+	return path, nil
 }
