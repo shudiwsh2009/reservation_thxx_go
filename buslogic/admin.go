@@ -7,6 +7,7 @@ import (
 	"github.com/shudiwsh2009/reservation_thxx_go/utils"
 	"path/filepath"
 	"sort"
+	"strings"
 	"time"
 )
 
@@ -477,7 +478,7 @@ func (w *Workflow) ExportReservationArrangementsByAdmin(fromDate string, userId 
 	}
 	filteredReservations := make([]*model.Reservation, 0, len(reservations))
 	for _, r := range reservations {
-		if r.Status == model.ReservationStatusReservated {
+		if r.Status == model.ReservationStatusReservated && (r.TeacherAddress == "" || strings.Contains(r.TeacherAddress, "紫荆C楼407室")) {
 			filteredReservations = append(filteredReservations, r)
 		}
 	}
