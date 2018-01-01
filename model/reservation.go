@@ -17,19 +17,22 @@ const (
 )
 
 type Reservation struct {
-	Id              bson.ObjectId   `bson:"_id"`
-	StartTime       time.Time       `bson:"start_time"`
-	EndTime         time.Time       `bson:"end_time"`
-	Status          int             `bson:"status"`
-	TeacherUsername string          `bson:"teacher_username"`
-	TeacherFullname string          `bson:"teacher_fullname"`
-	TeacherMobile   string          `bson:"teacher_mobile"`
-	TeacherAddress  string          `bson:"teacher_address"`
-	StudentInfo     StudentInfo     `bson:"student_info"`
-	StudentFeedback StudentFeedback `bson:"student_feedback"`
-	TeacherFeedback TeacherFeedback `bson:"teacher_feedback"`
-	CreatedAt       time.Time       `bson:"created_at"`
-	UpdatedAt       time.Time       `bson:"updated_at"`
+	Id                bson.ObjectId   `bson:"_id"`
+	StartTime         time.Time       `bson:"start_time"`
+	EndTime           time.Time       `bson:"end_time"`
+	Status            int             `bson:"status"`
+	InternationalType int             `bson:"international_type"`
+	TeacherUsername   string          `bson:"teacher_username"`
+	TeacherFullname   string          `bson:"teacher_fullname"`
+	TeacherFullnameEn string          `bson:"teacher_fullname_en"`
+	TeacherMobile     string          `bson:"teacher_mobile"`
+	TeacherAddress    string          `bson:"teacher_address"`
+	TeacherAddressEn  string          `bson:"teacher_address_en"`
+	StudentInfo       StudentInfo     `bson:"student_info"`
+	StudentFeedback   StudentFeedback `bson:"student_feedback"`
+	TeacherFeedback   TeacherFeedback `bson:"teacher_feedback"`
+	CreatedAt         time.Time       `bson:"created_at"`
+	UpdatedAt         time.Time       `bson:"updated_at"`
 }
 
 type ByStartTimeOfReservation []*Reservation
@@ -86,17 +89,18 @@ func (sf StudentFeedback) IsEmpty() bool {
 }
 
 type TeacherFeedback struct {
-	TeacherFullname string `bson:"teacher_fullname"`
-	TeacherUsername string `bson:"teacher_username"`
-	StudentFullname string `bson:"student_fullname"`
-	Problem         string `bson:"problem"`
-	Solution        string `bson:"solution"`
-	AdviceToCenter  string `bson:"advice_to_center"`
+	TeacherFullname   string `bson:"teacher_fullname"`
+	TeacherFullnameEn string `bson:"teacher_fullname_en"`
+	TeacherUsername   string `bson:"teacher_username"`
+	StudentFullname   string `bson:"student_fullname"`
+	Problem           string `bson:"problem"`
+	Solution          string `bson:"solution"`
+	AdviceToCenter    string `bson:"advice_to_center"`
 }
 
 func (tf TeacherFeedback) IsEmpty() bool {
-	return tf.TeacherFullname == "" || tf.TeacherUsername == "" || tf.StudentFullname == "" ||
-		tf.Problem == "" || tf.Solution == "" || tf.AdviceToCenter == ""
+	return (tf.TeacherFullname == "" && tf.TeacherFullnameEn == "") || tf.TeacherUsername == "" ||
+		tf.StudentFullname == "" || tf.Problem == "" || tf.Solution == "" || tf.AdviceToCenter == ""
 }
 
 func (m *MongoClient) InsertReservation(reservation *Reservation) error {

@@ -18,26 +18,34 @@ const (
 	UserTypeTeacher = 2
 	UserTypeAdmin   = 3
 
-	UserGenderMale   = "男"
-	UserGenderFemale = "女"
+	InternationalTypeChinese   = 0
+	InternationalTypeChinglish = 1
 )
 
 type Teacher struct {
-	Id        bson.ObjectId `bson:"_id"`
-	Username  string        `bson:"username"` // Indexed
-	Password  string        `bson:"password"`
-	Salt      string        `bson:"salt"`
-	UserType  int           `bson:"user_type"`
-	Fullname  string        `bson:"fullname"`
-	Mobile    string        `bson:"mobile"`
-	Address   string        `bson:"address"`
-	Gender    string        `bson:"gender"`
-	Major     string        `bson:"major"`    // 专业背景
-	Academic  string        `bson:"academic"` // 学历
-	Aptitude  string        `bson:"aptitude"` // 资质
-	Problem   string        `bson:"problem"`  // 可咨询的问题
-	CreatedAt time.Time     `bson:"created_at"`
-	UpdatedAt time.Time     `bson:"updated_at"`
+	Id                bson.ObjectId `bson:"_id"`
+	Username          string        `bson:"username"` // Indexed
+	Password          string        `bson:"password"`
+	Salt              string        `bson:"salt"`
+	UserType          int           `bson:"user_type"`
+	Fullname          string        `bson:"fullname"`
+	FullnameEn        string        `bson:"fullname_en"`
+	Mobile            string        `bson:"mobile"`
+	Address           string        `bson:"address"`
+	AddressEn         string        `bson:"address_en"`
+	Gender            string        `bson:"gender"`
+	GenderEn          string        `bson:"gender_en"`
+	Major             string        `bson:"major"` // 专业背景
+	MajorEn           string        `bson:"major_en"`
+	Academic          string        `bson:"academic"` // 学历
+	AcademicEn        string        `bson:"academic_en"`
+	Aptitude          string        `bson:"aptitude"` // 资质
+	AptitudeEn        string        `bson:"aptitude_en"`
+	Problem           string        `bson:"problem"` // 可咨询的问题
+	ProblemEn         string        `bson:"problem_en"`
+	InternationalType int           `bson:"international_type"` // 国际化类型：0、仅中文 1、中英双语
+	CreatedAt         time.Time     `bson:"created_at"`
+	UpdatedAt         time.Time     `bson:"updated_at"`
 }
 
 func (teacher *Teacher) PreInsert() error {
@@ -97,6 +105,18 @@ func (m *MongoClient) GetTeacherByUsername(username string) (*Teacher, error) {
 func (m *MongoClient) GetTeacherByFullname(fullname string) (*Teacher, error) {
 	var teacher Teacher
 	err := dbTeacher.Find(bson.M{"fullname": fullname, "user_type": UserTypeTeacher}).One(&teacher)
+	if err == mgo.ErrNotFound {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	} else {
+		return &teacher, nil
+	}
+}
+
+func (m *MongoClient) GetTeacherByFullnameEn(fullnameEn string) (*Teacher, error) {
+	var teacher Teacher
+	err := dbTeacher.Find(bson.M{"fullname_en": fullnameEn, "user_type": UserTypeTeacher}).One(&teacher)
 	if err == mgo.ErrNotFound {
 		return nil, nil
 	} else if err != nil {

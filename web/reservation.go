@@ -50,9 +50,11 @@ func (rc *ReservationController) MuxHandlers(m JsonMuxer) {
 }
 
 func (rc *ReservationController) ViewReservationsByStudent(w http.ResponseWriter, r *http.Request, userId string, userType int) (int, interface{}) {
+	language := form.ParamString(r, "language", "zh_cn")
+
 	var result = make(map[string]interface{})
 
-	reservations, err := service.Workflow().GetReservationsByStudent()
+	reservations, err := service.Workflow().GetReservationsByStudent(language)
 	if err != nil {
 		return http.StatusOK, wrapJsonError(err)
 	}
@@ -66,9 +68,11 @@ func (rc *ReservationController) ViewReservationsByStudent(w http.ResponseWriter
 }
 
 func (rc *ReservationController) ViewGroupedReservationsByStudent(w http.ResponseWriter, r *http.Request, userId string, userType int) (int, interface{}) {
+	language := form.ParamString(r, "language", "zh_cn")
+
 	var result = make(map[string]interface{})
 
-	reservations, err := service.Workflow().GetReservationsByStudent()
+	reservations, err := service.Workflow().GetReservationsByStudent(language)
 	if err != nil {
 		return http.StatusOK, wrapJsonError(err)
 	}
@@ -189,11 +193,13 @@ func (rc *ReservationController) AddReservationByTeacher(w http.ResponseWriter, 
 	startTime := form.ParamString(r, "start_time", "")
 	endTime := form.ParamString(r, "end_time", "")
 	fullname := form.ParamString(r, "fullname", "")
+	fullnameEn := form.ParamString(r, "fullname_en", "")
 	mobile := form.ParamString(r, "mobile", "")
+	internationalType := form.ParamInt(r, "international_type", 0)
 
 	var result = make(map[string]interface{})
 
-	reservation, err := service.Workflow().AddReservationByTeacher(startTime, endTime, fullname, mobile, userId, userType)
+	reservation, err := service.Workflow().AddReservationByTeacher(startTime, endTime, fullname, fullnameEn, mobile, internationalType, userId, userType)
 	if err != nil {
 		return http.StatusOK, wrapJsonError(err)
 	}
@@ -207,11 +213,13 @@ func (rc *ReservationController) EditReservationByTeacher(w http.ResponseWriter,
 	startTime := form.ParamString(r, "start_time", "")
 	endTime := form.ParamString(r, "end_time", "")
 	fullname := form.ParamString(r, "fullname", "")
+	fullnameEn := form.ParamString(r, "fullname_en", "")
 	mobile := form.ParamString(r, "mobile", "")
+	internationalType := form.ParamInt(r, "international_type", 0)
 
 	var result = make(map[string]interface{})
 
-	reservation, err := service.Workflow().EditReservationByTeacher(reservationId, startTime, endTime, fullname, mobile, userId, userType)
+	reservation, err := service.Workflow().EditReservationByTeacher(reservationId, startTime, endTime, fullname, fullnameEn, mobile, internationalType, userId, userType)
 	if err != nil {
 		return http.StatusOK, wrapJsonError(err)
 	}
@@ -261,6 +269,9 @@ func (rc *ReservationController) GetFeedbackByTeacher(w http.ResponseWriter, r *
 	if reservation.TeacherFeedback.TeacherFullname == "" {
 		feedbackJson["teacher_fullname"] = reservation.TeacherFullname
 	}
+	if reservation.TeacherFeedback.TeacherFullnameEn == "" {
+		feedbackJson["teacher_fullname_en"] = reservation.TeacherFullnameEn
+	}
 	if reservation.TeacherFeedback.TeacherUsername == "" {
 		feedbackJson["teacher_username"] = reservation.TeacherUsername
 	}
@@ -276,6 +287,7 @@ func (rc *ReservationController) SubmitFeedbackByTeacher(w http.ResponseWriter, 
 	reservationId := form.ParamString(r, "reservation_id", "")
 	teacherUsername := form.ParamString(r, "teacher_username", "")
 	teacherFullname := form.ParamString(r, "teacher_fullname", "")
+	teacherFullnameEn := form.ParamString(r, "teacher_fullname_en", "")
 	studentFullname := form.ParamString(r, "student_fullname", "")
 	problem := form.ParamString(r, "problem", "")
 	solution := form.ParamString(r, "solution", "")
@@ -283,8 +295,8 @@ func (rc *ReservationController) SubmitFeedbackByTeacher(w http.ResponseWriter, 
 
 	var result = make(map[string]interface{})
 
-	_, err := service.Workflow().SubmitFeedbackByTeacher(reservationId, teacherFullname, teacherUsername,
-		studentFullname, problem, solution, adviceToCenter, userId, userType)
+	_, err := service.Workflow().SubmitFeedbackByTeacher(reservationId, teacherFullname, teacherFullnameEn,
+		teacherUsername, studentFullname, problem, solution, adviceToCenter, userId, userType)
 	if err != nil {
 		return http.StatusOK, wrapJsonError(err)
 	}
@@ -347,12 +359,15 @@ func (rc *ReservationController) AddReservationByAdmin(w http.ResponseWriter, r 
 	endTime := form.ParamString(r, "end_time", "")
 	username := form.ParamString(r, "username", "")
 	fullname := form.ParamString(r, "fullname", "")
+	fullnameEn := form.ParamString(r, "fullname_en", "")
 	mobile := form.ParamString(r, "mobile", "")
 	address := form.ParamString(r, "address", "")
+	addressEn := form.ParamString(r, "address_en", "")
+	internationalType := form.ParamInt(r, "international_type", 0)
 
 	var result = make(map[string]interface{})
 
-	reservation, err := service.Workflow().AddReservationByAdmin(startTime, endTime, username, fullname, mobile, address, userId, userType)
+	reservation, err := service.Workflow().AddReservationByAdmin(startTime, endTime, username, fullname, fullnameEn, mobile, address, addressEn, internationalType, userId, userType)
 	if err != nil {
 		return http.StatusOK, wrapJsonError(err)
 	}
@@ -367,13 +382,16 @@ func (rc *ReservationController) EditReservationByAdmin(w http.ResponseWriter, r
 	endTime := form.ParamString(r, "end_time", "")
 	username := form.ParamString(r, "username", "")
 	fullname := form.ParamString(r, "fullname", "")
+	fullnameEn := form.ParamString(r, "fullname_en", "")
 	mobile := form.ParamString(r, "mobile", "")
 	address := form.ParamString(r, "address", "")
+	addressEn := form.ParamString(r, "address_en", "")
+	internationalType := form.ParamInt(r, "international_type", 0)
 
 	var result = make(map[string]interface{})
 
 	reservation, err := service.Workflow().EditReservationByAdmin(reservationId, startTime, endTime, username,
-		fullname, mobile, address, userId, userType)
+		fullname, fullnameEn, mobile, address, addressEn, internationalType, userId, userType)
 	if err != nil {
 		return http.StatusOK, wrapJsonError(err)
 	}
@@ -423,6 +441,9 @@ func (rc *ReservationController) GetFeedbackByAdmin(w http.ResponseWriter, r *ht
 	if reservation.TeacherFeedback.TeacherFullname == "" {
 		feedbackJson["teacher_fullname"] = reservation.TeacherFullname
 	}
+	if reservation.TeacherFeedback.TeacherFullnameEn == "" {
+		feedbackJson["teacher_fullname_en"] = reservation.TeacherFullnameEn
+	}
 	if reservation.TeacherFeedback.TeacherUsername == "" {
 		feedbackJson["teacher_username"] = reservation.TeacherUsername
 	}
@@ -438,6 +459,7 @@ func (rc *ReservationController) SubmitFeedbackByAdmin(w http.ResponseWriter, r 
 	reservationId := form.ParamString(r, "reservation_id", "")
 	teacherUsername := form.ParamString(r, "teacher_username", "")
 	teacherFullname := form.ParamString(r, "teacher_fullname", "")
+	teacherFullnameEn := form.ParamString(r, "teacher_fullname_en", "")
 	studentFullname := form.ParamString(r, "student_fullname", "")
 	problem := form.ParamString(r, "problem", "")
 	solution := form.ParamString(r, "solution", "")
@@ -445,8 +467,8 @@ func (rc *ReservationController) SubmitFeedbackByAdmin(w http.ResponseWriter, r 
 
 	var result = make(map[string]interface{})
 
-	_, err := service.Workflow().SubmitFeedbackByAdmin(reservationId, teacherFullname, teacherUsername,
-		studentFullname, problem, solution, adviceToCenter, userId, userType)
+	_, err := service.Workflow().SubmitFeedbackByAdmin(reservationId, teacherFullname, teacherFullnameEn,
+		teacherUsername, studentFullname, problem, solution, adviceToCenter, userId, userType)
 	if err != nil {
 		return http.StatusOK, wrapJsonError(err)
 	}
@@ -471,11 +493,12 @@ func (rc *ReservationController) GetReservationStudentInfoByAdmin(w http.Respons
 func (rc *ReservationController) SearchTeacherByAdmin(w http.ResponseWriter, r *http.Request, userId string, userType int) (int, interface{}) {
 	username := form.ParamString(r, "username", "")
 	fullname := form.ParamString(r, "fullname", "")
+	fullnameEn := form.ParamString(r, "fullname_en", "")
 	mobile := form.ParamString(r, "mobile", "")
 
 	var result = make(map[string]interface{})
 
-	teacher, err := service.Workflow().SearchTeacherByAdmin(fullname, username, mobile, userId, userType)
+	teacher, err := service.Workflow().SearchTeacherByAdmin(fullname, fullnameEn, username, mobile, userId, userType)
 	if err != nil {
 		return http.StatusOK, wrapJsonError(err)
 	}
@@ -501,15 +524,22 @@ func (rc *ReservationController) GetTeacherInfoByAdmin(w http.ResponseWriter, r 
 func (rc *ReservationController) EditTeacherInfoByAdmin(w http.ResponseWriter, r *http.Request, userId string, userType int) (int, interface{}) {
 	username := form.ParamString(r, "username", "")
 	fullname := form.ParamString(r, "fullname", "")
+	fullnameEn := form.ParamString(r, "fullname_en", "")
 	gender := form.ParamString(r, "gender", "")
+	genderEn := form.ParamString(r, "gender_en", "")
 	major := form.ParamString(r, "major", "")
+	majorEn := form.ParamString(r, "major_en", "")
 	academic := form.ParamString(r, "academic", "")
+	academicEn := form.ParamString(r, "academic_en", "")
 	aptitude := form.ParamString(r, "aptitude", "")
+	aptitudeEn := form.ParamString(r, "aptitude_en", "")
 	problem := form.ParamString(r, "problem", "")
+	problemEn := form.ParamString(r, "problem_en", "")
 
 	var result = make(map[string]interface{})
 
-	_, err := service.Workflow().EditTeacherInfoByAdmin(username, fullname, gender, major, academic, aptitude, problem, userId, userType)
+	_, err := service.Workflow().EditTeacherInfoByAdmin(username, fullname, fullnameEn, gender, genderEn, major, majorEn,
+		academic, academicEn, aptitude, aptitudeEn, problem, problemEn, userId, userType)
 	if err != nil {
 		return http.StatusOK, wrapJsonError(err)
 	}
