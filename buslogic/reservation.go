@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func (w *Workflow) GetReservationsByStudent() ([]*model.Reservation, error) {
+func (w *Workflow) GetReservationsByStudent(language string) ([]*model.Reservation, error) {
 	from := time.Now().AddDate(0, 0, -7)
 	to := time.Now().AddDate(0, 0, 8)
 	reservations, err := w.mongoClient.GetReservationsBetweenTime(from, to)
@@ -20,7 +20,11 @@ func (w *Workflow) GetReservationsByStudent() ([]*model.Reservation, error) {
 		if r.Status == model.ReservationStatusAvailable && r.StartTime.Before(time.Now()) {
 			continue
 		}
-		result = append(result, r)
+		if (language == "zh_cn" && (r.InternationalType == model.InternationalTypeChinese || r.InternationalType == model.InternationalTypeChinglish)) ||
+			(language == "en_us" && r.InternationalType == model.InternationalTypeChinglish) {
+			// 过滤支持的语言
+			result = append(result, r)
+		}
 	}
 	sort.Sort(model.ByStartTimeOfReservation(result))
 	return result, nil
@@ -190,11 +194,14 @@ func (w *Workflow) WrapSimpleReservation(reservation *model.Reservation) map[str
 	result["start_time"] = reservation.StartTime.Format("2006-01-02 15:04")
 	result["end_time"] = reservation.EndTime.Format("2006-01-02 15:04")
 	result["status"] = reservation.Status
+	result["international_type"] = reservation.InternationalType
 	if reservation.Status == model.ReservationStatusReservated && reservation.StartTime.Before(time.Now()) {
 		result["status"] = model.ReservationStatusFeedback
 	}
 	result["teacher_fullname"] = reservation.TeacherFullname
+	result["teacher_fullname_en"] = reservation.TeacherFullnameEn
 	result["teacher_address"] = reservation.TeacherAddress
+	result["teacher_address_en"] = reservation.TeacherAddressEn
 	return result
 }
 
@@ -221,6 +228,7 @@ func (w *Workflow) WrapReservationStudentFeedback(studentFeedback model.StudentF
 func (w *Workflow) WrapReservationTeacherFeedback(teacherFeedback model.TeacherFeedback) map[string]interface{} {
 	var result = make(map[string]interface{})
 	result["teacher_fullname"] = teacherFeedback.TeacherFullname
+	result["teacher_fullname_en"] = teacherFeedback.TeacherFullnameEn
 	result["teacher_username"] = teacherFeedback.TeacherUsername
 	result["student_fullname"] = teacherFeedback.StudentFullname
 	result["problem"] = teacherFeedback.Problem

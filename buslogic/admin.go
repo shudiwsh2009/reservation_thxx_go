@@ -11,8 +11,9 @@ import (
 	"time"
 )
 
-func (w *Workflow) AddReservationByAdmin(startTime string, endTime string, username string,
-	fullname string, mobile string, address string, userId string, userType int) (*model.Reservation, error) {
+func (w *Workflow) AddReservationByAdmin(startTime string, endTime string, username string, fullname string,
+	fullnameEn string, mobile string, address string, addressEn string, internationalType int,
+	userId string, userType int) (*model.Reservation, error) {
 	if userId == "" {
 		return nil, re.NewRErrorCode("admin not login", nil, re.ErrorNoLogin)
 	} else if userType != model.UserTypeAdmin {
@@ -23,11 +24,11 @@ func (w *Workflow) AddReservationByAdmin(startTime string, endTime string, usern
 		return nil, re.NewRErrorCodeContext("end_time is empty", nil, re.ErrorMissingParam, "end_time")
 	} else if username == "" {
 		return nil, re.NewRErrorCodeContext("username is empty", nil, re.ErrorMissingParam, "username")
-	} else if fullname == "" {
+	} else if fullname == "" && fullnameEn == "" {
 		return nil, re.NewRErrorCodeContext("fullname is empty", nil, re.ErrorMissingParam, "fullname")
 	} else if mobile == "" {
 		return nil, re.NewRErrorCodeContext("mobile is empty", nil, re.ErrorMissingParam, "mobile")
-	} else if address == "" {
+	} else if address == "" && addressEn == "" {
 		return nil, re.NewRErrorCodeContext("address is empty", nil, re.ErrorMissingParam, "address")
 	} else if !utils.IsMobile(mobile) {
 		return nil, re.NewRErrorCode("mobile format is wrong", nil, re.ErrorFormatMobile)
@@ -52,20 +53,27 @@ func (w *Workflow) AddReservationByAdmin(startTime string, endTime string, usern
 		return nil, re.NewRErrorCode("fail to get teacher", err, re.ErrorDatabase)
 	} else if teacher == nil || teacher.UserType != model.UserTypeTeacher {
 		teacher = &model.Teacher{
-			Username: username,
-			Password: TeacherDefaultPassword,
-			UserType: model.UserTypeTeacher,
-			Fullname: fullname,
-			Mobile:   mobile,
-			Address:  address,
+			Username:          username,
+			Password:          TeacherDefaultPassword,
+			UserType:          model.UserTypeTeacher,
+			Fullname:          fullname,
+			FullnameEn:        fullnameEn,
+			Mobile:            mobile,
+			Address:           address,
+			AddressEn:         addressEn,
+			InternationalType: internationalType,
 		}
 		if err = w.mongoClient.InsertTeacher(teacher); err != nil {
 			return nil, re.NewRErrorCode("fail to insert teacher", err, re.ErrorDatabase)
 		}
-	} else if teacher.Fullname != fullname || teacher.Mobile != mobile || teacher.Address != address {
+	} else if teacher.Fullname != fullname || teacher.FullnameEn != fullnameEn || teacher.Mobile != mobile ||
+		teacher.Address != address || teacher.AddressEn != addressEn || teacher.InternationalType != internationalType {
 		teacher.Fullname = fullname
+		teacher.FullnameEn = fullnameEn
 		teacher.Mobile = mobile
 		teacher.Address = address
+		teacher.AddressEn = addressEn
+		teacher.InternationalType = internationalType
 		if err = w.mongoClient.UpdateTeacher(teacher); err != nil {
 			return nil, re.NewRErrorCode("fail to update teacher", err, re.ErrorDatabase)
 		}
@@ -88,13 +96,16 @@ func (w *Workflow) AddReservationByAdmin(startTime string, endTime string, usern
 	}
 	// 新增咨询
 	reservation := &model.Reservation{
-		StartTime:       start,
-		EndTime:         end,
-		Status:          model.ReservationStatusAvailable,
-		TeacherUsername: teacher.Username,
-		TeacherFullname: teacher.Fullname,
-		TeacherMobile:   teacher.Mobile,
-		TeacherAddress:  teacher.Address,
+		StartTime:         start,
+		EndTime:           end,
+		Status:            model.ReservationStatusAvailable,
+		InternationalType: teacher.InternationalType,
+		TeacherUsername:   teacher.Username,
+		TeacherFullname:   teacher.Fullname,
+		TeacherFullnameEn: teacher.FullnameEn,
+		TeacherMobile:     teacher.Mobile,
+		TeacherAddress:    teacher.Address,
+		TeacherAddressEn:  teacher.AddressEn,
 	}
 	if err = w.mongoClient.InsertReservation(reservation); err != nil {
 		return nil, re.NewRErrorCode("fail to insert new reservation", err, re.ErrorDatabase)
@@ -103,7 +114,8 @@ func (w *Workflow) AddReservationByAdmin(startTime string, endTime string, usern
 }
 
 func (w *Workflow) EditReservationByAdmin(reservationId string, startTime string, endTime string, username string,
-	fullname string, mobile string, address string, userId string, userType int) (*model.Reservation, error) {
+	fullname string, fullnameEn string, mobile string, address string, addressEn string, internationalType int,
+	userId string, userType int) (*model.Reservation, error) {
 	if userId == "" {
 		return nil, re.NewRErrorCode("admin not login", nil, re.ErrorNoLogin)
 	} else if userType != model.UserTypeAdmin {
@@ -114,11 +126,11 @@ func (w *Workflow) EditReservationByAdmin(reservationId string, startTime string
 		return nil, re.NewRErrorCodeContext("end_time is empty", nil, re.ErrorMissingParam, "end_time")
 	} else if username == "" {
 		return nil, re.NewRErrorCodeContext("username is empty", nil, re.ErrorMissingParam, "username")
-	} else if fullname == "" {
+	} else if fullname == "" && fullnameEn == "" {
 		return nil, re.NewRErrorCodeContext("fullname is empty", nil, re.ErrorMissingParam, "fullname")
 	} else if mobile == "" {
 		return nil, re.NewRErrorCodeContext("mobile is empty", nil, re.ErrorMissingParam, "mobile")
-	} else if address == "" {
+	} else if address == "" && addressEn == "" {
 		return nil, re.NewRErrorCodeContext("address is empty", nil, re.ErrorMissingParam, "address")
 	} else if !utils.IsMobile(mobile) {
 		return nil, re.NewRErrorCode("mobile format is wrong", nil, re.ErrorFormatMobile)
@@ -151,22 +163,29 @@ func (w *Workflow) EditReservationByAdmin(reservationId string, startTime string
 		return nil, re.NewRErrorCode("fail to get teacher", err, re.ErrorDatabase)
 	} else if teacher == nil || teacher.UserType != model.UserTypeTeacher {
 		teacher = &model.Teacher{
-			Username: username,
-			Password: TeacherDefaultPassword,
-			UserType: model.UserTypeTeacher,
-			Fullname: fullname,
-			Mobile:   mobile,
-			Address:  address,
+			Username:          username,
+			Password:          TeacherDefaultPassword,
+			UserType:          model.UserTypeTeacher,
+			Fullname:          fullname,
+			FullnameEn:        fullnameEn,
+			Mobile:            mobile,
+			Address:           address,
+			AddressEn:         addressEn,
+			InternationalType: internationalType,
 		}
 		if err = w.mongoClient.InsertTeacher(teacher); err != nil {
 			return nil, re.NewRErrorCode("fail to insert teacher", err, re.ErrorDatabase)
 		}
 	} else if teacher.UserType != model.UserTypeTeacher {
 		return nil, re.NewRErrorCode("teacher has wrong user type", nil, re.ErrorDatabase)
-	} else if teacher.Fullname != fullname || teacher.Mobile != mobile || teacher.Address != address {
+	} else if teacher.Fullname != fullname || teacher.FullnameEn != fullnameEn || teacher.Mobile != mobile ||
+		teacher.Address != address || teacher.AddressEn != addressEn || teacher.InternationalType != internationalType {
 		teacher.Fullname = fullname
+		teacher.FullnameEn = fullnameEn
 		teacher.Mobile = mobile
 		teacher.Address = address
+		teacher.AddressEn = addressEn
+		teacher.InternationalType = internationalType
 		if err = w.mongoClient.UpdateTeacher(teacher); err != nil {
 			return nil, re.NewRErrorCode("fail to update teacher", err, re.ErrorDatabase)
 		}
@@ -190,10 +209,13 @@ func (w *Workflow) EditReservationByAdmin(reservationId string, startTime string
 	// 更新咨询
 	reservation.StartTime = start
 	reservation.EndTime = end
+	reservation.InternationalType = internationalType
 	reservation.TeacherUsername = teacher.Username
 	reservation.TeacherFullname = teacher.Fullname
+	reservation.TeacherFullnameEn = teacher.FullnameEn
 	reservation.TeacherMobile = teacher.Mobile
 	reservation.TeacherAddress = teacher.Address
+	reservation.TeacherAddressEn = teacher.AddressEn
 	if err = w.mongoClient.UpdateReservation(reservation); err != nil {
 		return nil, re.NewRErrorCode("fail to update reservation", err, re.ErrorDatabase)
 	}
@@ -275,15 +297,16 @@ func (w *Workflow) GetFeedbackByAdmin(reservationId string, userId string, userT
 	return reservation, nil
 }
 
-func (w *Workflow) SubmitFeedbackByAdmin(reservationId string, teacherFullname string, teacherUsername string,
-	studentFullname string, problem string, solution string, adviceToCenter string, userId string, userType int) (*model.Reservation, error) {
+func (w *Workflow) SubmitFeedbackByAdmin(reservationId string, teacherFullname string, teacherFullnameEn string,
+	teacherUsername string, studentFullname string, problem string, solution string, adviceToCenter string,
+	userId string, userType int) (*model.Reservation, error) {
 	if userId == "" {
 		return nil, re.NewRErrorCode("admin not login", nil, re.ErrorNoLogin)
 	} else if userType != model.UserTypeAdmin {
 		return nil, re.NewRErrorCode("user is not admin", nil, re.ErrorNotAuthorized)
 	} else if reservationId == "" {
 		return nil, re.NewRErrorCodeContext("reservation_id is empty", nil, re.ErrorMissingParam, "reservation_id")
-	} else if teacherFullname == "" {
+	} else if teacherFullname == "" && teacherFullnameEn == "" {
 		return nil, re.NewRErrorCodeContext("teacher_fullname is empty", nil, re.ErrorMissingParam, "teacher_fullname")
 	} else if teacherUsername == "" {
 		return nil, re.NewRErrorCodeContext("teacher_username is empty", nil, re.ErrorMissingParam, "teacher_username")
@@ -310,12 +333,13 @@ func (w *Workflow) SubmitFeedbackByAdmin(reservationId string, teacherFullname s
 	}
 	sendFeedbackSms := reservation.TeacherFeedback.IsEmpty() && reservation.StudentFeedback.IsEmpty()
 	reservation.TeacherFeedback = model.TeacherFeedback{
-		TeacherFullname: teacherFullname,
-		TeacherUsername: teacherUsername,
-		StudentFullname: studentFullname,
-		Problem:         problem,
-		Solution:        solution,
-		AdviceToCenter:  adviceToCenter,
+		TeacherFullname:   teacherFullname,
+		TeacherFullnameEn: teacherFullnameEn,
+		TeacherUsername:   teacherUsername,
+		StudentFullname:   studentFullname,
+		Problem:           problem,
+		Solution:          solution,
+		AdviceToCenter:    adviceToCenter,
 	}
 	if err = w.mongoClient.UpdateReservation(reservation); err != nil {
 		return nil, re.NewRErrorCode("fail to update reservation", err, re.ErrorDatabase)
@@ -347,7 +371,7 @@ func (w *Workflow) GetReservationStudentInfoByAdmin(reservationId string, userId
 	return &reservation.StudentInfo, nil
 }
 
-func (w *Workflow) SearchTeacherByAdmin(fullname string, username string, mobile string,
+func (w *Workflow) SearchTeacherByAdmin(fullname string, fullnameEn string, username string, mobile string,
 	userId string, userType int) (*model.Teacher, error) {
 	if userId == "" {
 		return nil, re.NewRErrorCode("admin not login", nil, re.ErrorNoLogin)
@@ -360,6 +384,12 @@ func (w *Workflow) SearchTeacherByAdmin(fullname string, username string, mobile
 	}
 	if fullname != "" {
 		teacher, err := w.mongoClient.GetTeacherByFullname(fullname)
+		if err == nil && teacher != nil && teacher.UserType == model.UserTypeTeacher {
+			return teacher, nil
+		}
+	}
+	if fullnameEn != "" {
+		teacher, err := w.mongoClient.GetTeacherByFullnameEn(fullnameEn)
 		if err == nil && teacher != nil && teacher.UserType == model.UserTypeTeacher {
 			return teacher, nil
 		}
@@ -398,15 +428,16 @@ func (w *Workflow) GetTeacherInfoByAdmin(username string, userId string, userTyp
 	return teacher, nil
 }
 
-func (w *Workflow) EditTeacherInfoByAdmin(username string, fullname string, gender string, major string,
-	academic string, aptitude string, problem string, userId string, userType int) (*model.Teacher, error) {
+func (w *Workflow) EditTeacherInfoByAdmin(username string, fullname string, fullnameEn string, gender string,
+	genderEn string, major string, majorEn string, academic string, academicEn string, aptitude string, aptitudeEn string,
+	problem string, problemEn string, userId string, userType int) (*model.Teacher, error) {
 	if userId == "" {
 		return nil, re.NewRErrorCode("admin not login", nil, re.ErrorNoLogin)
 	} else if userType != model.UserTypeAdmin {
 		return nil, re.NewRErrorCode("user is not admin", nil, re.ErrorNotAuthorized)
 	} else if username == "" {
 		return nil, re.NewRErrorCodeContext("username is empty", nil, re.ErrorMissingParam, "username")
-	} else if fullname == "" {
+	} else if fullname == "" && fullnameEn == "" {
 		return nil, re.NewRErrorCodeContext("fullname is empty", nil, re.ErrorMissingParam, "fullname")
 	}
 	admin, err := w.mongoClient.GetAdminById(userId)
@@ -418,11 +449,17 @@ func (w *Workflow) EditTeacherInfoByAdmin(username string, fullname string, gend
 		return nil, re.NewRErrorCode("fail to get teacher", err, re.ErrorDatabase)
 	}
 	teacher.Fullname = fullname
+	teacher.FullnameEn = fullnameEn
 	teacher.Gender = gender
+	teacher.GenderEn = genderEn
 	teacher.Major = major
+	teacher.MajorEn = majorEn
 	teacher.Academic = academic
+	teacher.AcademicEn = academicEn
 	teacher.Aptitude = aptitude
+	teacher.AptitudeEn = aptitudeEn
 	teacher.Problem = problem
+	teacher.ProblemEn = problemEn
 	if err = w.mongoClient.UpdateTeacher(teacher); err != nil {
 		return nil, re.NewRErrorCode("fail to update teacher", err, re.ErrorDatabase)
 	}

@@ -7,8 +7,8 @@ import (
 	"time"
 )
 
-func (w *Workflow) AddReservationByTeacher(startTime string, endTime string, fullname string, mobile string,
-	userId string, userType int) (*model.Reservation, error) {
+func (w *Workflow) AddReservationByTeacher(startTime string, endTime string, fullname string, fullnameEn string,
+	mobile string, internationalType int, userId string, userType int) (*model.Reservation, error) {
 	if userId == "" {
 		return nil, re.NewRErrorCode("teacher not login", nil, re.ErrorNoLogin)
 	} else if userType != model.UserTypeTeacher {
@@ -17,7 +17,7 @@ func (w *Workflow) AddReservationByTeacher(startTime string, endTime string, ful
 		return nil, re.NewRErrorCodeContext("start_time is empty", nil, re.ErrorMissingParam, "start_time")
 	} else if endTime == "" {
 		return nil, re.NewRErrorCodeContext("end_time is empty", nil, re.ErrorMissingParam, "end_time")
-	} else if fullname == "" {
+	} else if fullname == "" && fullnameEn == "" {
 		return nil, re.NewRErrorCodeContext("fullname is empty", nil, re.ErrorMissingParam, "fullname")
 	} else if mobile == "" {
 		return nil, re.NewRErrorCodeContext("mobile is empty", nil, re.ErrorMissingParam, "mobile")
@@ -39,9 +39,12 @@ func (w *Workflow) AddReservationByTeacher(startTime string, endTime string, ful
 	if start.After(end) {
 		return nil, re.NewRErrorCode("start time cannot be after end time", nil, re.ErrorEditReservationEndTimeBeforeStartTime)
 	}
-	if teacher.Fullname != fullname || teacher.Mobile != mobile {
+	if teacher.Fullname != fullname || teacher.FullnameEn != fullnameEn || teacher.Mobile != mobile ||
+		teacher.InternationalType != internationalType {
 		teacher.Fullname = fullname
+		teacher.FullnameEn = fullnameEn
 		teacher.Mobile = mobile
+		teacher.InternationalType = internationalType
 		if err = w.mongoClient.UpdateTeacher(teacher); err != nil {
 			return nil, re.NewRErrorCode("fail to update teacher", err, re.ErrorDatabase)
 		}
@@ -64,13 +67,16 @@ func (w *Workflow) AddReservationByTeacher(startTime string, endTime string, ful
 	}
 	// 新增咨询
 	reservation := &model.Reservation{
-		StartTime:       start,
-		EndTime:         end,
-		Status:          model.ReservationStatusAvailable,
-		TeacherUsername: teacher.Username,
-		TeacherFullname: teacher.Fullname,
-		TeacherMobile:   teacher.Mobile,
-		TeacherAddress:  teacher.Address,
+		StartTime:         start,
+		EndTime:           end,
+		Status:            model.ReservationStatusAvailable,
+		InternationalType: teacher.InternationalType,
+		TeacherUsername:   teacher.Username,
+		TeacherFullname:   teacher.Fullname,
+		TeacherFullnameEn: teacher.FullnameEn,
+		TeacherMobile:     teacher.Mobile,
+		TeacherAddress:    teacher.Address,
+		TeacherAddressEn:  teacher.AddressEn,
 	}
 	if err = w.mongoClient.InsertReservation(reservation); err != nil {
 		return nil, re.NewRErrorCode("fail to insert new reservation", err, re.ErrorDatabase)
@@ -78,8 +84,8 @@ func (w *Workflow) AddReservationByTeacher(startTime string, endTime string, ful
 	return reservation, nil
 }
 
-func (w *Workflow) EditReservationByTeacher(reservationId string, startTime string, endTime string,
-	fullname string, mobile string, userId string, userType int) (*model.Reservation, error) {
+func (w *Workflow) EditReservationByTeacher(reservationId string, startTime string, endTime string, fullname string,
+	fullnameEn string, mobile string, internationalType int, userId string, userType int) (*model.Reservation, error) {
 	if userId == "" {
 		return nil, re.NewRErrorCode("teacher not login", nil, re.ErrorNoLogin)
 	} else if userType != model.UserTypeTeacher {
@@ -90,7 +96,7 @@ func (w *Workflow) EditReservationByTeacher(reservationId string, startTime stri
 		return nil, re.NewRErrorCodeContext("start_time is empty", nil, re.ErrorMissingParam, "start_time")
 	} else if endTime == "" {
 		return nil, re.NewRErrorCodeContext("end_time is empty", nil, re.ErrorMissingParam, "end_time")
-	} else if fullname == "" {
+	} else if fullname == "" && fullnameEn == "" {
 		return nil, re.NewRErrorCodeContext("fullname is empty", nil, re.ErrorMissingParam, "fullname")
 	} else if mobile == "" {
 		return nil, re.NewRErrorCodeContext("mobile is empty", nil, re.ErrorMissingParam, "mobile")
@@ -122,9 +128,12 @@ func (w *Workflow) EditReservationByTeacher(reservationId string, startTime stri
 	} else if start.Before(time.Now()) {
 		return nil, re.NewRErrorCode("cannot edit outdated reservation", nil, re.ErrorEditOutdatedReservation)
 	}
-	if teacher.Fullname != fullname || teacher.Mobile != mobile {
+	if teacher.Fullname != fullname || teacher.FullnameEn != fullnameEn || teacher.Mobile != mobile ||
+		teacher.InternationalType != internationalType {
 		teacher.Fullname = fullname
+		teacher.FullnameEn = fullnameEn
 		teacher.Mobile = mobile
+		teacher.InternationalType = internationalType
 		if err = w.mongoClient.UpdateTeacher(teacher); err != nil {
 			return nil, re.NewRErrorCode("fail to update teacher", err, re.ErrorDatabase)
 		}
@@ -148,7 +157,9 @@ func (w *Workflow) EditReservationByTeacher(reservationId string, startTime stri
 	// 更新咨询
 	reservation.StartTime = start
 	reservation.EndTime = end
+	reservation.InternationalType = internationalType
 	reservation.TeacherFullname = teacher.Fullname
+	reservation.TeacherFullnameEn = teacher.FullnameEn
 	reservation.TeacherMobile = teacher.Mobile
 	if err = w.mongoClient.UpdateReservation(reservation); err != nil {
 		return nil, re.NewRErrorCode("fail to update reservation", err, re.ErrorDatabase)
@@ -234,15 +245,16 @@ func (w *Workflow) GetFeedbackByTeacher(reservationId string, userId string, use
 	return reservation, nil
 }
 
-func (w *Workflow) SubmitFeedbackByTeacher(reservationId string, teacherFullname string, teacherUsername string,
-	studentFullname string, problem string, solution string, adviceToCenter string, userId string, userType int) (*model.Reservation, error) {
+func (w *Workflow) SubmitFeedbackByTeacher(reservationId string, teacherFullname string, teacherFullnameEn string,
+	teacherUsername string, studentFullname string, problem string, solution string, adviceToCenter string,
+	userId string, userType int) (*model.Reservation, error) {
 	if userId == "" {
 		return nil, re.NewRErrorCode("teacher not login", nil, re.ErrorNoLogin)
 	} else if userType != model.UserTypeTeacher {
 		return nil, re.NewRErrorCode("user is not teacher", nil, re.ErrorNotAuthorized)
 	} else if reservationId == "" {
 		return nil, re.NewRErrorCodeContext("reservation_id is empty", nil, re.ErrorMissingParam, "reservation_id")
-	} else if teacherFullname == "" {
+	} else if teacherFullname == "" && teacherFullnameEn == "" {
 		return nil, re.NewRErrorCodeContext("teacher_fullname is empty", nil, re.ErrorMissingParam, "teacher_fullname")
 	} else if teacherUsername == "" {
 		return nil, re.NewRErrorCodeContext("teacher_username is empty", nil, re.ErrorMissingParam, "teacher_username")
@@ -271,12 +283,13 @@ func (w *Workflow) SubmitFeedbackByTeacher(reservationId string, teacherFullname
 	}
 	sendFeedbackSms := reservation.TeacherFeedback.IsEmpty() && reservation.StudentFeedback.IsEmpty()
 	reservation.TeacherFeedback = model.TeacherFeedback{
-		TeacherFullname: teacherFullname,
-		TeacherUsername: teacherUsername,
-		StudentFullname: studentFullname,
-		Problem:         problem,
-		Solution:        solution,
-		AdviceToCenter:  adviceToCenter,
+		TeacherFullname:   teacherFullname,
+		TeacherFullnameEn: teacherFullnameEn,
+		TeacherUsername:   teacherUsername,
+		StudentFullname:   studentFullname,
+		Problem:           problem,
+		Solution:          solution,
+		AdviceToCenter:    adviceToCenter,
 	}
 	if err = w.mongoClient.UpdateReservation(reservation); err != nil {
 		return nil, re.NewRErrorCode("fail to update reservation", err, re.ErrorDatabase)
@@ -316,12 +329,20 @@ func (w *Workflow) WrapSimpleTeacher(teacher *model.Teacher) map[string]interfac
 		return result
 	}
 	result["fullname"] = teacher.Fullname
+	result["fullname_en"] = teacher.FullnameEn
 	result["address"] = teacher.Address
+	result["address_en"] = teacher.AddressEn
 	result["gender"] = teacher.Gender
+	result["gender_en"] = teacher.GenderEn
 	result["major"] = teacher.Major
+	result["major_en"] = teacher.MajorEn
 	result["academic"] = teacher.Academic
+	result["academic_en"] = teacher.AcademicEn
 	result["aptitude"] = teacher.Aptitude
+	result["aptitude_en"] = teacher.AptitudeEn
 	result["problem"] = teacher.Problem
+	result["problem_en"] = teacher.ProblemEn
+	result["international_type"] = teacher.InternationalType
 	return result
 }
 
