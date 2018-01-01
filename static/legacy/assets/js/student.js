@@ -68,8 +68,9 @@ function refreshDataTable(reservations) {
 		$("#col_time").append("<div class='table_cell' id='cell_time_" + id + "'>"
 			+ reservations[i].start_time.substr(2) + "-"
 			+ reservations[i].end_time.split(" ")[1] + "</div>");
-		$("#col_teacher").append("<div class='table_cell' id='cell_teacher_" + id + "' onclick='getTeacher(\"" + id +
-			"\")'>" + reservations[i].teacher_fullname + "</div>");
+        $("#col_teacher").append("<div class='table_cell' id='cell_teacher_" + id
+            + "'><button type='button' id='cell_teacher_b_" + id + "' onclick='getTeacher(\"" + id
+            + "\")'>" + reservations[i].teacher_fullname + "</button></div>");
 		if (reservations[i].status === 1) {
 			$("#col_status").append("<div class='table_cell' id='cell_status_" + id
 				+ "'><button type='button' id='cell_status_b_" + id + "' onclick='makeReservation(\"" + id
@@ -110,8 +111,9 @@ function refreshDataTableForGroups(reservationGroups) {
 			$("#col_time_" + group.date).append("<div class='table_cell' id='cell_time_" + id + "'>"
 				+ group.reservations[j].start_time.substr(2) + "-"
 				+ group.reservations[j].end_time.split(" ")[1] + "</div>");
-			$("#col_teacher_" + group.date).append("<div class='table_cell' id='cell_teacher_" + id + "' onclick='getTeacher(\"" + id +
-				"\")'>" + group.reservations[j].teacher_fullname + "</div>");
+            $("#col_teacher_" + group.date).append("<div class='table_cell' id='cell_teacher_" + id
+                + "'><button type='button' id='cell_teacher_b_" + id + "' onclick='getTeacher(\"" + id
+                + "\")'>" + group.reservations[j].teacher_fullname + "</button></div>");
 			if (group.reservations[j].status === 1) {
 				$("#col_status_" + group.date).append("<div class='table_cell' id='cell_status_" + id
 					+ "'><button type='button' id='cell_status_b_" + id + "' onclick='makeReservation(\"" + id
