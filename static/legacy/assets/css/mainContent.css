@@ -1,0 +1,289 @@
+﻿body {
+    margin: 0;
+    padding: 0;
+    background:rgba(116, 52, 129, 0.05);
+    font-size: 14px;
+    border-bottom: 0px;
+}
+ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+input {
+    margin: 0;
+    padding: 0;
+}
+a {
+    text-decoration: none;
+}
+
+
+/* 覆盖bootstrap的样式 */
+p {
+    margin: 0;
+    padding: 0;
+}
+.nav-list,.nav-list li a {
+    padding: 0px;
+    margin: 0px;
+}
+.left {
+    float: left;
+}
+.right {
+    float: right;
+}
+.ofd {
+    overflow: hidden;
+}
+#topbar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    height: 56px;
+    background: #ffffff;
+    overflow: hidden;
+    z-index:10;
+}
+
+
+
+/* 后台导航栏、侧边栏、内容 */
+.topbar-logo {
+    width: 250px;
+    height: 56px;
+    background: #3ca3e0;
+}
+.topbar-logo i {
+    font-size: 32px;
+    color: #ffffff;
+    line-height: 56px;
+    margin-left: 26px;
+}
+.topbar-logo span {
+    font-size: 18px;
+    color: #ffffff;
+    line-height: 56px;
+    margin-left: 25px;
+    font-weight: 200;
+    letter-spacing: 1px;
+    cursor: default;
+}
+.topbar-navi {
+    margin-left: 13px;
+}
+.topbar-navi ul li {
+    float: left;
+    text-align: center;
+}
+.topbar-navi ul li:hover {
+    background: rgba(116, 52, 129, 0.1);
+}
+.topbar-navi ul li a {
+    width: 110px;
+    height: 56px;
+    line-height: 56px;
+    display: block;
+}
+.topbar-navi ul li a span {
+    color: #32323a;
+}
+
+.topbar-menu {
+    width: 76px;
+    height: 56px;
+    text-align: center;
+    border-left: 1px solid #e7e7e7;
+    cursor: pointer;
+}
+.topbar-menu i {
+    font-size: 26px;
+    color: #e4e4e4;
+    line-height: 56px;
+}
+.topbar-user {
+    padding: 0 10px 0 10px;
+    height: 56px;
+    margin-right: 36px;
+}
+.topbar-user img {
+    width: 38px;
+    height: 38px;
+    margin-top: 9px;
+}
+.topbar-user span {
+    line-height: 56px;
+    margin-left: 12px;
+    color: #32323a;
+    cursor: default;
+}
+
+
+
+
+
+/*后台普通页面*/
+form{
+    list-style: none;
+}
+
+.temp{
+/*clear: both;*/
+margin: 0;
+padding: 0;
+border: 0;
+}
+
+.active{
+    background: rgba(116, 52, 129, 0.1);
+}
+
+.panel{
+    position: relative;
+    width: 100%;
+    margin:0;
+    background: transparent;
+}
+
+  .mainContent {
+    position: relative;
+      top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0;
+    /*margin:69px 13px 13px 293px;*/
+    margin:0px 50px 20px 50px;
+    padding: 0 13px 13px 13px;
+    background: #ffffff;
+    border-radius: 5px;
+    /*border-bottom: 0px;*/
+}
+
+/*内容标题*/
+  .mainContent .conTitle{
+    margin: 15px 0px 15px 0px;
+    text-align: right;
+    float: right;
+}
+
+  .mainContent .a{
+    display: block;
+    text-align: center;
+    color: white;
+    border-radius: 3px;
+    border:0;
+    text-decoration: none; 
+    margin-right: 3px;
+    float: right;
+}
+  .mainContent .conTitle .a{
+    padding: 0 10px 0 10px;
+    height: 30px;
+    line-height: 2;
+    background-color: rgba(116,52,129,0.8);
+}
+  .mainContent .conTitle .a:hover { 
+    background: rgba(116,52,129,0.6);
+}
+
+/*内容*/
+.mainContent .conBody{
+}
+.conBody .bodyTable{
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    border-top: 3px solid rgba(116, 52, 129, 0.1);
+}
+.conBody tr{
+    line-height: 50px;
+    border-bottom: 1px solid rgba(116, 52, 129, 0.1);
+    width: 100%;
+}
+.conBody thead>tr{
+    line-height: 50px;
+    border-bottom: 2px solid rgba(116, 52, 129, 0.1);
+    width: 100%;
+}
+.conBody tr:hover{
+    background:  rgba(116, 52, 129, 0.1);
+}
+.conBody th{
+    text-align: center;
+    vertical-align: center;
+}
+.conBody td{
+    text-align: center;
+    vertical-align: center;
+}
+.conBody .long{
+    width: 30%;
+}
+.conBody .place{
+  width: 12%;
+}
+.conBody .time{
+    width: 120px;
+}
+.conBody .state{
+    width: 80px;
+}
+.conBody .handle2{
+  width: 126px;
+}
+.conBody .handle3{
+  width: 182px;
+}
+.conBody .handle4{
+  width: 308px;
+}
+.conBody .handle5{
+  width: 350px;
+}
+.conBody .handle4 .a{
+    float: none;
+    padding: 10 auto 10 auto;
+    display: inline-block;
+}
+.conBody .handle5 .a{
+    float: none;
+    padding: 10 auto 10 auto;
+    display: inline-block;
+}
+
+.mainContent .conBody .a{
+    padding: 0 10px 0 10px;
+    height: 25px;
+    line-height: 1.7;
+}
+  .mainContent .conBody .examine{
+    background: rgba(116,52,129,0.8);
+}
+  .mainContent .conBody .examine:hover { 
+    background: rgba(116,52,129,0.6);
+}
+  .mainContent .conBody .imp{
+    background: rgba(2,125,143,1);
+}
+  .mainContent .conBody .imp:hover { 
+    background: rgba(3,172,194,1);
+}
+  .mainContent .conBody .top{
+    background: rgba(255,118,56,1);
+}
+  .mainContent .conBody .top:hover { 
+    background: rgba(255,187,51,1);
+}
+  .mainContent .conBody .pass{
+    background: #077F56;
+}
+  .mainContent .conBody .pass:hover { 
+    background: rgba(62,184,102,1);
+}
+  .mainContent .conBody .no-pass{
+    background: rgba(178,34,21,1);
+}
+  .mainContent .conBody .no-pass:hover { 
+    background: rgba(227,43,27,1);
+}
