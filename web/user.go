@@ -21,6 +21,7 @@ func (uc *UserController) MuxHandlers(m JsonMuxer) {
 	m.Get("/appointment", "EntryPageLegacy", uc.GetEntryPageLegacy)
 	m.Get("/appointment/entry", "EntryPageLegacyBak", uc.GetEntryPageLegacy)
 	m.Get("/appointment/student", "StudentPageLegacy", uc.GetStudentPageLegacy)
+	m.Get("/appointment/student/en", "StudentEnPageLegacy", uc.GetStudentEnPageLegacy)
 	m.Get("/appointment/teacher/login", "TeacherLoginPageLegacy", uc.GetTeacherLoginPageLegacy)
 	m.Get("/appointment/teacher", "TeacherPageLegacy", LegacyPageInjection(uc.GetTeacherPageLegacy, "/appointment/teacher/login"))
 	m.Get("/appointment/admin/login", "AdminLoginPageLegacy", uc.GetAdminLoginPageLegacy)
@@ -36,6 +37,7 @@ func (uc *UserController) GetTemplates() []*render.TemplateSet {
 	return []*render.TemplateSet{
 		render.NewTemplateSet("entry", "desktop.html", "legacy/entry.html", "layout/desktop.html"),
 		render.NewTemplateSet("student", "desktop.html", "legacy/student.html", "layout/desktop.html"),
+		render.NewTemplateSet("student_en", "desktop.html", "legacy/student_en.html", "layout/desktop.html"),
 		render.NewTemplateSet("teacher_login", "desktop.html", "legacy/teacher_login.html", "layout/desktop.html"),
 		render.NewTemplateSet("teacher", "desktop.html", "legacy/teacher.html", "layout/desktop.html"),
 		render.NewTemplateSet("admin_login", "desktop.html", "legacy/admin_login.html", "layout/desktop.html"),
@@ -52,6 +54,12 @@ func (uc *UserController) GetEntryPageLegacy(ctx context.Context, w http.Respons
 func (uc *UserController) GetStudentPageLegacy(ctx context.Context, w http.ResponseWriter, r *http.Request) context.Context {
 	params := map[string]interface{}{}
 	uc.RenderHtmlOr500(w, http.StatusOK, "student", params)
+	return ctx
+}
+
+func (uc *UserController) GetStudentEnPageLegacy(ctx context.Context, w http.ResponseWriter, r *http.Request) context.Context {
+	params := map[string]interface{}{}
+	uc.RenderHtmlOr500(w, http.StatusOK, "student_en", params)
 	return ctx
 }
 

@@ -117,13 +117,15 @@ function refreshDataTable(reservations) {
 		$("#col_time").append("<div class='table_cell' id='cell_time_" + i + "' onclick='editReservation("
 			+ i + ")'>" + reservations[i].start_time + "至" + reservations[i].end_time + "</div>");
 		$("#col_teacher_fullname").append("<div class='table_cell' id='cell_teacher_fullname_"
-			+ i + "' onclick='getTeacher(" + i + ")'>" + reservations[i].teacher_fullname + "</div>");
+			+ i + "' onclick='getTeacher(" + i + ")'>" + reservations[i].teacher_fullname + "<br>"
+			+ reservations[i].teacher_fullname_en + "</div>");
 		$("#col_teacher_username").append("<div class='table_cell' id='cell_teacher_username_"
 			+ i + "' onclick='getTeacher(" + i + ")'>" + reservations[i].teacher_username + "</div>");
 		$("#col_teacher_mobile").append("<div class='table_cell' id='cell_teacher_mobile_"
 			+ i + "' onclick='getTeacher(" + i + ")'>" + reservations[i].teacher_mobile + "</div>");
 		$("#col_teacher_address").append("<div class='table_cell' id='cell_teacher_address_"
-			+ i + "' onclick='getTeacher(" + i + ")'>" + reservations[i].teacher_address + "</div>");
+			+ i + "' onclick='getTeacher(" + i + ")'>" + reservations[i].teacher_address + "<br>"
+			+ reservations[i].teacher_address_en + "</div>");
 		if (reservations[i].status === 1) {
 			$("#col_status").append("<div class='table_cell' id='cell_status_" + i + "'>未预约</div>");
 			$("#col_student").append("<div class='table_cell' id='cell_student_" + i + "'>"
@@ -203,14 +205,14 @@ function optimize(t) {
 			$("#cell_student_" + i).css("background-color", "#f3f3ff");
 		}
 	}
-	$("#cell_select_add").height(28);
-	$("#cell_time_add").height(28);
-	$("#cell_teacher_fullname_add").height(28);
-	$("#cell_teacher_username_add").height(28);
-	$("#cell_teacher_mobile_add").height(28);
-	$("#cell_teacher_address_add").height(28);
-	$("#cell_status_add").height(28);
-	$("#cell_student_add").height(28);
+	$("#cell_select_add").height(50);
+	$("#cell_time_add").height(50);
+	$("#cell_teacher_fullname_add").height(50);
+	$("#cell_teacher_username_add").height(50);
+	$("#cell_teacher_mobile_add").height(50);
+	$("#cell_teacher_address_add").height(50);
+	$("#cell_status_add").height(50);
+	$("#cell_student_add").height(50);
 
 	$(".table_head").height($("#head_select").height());
 	$(t).css("left", (width - $(t).width()) / 2 - 11 + "px");
@@ -225,10 +227,12 @@ function addReservation() {
 		+ "<input style='width:20px' id='start_hour'/>时<input style='width:20px' id='start_minute'/>分"
 		+ "至<input style='width:20px' id='end_hour'/>时<input style='width:20px' id='end_minute'/>分";
 	$("#cell_teacher_fullname_add")[0].innerHTML = "<input id='teacher_fullname' style='width:60px'/>"
-		+ "<button type='button' onclick='searchTeacher();'>搜索</button>";
+		+ "<button type='button' onclick='searchTeacher();'>搜索</button><br>"
+		+ "<input id='teacher_fullname_en' style='width:60px'/>";
 	$("#cell_teacher_username_add")[0].innerHTML = "<input id='teacher_username' style='width:120px'/>";
 	$("#cell_teacher_mobile_add")[0].innerHTML = "<input id='teacher_mobile' style='width:120px'/>";
-	$("#cell_teacher_address_add")[0].innerHTML = "<input id='teacher_address' style='width:180px' value='紫荆C楼407室'/>";
+	$("#cell_teacher_address_add")[0].innerHTML = "<input id='teacher_address' style='width:180px' value='紫荆C楼407室'/><br>"
+		+ "<input id='teacher_address_en' style='width:180px' value='Room 407, Zijing C Building'/>";
 	$("#cell_status_add")[0].innerHTML = "<button type='button' onclick='addReservationConfirm();'>确认</button>";
 	$("#cell_student_add")[0].innerHTML = "<button type='button' onclick='window.location.reload();'>取消</button>";
 	$("#input_date").datepicker({
@@ -287,6 +291,11 @@ function addReservationConfirm() {
 		alert("咨询师姓名为空");
 		return;
 	}
+	var fullname_en = $("#teacher_fullname_en").val();
+	if (fullname_en === "" ) {
+		alert("咨询师英文姓名为空");
+		return;
+	}
 	var mobile = $("#teacher_mobile").val();
 	if (mobile === "") {
 		alert("咨询师手机号为空");
@@ -297,13 +306,20 @@ function addReservationConfirm() {
 		alert("咨询师地址为空");
 		return;
 	}
+	var address_en = $("#teacher_address_en").val();
+	if (address_en === "") {
+		alert("咨询师英文地址为空");
+		return;
+	}
 	var payload = {
 		start_time: startTime,
 		end_time: endTime,
 		username: username,
 		fullname: fullname,
+		fullname_en: fullname_en,
 		mobile: mobile,
 		address: address,
+		address_en: address_en,
 	};
 	$.ajax({
 		type: "POST",
@@ -328,8 +344,9 @@ function editReservation(index) {
 		+ "至<input style='width:20px' id='end_hour'/>时<input style='width:20px' id='end_minute'/>分";
 	$("#cell_teacher_fullname_" + index)[0].onclick = "";
 	$("#cell_teacher_fullname_" + index)[0].innerHTML = "<input id='teacher_fullname" + index + "' style='width:60px' "
-		+ "value='" + reservations[index].teacher_fullname + "''></input>"
-		+ "<button type='button' onclick='searchTeacher(" + index + ");'>搜索</button>";
+		+ "value='" + reservations[index].teacher_fullname + "'/>"
+		+ "<button type='button' onclick='searchTeacher(" + index + ");'>搜索</button><br>"
+		+ "<input id='teacher_fullname_en" + index + "' style='width:60px' value='" + reservations[index].teacher_fullname_en + "'/>";
 	$("#cell_teacher_username_" + index)[0].onclick = "";
 	$("#cell_teacher_username_" + index)[0].innerHTML = "<input id='teacher_username" + index + "' style='width:120px' "
 		+ "value='" + reservations[index].teacher_username + "'/>";
@@ -338,7 +355,8 @@ function editReservation(index) {
 		+ "value='" + reservations[index].teacher_mobile + "'/>";
 	$("#cell_teacher_address_" + index)[0].onclick = "";
 	$("#cell_teacher_address_" + index)[0].innerHTML = "<input id='teacher_address" + index + "' style='width:180px' "
-		+ "value='" + reservations[index].teacher_address + "'/>";
+		+ "value='" + reservations[index].teacher_address + "'/><br>"
+		+ "<input id='teacher_address_en" + index + "' style='width:180px' value='" + reservations[index].teacher_address_en + "'/>";
 	$("#cell_status_" + index)[0].innerHTML = "<button type='button' onclick='editReservationConfirm(" + index + ");'>确认</button>";
 	$("#cell_student_" + index)[0].innerHTML = "<button type='button' onclick='window.location.reload();'>取消</button>";
 	$("#input_date").datepicker({
@@ -397,6 +415,11 @@ function editReservationConfirm(index) {
 		alert("咨询师姓名为空");
 		return;
 	}
+	var fullname_en = $("#teacher_fullname_en" + index).val();
+	if (fullname_en === "" ) {
+		alert("咨询师英文姓名为空");
+		return;
+	}
 	var mobile = $("#teacher_mobile" + index).val();
 	if (mobile === "") {
 		alert("咨询师手机号为空");
@@ -407,14 +430,21 @@ function editReservationConfirm(index) {
 		alert("咨询师地址为空");
 		return;
 	}
+	var address_en = $("#teacher_address_en" + index).val();
+	if (address_en === "") {
+		alert("咨询师英文地址为空");
+		return;
+	}
 	var payload = {
 		reservation_id: reservations[index].id,
 		start_time: startTime,
 		end_time: endTime,
 		username: username,
 		fullname: fullname,
+		fullname_en: fullname_en,
 		mobile: mobile,
 		address: address,
+		address_en: address_en,
 	};
 	$.ajax({
 		type: "POST",
@@ -436,6 +466,7 @@ function searchTeacher(index) {
 	var payload = {
 		username: $("#teacher_username" + (index === undefined ? "" : index)).val(),
 		fullname: $("#teacher_fullname" + (index === undefined ? "" : index)).val(),
+		fullname_en: $("#teacher_fullname_en" + (index === undefined ? "" : index)).val(),
 		mobile: $("#teacher_mobile" + (index === undefined ? "" : index)).val(),
 	};
 	$.ajax({
@@ -448,8 +479,10 @@ function searchTeacher(index) {
 			if (data.status === "OK") {
 				$("#teacher_username" + (index === undefined ? "" : index)).val(data.payload.teacher.username);
 				$("#teacher_fullname" + (index === undefined ? "" : index)).val(data.payload.teacher.fullname);
+				$("#teacher_fullname_en" + (index === undefined ? "" : index)).val(data.payload.teacher.fullname_en);
 				$("#teacher_mobile" + (index === undefined ? "" : index)).val(data.payload.teacher.mobile);
 				$("#teacher_address" + (index === undefined ? "" : index)).val(data.payload.teacher.address);
+				$("#teacher_address_en" + (index === undefined ? "" : index)).val(data.payload.teacher.address_en);
 			}
 		}
 	});
@@ -714,19 +747,28 @@ function showTeacher(teacher) {
 	$("body").append("\
 		<div class='admin_chakan' style='text-align: left'>\
 			姓　　名：<input id='show_teacher_fullname' value='" + teacher.fullname + "'><br>\
+			Name    ：<input id='show_teacher_fullname_en' value='" + teacher.fullname_en + "'><br>\
 			性　　别：<select id='show_teacher_gender'><option value=''>请选择</option><option value='男'>男</option><option value='女'>女</option></select><br>\
+			Gender  ：<select id='show_teacher_gender_en'><option value=''>choose male/female</option><option value='male'>male</option><option value='female'>female</option></select><br>\
 			专业背景：<input id='show_teacher_major' value='" + teacher.major + "'><br>\
+			Major   ：<input id='show_teacher_major_en' value='" + teacher.major_en + "'><br>\
 			学　　历：<input id='show_teacher_academic' value='" + teacher.academic + "'><br>\
+			Academic：<input id='show_teacher_academic_en' value='" + teacher.academic_en + "'><br>\
 			资　　质：<input id='show_teacher_aptitude' value='" + teacher.aptitude + "'><br>\
+			Aptitude：<input id='show_teacher_aptitude_en' value='" + teacher.aptitude_en + "'><br>\
 			可咨询的问题：<br>\
 			<textarea id='show_teacher_problem' style='width:70%; height:60px;'></textarea><br>\
+			Consultable Questions：<br>\
+			<textarea id='show_teacher_problem_en' style='width:70%; height:60px;'></textarea><br>\
 			<button type='button' onclick='editTeacher(" + teacher.username + ");'>保存</button>\
 			<button type='button' onclick='$(\".admin_chakan\").remove();'>关闭</button>\
 			<span id='edit_tip' style='color: red'></span>\
 		</div>\
 	");
 	$('#show_teacher_gender').val(teacher.gender);
+	$('#show_teacher_gender_en').val(teacher.gender_en);
 	$('#show_teacher_problem').val(teacher.problem);
+	$('#show_teacher_problem_en').val(teacher.problem_en);
 	optimize(".admin_chakan");
 }
 
@@ -736,9 +778,19 @@ function editTeacher(teacherUsername) {
 		alert("姓名为空");
 		return;
 	}
+	var fullname_en = $('#show_teacher_fullname_en').val();
+	if (fullname_en === "") {
+		alert("英文姓名为空");
+		return;
+	}
 	var gender = $('#show_teacher_gender').val();
 	if (gender === "") {
 		alert("性别为空");
+		return;
+	}
+	var gender_en = $('#show_teacher_gender_en').val();
+	if (gender_en === "") {
+		alert("性别（英文）为空");
 		return;
 	}
 	var major = $('#show_teacher_major').val();
@@ -746,9 +798,19 @@ function editTeacher(teacherUsername) {
 		alert("专业背景为空");
 		return;
 	}
+	var major_en = $('#show_teacher_major_en').val();
+	if (major_en === "") {
+		alert("专业背景（英文）为空");
+		return;
+	}
 	var academic = $('#show_teacher_academic').val();
 	if (academic === "") {
 		alert("学历为空");
+		return;
+	}
+	var academic_en = $('#show_teacher_academic_en').val();
+	if (academic_en === "") {
+		alert("学历（英文）为空");
 		return;
 	}
 	var aptitude = $('#show_teacher_aptitude').val();
@@ -756,19 +818,35 @@ function editTeacher(teacherUsername) {
 		alert("资质为空");
 		return;
 	}
+	var aptitude_en = $('#show_teacher_aptitude_en').val();
+	if (aptitude_en === "") {
+		alert("资质（英文）为空");
+		return;
+	}
 	var problem = $('#show_teacher_problem').val();
 	if (problem === "") {
 		alert("可咨询问题为空");
 		return;
 	}
+	var problem_en = $('#show_teacher_problem_en').val();
+	if (problem_en === "") {
+		alert("可咨询问题（英文）为空");
+		return;
+	}
 	var payload = {
 		username: teacherUsername,
 		fullname: fullname,
+		fullname_en: fullname_en,
 		gender: gender,
+		gender_en: gender_en,
 		major: major,
+		major_en: major_en,
 		academic: academic,
+		academic_en: academic_en,
 		aptitude: aptitude,
+		aptitude_en: aptitude_en,
 		problem: problem,
+		problem_en: problem_en,
 	};
 	$.ajax({
 		type: "POST",

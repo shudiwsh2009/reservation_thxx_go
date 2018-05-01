@@ -54,7 +54,8 @@ function refreshDataTable(reservations) {
 			+ i + ")'>" + reservations[i].start_time.split(" ")[0].substr(2) + "<br>"
 			+ reservations[i].start_time.split(" ")[1] + "-" + reservations[i].end_time.split(" ")[1] + "</div>");
 		$("#col_teacher_fullname").append("<div class='table_cell' id='cell_teacher_fullname_"
-			+ i + "'>" + reservations[i].teacher_fullname + "</div>");
+			+ i + "'>" + reservations[i].teacher_fullname + "<br>"
+			+ reservations[i].teacher_fullname_en + "</div>");
 		$("#col_teacher_mobile").append("<div class='table_cell' id='cell_teacher_mobile_"
 			+ i + "'>" + reservations[i].teacher_mobile + "</div>");
 		if (reservations[i].status === 1) {
@@ -145,7 +146,8 @@ function addReservation() {
 	$("#cell_time_add")[0].innerHTML = "<input type='text' id='input_date' style='width: 60px'/><br>"
 		+ "<input style='width:15px' id='start_hour'/>时<input style='width:15px' id='start_minute'/>分<br>"
 		+ "<input style='width:15px' id='end_hour'/>时<input style='width:15px' id='end_minute'/>分";
-	$("#cell_teacher_fullname_add")[0].innerHTML = "<input id='teacher_fullname' style='width:80px' value='" + teacher.fullname + "'/>";
+	$("#cell_teacher_fullname_add")[0].innerHTML = "<input id='teacher_fullname' style='width:80px' value='" + teacher.fullname + "'/><br>"
+		+ "<input id='teacher_fullname_en' style='width:80px' value='" + teacher.fullname_en + "'/>";
 	$("#cell_teacher_mobile_add")[0].innerHTML = "<input id='teacher_mobile' style='width:120px' value='" + teacher.mobile + "'/>";
 	$("#cell_status_add")[0].innerHTML = "<button type='button' onclick='addReservationConfirm();'>确认</button>";
 	$("#cell_student_add")[0].innerHTML = "<button type='button' onclick='window.location.reload();'>取消</button>";
@@ -213,6 +215,11 @@ function addReservationConfirm() {
 		alert("咨询师姓名为空");
 		return;
 	}
+	var fullname_en = $("#teacher_fullname_en").val();
+	if (fullname_en === "" ) {
+		alert("咨询师英文姓名为空");
+		return;
+	}
 	var mobile = $("#teacher_mobile").val();
 	if (mobile === "") {
 		alert("咨询师手机号为空");
@@ -222,6 +229,7 @@ function addReservationConfirm() {
 		start_time: startTime,
 		end_time: endTime,
 		fullname: $("#teacher_fullname").val(),
+		fullname_en: $("#teacher_fullname_en").val(),
 		mobile: $("#teacher_mobile").val(),
 	};
 	$.ajax({
@@ -247,7 +255,9 @@ function editReservation(index) {
 		+ "<input style='width:15px' id='start_hour'/>时<input style='width:15px' id='start_minute'/>分"
 		+ "<input style='width:15px' id='end_hour'/>时<input style='width:15px' id='end_minute'/>分";
 	$("#cell_teacher_fullname_" + index)[0].innerHTML = "<input id='teacher_fullname" + index + "' style='width:80px' "
-		+ "value='" + reservations[index].teacher_fullname + "''></input>";
+		+ "value='" + reservations[index].teacher_fullname + "'/><br>"
+		+ "<input id='teacher_fullname_en" + index + "' style='width:80px' "
+		+ "value='" + reservations[index].teacher_fullname_en + "'/>";
 	$("#cell_teacher_mobile_" + index)[0].innerHTML = "<input id='teacher_mobile" + index + "' style='width:120px' "
 		+ "value='" + reservations[index].teacher_mobile + "'/>";
 	$("#cell_status_" + index)[0].innerHTML = "<button type='button' onclick='editReservationConfirm(" + index + ");'>确认</button>";
@@ -310,6 +320,11 @@ function editReservationConfirm(index) {
 		alert("咨询师姓名为空");
 		return;
 	}
+	var fullname_en = $("#teacher_fullname_en" + index).val();
+	if (fullname_en === "" ) {
+		alert("咨询师英文姓名为空");
+		return;
+	}
 	var mobile = $("#teacher_mobile" + index).val();
 	if (mobile === "") {
 		alert("咨询师手机号为空");
@@ -320,6 +335,7 @@ function editReservationConfirm(index) {
 		start_time: startTime,
 		end_time: endTime,
 		fullname: $("#teacher_fullname" + index).val(),
+		fullname_en: $("#teacher_fullname_en" + index).val(),
 		mobile: $("#teacher_mobile" + index).val(),
 	};
 	$.ajax({
