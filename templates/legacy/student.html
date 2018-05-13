@@ -1,31 +1,42 @@
 {{ define "title" }}
-<meta charset="UTF-8">
-<meta name="HandheldFriendly" content="True">
-<meta name="MobileOptimized" content="320">
-<meta content="telephone=no" name="format-detection">
-<meta name="viewport" content="width=device-width, maximum-scale=1, initial-scale=1, user-scalable=no">
-<title>
-    学习与发展指导中心预约系统
-</title>
-<link type="text/css" href="/static/legacy/assets/css/style.css" rel="stylesheet">
-<script type="text/javascript" src="/static/legacy/assets/js/jquery-3.2.1.min.js"></script>
+<head>
+    <title>学习发展中心一对一咨询预约系统</title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="/static/legacy/assets/css/index.css">
+    <link href="/static/legacy/assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/static/legacy/assets/css/fit.css">
+    <link rel="stylesheet" type="text/css" href="/static/legacy/assets/css/mainContent.css">
+    <link type="text/css" href="/static/legacy/assets/css/style.css" rel="stylesheet">
+    <script type="text/javascript" src="/static/legacy/assets/js/jquery-3.2.1.min.js"></script>
+   
+</head>
 {{ end }}
 
 {{ define "content" }}
-<body background="/static/legacy/assets/img/bg.png">
-<div id="page_title">
-    <img id="titleImage" style="width:100%;" src="/static/legacy/assets/img/xxfzzdzx.jpg">
-    <br><br>欢迎使用咨询预约系统<br>请根据您的需要选择相应咨询师和时间段进行预约<br>
-    <p style="font-size: 18px; color: black">(点击日期展开当日咨询列表)</p>
-    <p style="font-size: 18px; color: black">(点击咨询师姓名查看详细信息)</p>
-</div>
-<div id="page_maintable" style="text-align:center;">
+<body style="overflow-x: hidden; overflow-y: auto;">
+    <nav class="navbar navbar-inverse" style="background-color: #743481;background-image: none; margin-bottom: 8px">
+      <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#">欢迎使用一对一咨询预约系统</a>
+        </div>
+      </div>
+    </nav>
+    
 
-</div>
-<div id="page_bottom"><br><br>清华大学学生学习发展指导中心<br>联系方式：62792453(欧老师)<br>办公时间：周一至周五 8:00-12:00 13:00-17:00</div>
+    <div class="panel">
+        <div class="mainContent" id="mainContent" style="padding: 5px 0 5px 0; margin: 5px 0px 5px 0px">
+            <div class="conBody" style="padding-top: 0px">
+                <div id="page_maintable" style="text-align:center;">
+                </div>
+            </div>
+        </div>   
+    </div>
+
+    <script type="text/javascript" src="/static/legacy/assets/js/student.js"></script>
+    <script type="text/javascript">
+        viewGroupedReservations();
+    </script>
 </body>
-<script type="text/javascript" src="/static/legacy/assets/js/student.js"></script>
-<script type="text/javascript">
-    viewGroupedReservations();
-</script>
 {{ end }}

@@ -92,7 +92,7 @@ function refreshDataTableForGroups(reservationGroups) {
 		var group = reservationGroups[i];
 		$("#page_maintable").append("\
 			<div class='has_children' data-name='" + group.date + "' style='overflow: hidden;'>\
-				<div class='children_title'>" + group.date + " " + group.teacher_num + "consultants and " + group.total_reservation_count
+				<div class='children_title'>" + group.date + " " + group.teacher_num + " consultants and " + group.total_reservation_count
 					 + " sessions, " + group.available_reservation_count + " available" + "</div>\
 				<div class='table_col children' id='col_time_" + group.date + "' style='background-color:white;'>\
 					<div class='table_head table_cell'>Time</div>\

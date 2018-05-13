@@ -1,23 +1,36 @@
 {{ define "title" }}
 <meta charset="UTF-8">
-<meta name="HandheldFriendly" content="True">
-<meta name="MobileOptimized" content="320">
-<meta content="telephone=no" name="format-detection">
-<meta name="viewport" content="width=device-width, maximum-scale=1, initial-scale=1, user-scalable=no">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+
 <title>
-    学习与发展指导中心预约系统
+    学习发展中心一对一咨询预约系统
 </title>
+<link href="/static/legacy/assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="/static/legacy/assets/css/fit.css">
+<link rel="stylesheet" type="text/css" href="/static/legacy/assets/css/mainContent.css">
 <link type="text/css" href="/static/legacy/assets/css/style.css" rel="stylesheet">
+
 <script type="text/javascript" src="/static/legacy/assets/js/jquery-3.2.1.min.js"></script>
 <script type="text/javascript" src="/static/legacy/assets/js/jquery-ui.min.js"></script>
 <link rel="stylesheet" href="/static/legacy/assets/js/jquery-ui.min.css" type="text/css">
 {{ end }}
 
 {{ define "content" }}
-<body background="/static/legacy/assets/img/bg.png" style="text-align:center;">
-    <div id="page_title">
-        学习与发展指导中心预约系统<br>管理员系统
-    </div>
+<body style="overflow-x: hidden; overflow-y: auto; text-align:center;">
+    <nav class="navbar navbar-inverse" style="background-color: #743481;background-image: none; margin-bottom: 8px">
+      <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#">欢迎使用一对一咨询预约系统</a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="panel">
+        <div class="mainContent" id="mainContent" style="padding: 5px 0 5px 0; margin: 5px 0px 5px 0px">
+            <div class="conBody" style="padding-top: 0px">
+
     <button onclick="addReservation();">新增</button>
     <button onclick="removeReservations();">删除</button>
     <button onclick="cancelReservations();">取消预约</button>
@@ -33,7 +46,10 @@
     <div id="page_maintable">
 
     </div>
-    <div id="page_bottom"><br><br>清华大学学生学习发展指导中心<br>联系方式：62792453(欧老师)</div>
+
+            </div>
+        </div>
+    </div>
 </body>
 <script type="text/javascript" src="/static/legacy/assets/js/user.js"></script>
 <script type="text/javascript" src="/static/legacy/assets/js/admin.js"></script>

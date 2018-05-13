@@ -47,7 +47,7 @@ $(LINUX_EXTERNAL): $(GO_FILES)
 kill:
 	@kill `cat $(PID)` || true
 
-dev: clean $(BUNDLE) restart
+dev: clean $(BUNDLE) $(MAC_TARGET) $(MAC_EXTERNAL) restart
 	@DEV_HOT=true NODE_ENV=development $(NODE_BIN)/webpack-dev-server --config webpack.config.js &
 	@printf "\n\nWaiting for the file change\n\n"
 	@fswatch --one-per-batch $(GO_FILES) | xargs -n1 -I{} make restart || make kill
