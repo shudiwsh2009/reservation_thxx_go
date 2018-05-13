@@ -17,6 +17,9 @@ function viewReservations() {
 		type: "GET",
 		async: false,
 		url: "/api/student/reservation/view",
+		data: {
+			"language": "en_us",
+		},
 		dataType: "json",
 		success: function(data) {
 			if (data.status === "OK") {
@@ -33,20 +36,23 @@ function viewReservations() {
 
 function viewGroupedReservations() {
 	$.ajax({
-			type: "GET",
-			async: false,
-			url: "/api/student/reservation/view/group",
-			dataType: "json",
-			success: function(data) {
-				if (data.status === "OK") {
-					console.log(data);
-					reservations = data.payload.reservations;
-					reservationGroups = data.payload.reservation_groups;
-					refreshDataTableForGroups(reservationGroups);
-				} else {
-					alert(data.err_msg);
-				}
+		type: "GET",
+		async: false,
+		url: "/api/student/reservation/view/group",
+        data: {
+            "language": "en_us",
+        },
+		dataType: "json",
+		success: function(data) {
+			if (data.status === "OK") {
+				console.log(data);
+				reservations = data.payload.reservations;
+				reservationGroups = data.payload.reservation_groups;
+				refreshDataTableForGroups(reservationGroups);
+			} else {
+				alert(data.err_msg);
 			}
+		}
 	});
 }
 
