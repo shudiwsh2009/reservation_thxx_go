@@ -17,6 +17,9 @@ function viewReservations() {
 		type: "GET",
 		async: false,
 		url: "/api/student/reservation/view",
+		data: {
+			"language": "en_us",
+		},
 		dataType: "json",
 		success: function(data) {
 			if (data.status === "OK") {
@@ -33,20 +36,23 @@ function viewReservations() {
 
 function viewGroupedReservations() {
 	$.ajax({
-			type: "GET",
-			async: false,
-			url: "/api/student/reservation/view/group",
-			dataType: "json",
-			success: function(data) {
-				if (data.status === "OK") {
-					console.log(data);
-					reservations = data.payload.reservations;
-					reservationGroups = data.payload.reservation_groups;
-					refreshDataTableForGroups(reservationGroups);
-				} else {
-					alert(data.err_msg);
-				}
+		type: "GET",
+		async: false,
+		url: "/api/student/reservation/view/group",
+        data: {
+            "language": "en_us",
+        },
+		dataType: "json",
+		success: function(data) {
+			if (data.status === "OK") {
+				console.log(data);
+				reservations = data.payload.reservations;
+				reservationGroups = data.payload.reservation_groups;
+				refreshDataTableForGroups(reservationGroups);
+			} else {
+				alert(data.err_msg);
 			}
+		}
 	});
 }
 
@@ -92,7 +98,7 @@ function refreshDataTableForGroups(reservationGroups) {
 		var group = reservationGroups[i];
 		$("#page_maintable").append("\
 			<div class='has_children' data-name='" + group.date + "' style='overflow: hidden;'>\
-				<div class='children_title'>" + group.date + " " + group.teacher_num + "consultants and " + group.total_reservation_count
+				<div class='children_title'>" + group.date + " " + group.teacher_num + " consultants and " + group.total_reservation_count
 					 + " sessions, " + group.available_reservation_count + " available" + "</div>\
 				<div class='table_col children' id='col_time_" + group.date + "' style='background-color:white;'>\
 					<div class='table_head table_cell'>Time</div>\

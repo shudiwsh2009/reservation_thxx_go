@@ -4,6 +4,7 @@ import (
 	"github.com/mijia/sweb/form"
 	"github.com/shudiwsh2009/reservation_thxx_go/service"
 	"net/http"
+	"github.com/shudiwsh2009/reservation_thxx_go/model"
 )
 
 type ReservationController struct {
@@ -195,11 +196,10 @@ func (rc *ReservationController) AddReservationByTeacher(w http.ResponseWriter, 
 	fullname := form.ParamString(r, "fullname", "")
 	fullnameEn := form.ParamString(r, "fullname_en", "")
 	mobile := form.ParamString(r, "mobile", "")
-	internationalType := form.ParamInt(r, "international_type", 0)
 
 	var result = make(map[string]interface{})
 
-	reservation, err := service.Workflow().AddReservationByTeacher(startTime, endTime, fullname, fullnameEn, mobile, internationalType, userId, userType)
+	reservation, err := service.Workflow().AddReservationByTeacher(startTime, endTime, fullname, fullnameEn, mobile, userId, userType)
 	if err != nil {
 		return http.StatusOK, wrapJsonError(err)
 	}
@@ -215,11 +215,10 @@ func (rc *ReservationController) EditReservationByTeacher(w http.ResponseWriter,
 	fullname := form.ParamString(r, "fullname", "")
 	fullnameEn := form.ParamString(r, "fullname_en", "")
 	mobile := form.ParamString(r, "mobile", "")
-	internationalType := form.ParamInt(r, "international_type", 0)
 
 	var result = make(map[string]interface{})
 
-	reservation, err := service.Workflow().EditReservationByTeacher(reservationId, startTime, endTime, fullname, fullnameEn, mobile, internationalType, userId, userType)
+	reservation, err := service.Workflow().EditReservationByTeacher(reservationId, startTime, endTime, fullname, fullnameEn, mobile, userId, userType)
 	if err != nil {
 		return http.StatusOK, wrapJsonError(err)
 	}
@@ -535,11 +534,12 @@ func (rc *ReservationController) EditTeacherInfoByAdmin(w http.ResponseWriter, r
 	aptitudeEn := form.ParamString(r, "aptitude_en", "")
 	problem := form.ParamString(r, "problem", "")
 	problemEn := form.ParamString(r, "problem_en", "")
+	internationalType := form.ParamInt(r, "international_type", model.InternationalTypeChinese)
 
 	var result = make(map[string]interface{})
 
 	_, err := service.Workflow().EditTeacherInfoByAdmin(username, fullname, fullnameEn, gender, genderEn, major, majorEn,
-		academic, academicEn, aptitude, aptitudeEn, problem, problemEn, userId, userType)
+		academic, academicEn, aptitude, aptitudeEn, problem, problemEn, internationalType, userId, userType)
 	if err != nil {
 		return http.StatusOK, wrapJsonError(err)
 	}

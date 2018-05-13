@@ -8,7 +8,7 @@ import (
 )
 
 func (w *Workflow) AddReservationByTeacher(startTime string, endTime string, fullname string, fullnameEn string,
-	mobile string, internationalType int, userId string, userType int) (*model.Reservation, error) {
+	mobile string, userId string, userType int) (*model.Reservation, error) {
 	if userId == "" {
 		return nil, re.NewRErrorCode("teacher not login", nil, re.ErrorNoLogin)
 	} else if userType != model.UserTypeTeacher {
@@ -39,12 +39,10 @@ func (w *Workflow) AddReservationByTeacher(startTime string, endTime string, ful
 	if start.After(end) {
 		return nil, re.NewRErrorCode("start time cannot be after end time", nil, re.ErrorEditReservationEndTimeBeforeStartTime)
 	}
-	if teacher.Fullname != fullname || teacher.FullnameEn != fullnameEn || teacher.Mobile != mobile ||
-		teacher.InternationalType != internationalType {
+	if teacher.Fullname != fullname || teacher.FullnameEn != fullnameEn || teacher.Mobile != mobile {
 		teacher.Fullname = fullname
 		teacher.FullnameEn = fullnameEn
 		teacher.Mobile = mobile
-		teacher.InternationalType = internationalType
 		if err = w.mongoClient.UpdateTeacher(teacher); err != nil {
 			return nil, re.NewRErrorCode("fail to update teacher", err, re.ErrorDatabase)
 		}
@@ -85,7 +83,7 @@ func (w *Workflow) AddReservationByTeacher(startTime string, endTime string, ful
 }
 
 func (w *Workflow) EditReservationByTeacher(reservationId string, startTime string, endTime string, fullname string,
-	fullnameEn string, mobile string, internationalType int, userId string, userType int) (*model.Reservation, error) {
+	fullnameEn string, mobile string, userId string, userType int) (*model.Reservation, error) {
 	if userId == "" {
 		return nil, re.NewRErrorCode("teacher not login", nil, re.ErrorNoLogin)
 	} else if userType != model.UserTypeTeacher {
@@ -128,12 +126,10 @@ func (w *Workflow) EditReservationByTeacher(reservationId string, startTime stri
 	} else if start.Before(time.Now()) {
 		return nil, re.NewRErrorCode("cannot edit outdated reservation", nil, re.ErrorEditOutdatedReservation)
 	}
-	if teacher.Fullname != fullname || teacher.FullnameEn != fullnameEn || teacher.Mobile != mobile ||
-		teacher.InternationalType != internationalType {
+	if teacher.Fullname != fullname || teacher.FullnameEn != fullnameEn || teacher.Mobile != mobile {
 		teacher.Fullname = fullname
 		teacher.FullnameEn = fullnameEn
 		teacher.Mobile = mobile
-		teacher.InternationalType = internationalType
 		if err = w.mongoClient.UpdateTeacher(teacher); err != nil {
 			return nil, re.NewRErrorCode("fail to update teacher", err, re.ErrorDatabase)
 		}
@@ -157,7 +153,6 @@ func (w *Workflow) EditReservationByTeacher(reservationId string, startTime stri
 	// 更新咨询
 	reservation.StartTime = start
 	reservation.EndTime = end
-	reservation.InternationalType = internationalType
 	reservation.TeacherFullname = teacher.Fullname
 	reservation.TeacherFullnameEn = teacher.FullnameEn
 	reservation.TeacherMobile = teacher.Mobile

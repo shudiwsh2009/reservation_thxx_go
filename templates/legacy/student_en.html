@@ -1,32 +1,15 @@
 {{ define "title" }}
 <head>
-    <title>学习与发展指导中心预约系统-清华大学学习发展中心答疑坊</title>
+    <title>Booking System for One-on-One Advising Service of CSLD</title>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
     <link rel="stylesheet" href="/static/legacy/assets/css/index.css">
     <link href="/static/legacy/assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/static/legacy/assets/bootstrap/css/bootstrap-theme.min.css" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="/static/legacy/assets/jquery-ui/jquery-ui.css">
-    <!--模态框-->
-    <link rel="stylesheet" type="text/css" href="/static/legacy/assets/jquery-ui/jquery-ui-timepicker-addon.css">
     <link rel="stylesheet" type="text/css" href="/static/legacy/assets/css/fit.css">
     <link rel="stylesheet" type="text/css" href="/static/legacy/assets/css/mainContent.css">
-    
-    <style>
-        .crop-container
-        {   
-        }
-        .action
-        {
-            width: 100%;
-            height: 30px;
-            margin: 10px 0;
-        }
-        .cropped>img
-        {
-            margin-right: 10px;
-        }
-    </style>
+    <link type="text/css" href="/static/legacy/assets/css/style.css" rel="stylesheet">
+    <script type="text/javascript" src="/static/legacy/assets/js/jquery-3.2.1.min.js"></script>
+   
 </head>
 {{ end }}
 
@@ -35,109 +18,22 @@
     <nav class="navbar navbar-inverse" style="background-color: #743481;background-image: none; margin-bottom: 8px">
       <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
+        <div class="navbar-header" style="padding-bottom: 20px">
           <a class="navbar-brand" href="#">Welcome to the Booking System for One-on-One Advising Service</a>
         </div>
       </div>
     </nav>
     
 
-    <script src="/static/legacy/assets/js/ie-emulation-modes-warning.js"></script>
-    <script src="/static/legacy/assets/js/jquery.min.js"></script>
-    <script src="/static/legacy/assets/jquery-ui/jquery-ui.js"></script>
-
     <div class="panel">
-        <div class="mainContent" id="mainContent" style="padding: 10px 0px 10px 0px; margin: 5px 0px 5px 0px">
-            <div class="conBody" style="padding-top: 10px 2px 10px 2px">
-                <div id="page_maintable">
+        <div class="mainContent" id="mainContent" style="padding: 5px 0 5px 0; margin: 5px 0px 5px 0px">
+            <div class="conBody" style="padding-top: 0px">
+                <div id="page_maintable" style="text-align:center;">
                 </div>
             </div>
         </div>   
     </div>
 
-    <script src="/static/legacy/assets/bootstrap/js/bootstrap.min.js"></script>
-    <script src="/static/legacy/assets/js/fliplightbox.min.js"></script>
-    <script type="text/javascript">$('body').flipLightBox()</script>
-    <script src="/static/legacy/assets/crop/cropbox.js"></script>
-    <script src="/static/legacy/assets/js/check.js"></script>
-    
-    <script type="text/javascript">
-        $(window).load(function() {
-            var options =
-            {
-                thumbBox: '.thumbBox',
-                spinner: '.spinner',
-                imgSrc: ''
-            }
-            var cropper = $('.imageBox').cropbox(options);
-            $('#file').on('change', function(){
-                var reader = new FileReader();
-                reader.onload = function(e) {
-                    options.imgSrc = e.target.result;
-                    cropper = $('.imageBox').cropbox(options);
-                }
-                reader.readAsDataURL(this.files[0]);
-                this.files = [];
-            })
-            $('#btnCrop').on('click', function(){
-
-                var img = cropper.getDataURL();
-                $('.cropped').append('<img src="'+img+'">');
-                $('.crop-container').hide();
-                var params = cropper.getParams();
-                $('#sw').val(params[0]);
-                $('#sh').val(params[1]);
-                $('#dx').val(params[2]);
-                $('#dy').val(params[3]);
-                $('#dw').val(params[4]);
-                $('#dh').val(params[5]);
-
-            })
-            $('#btnZoomIn').on('click', function(){
-                cropper.zoomIn();
-            })
-            $('#btnZoomOut').on('click', function(){
-                cropper.zoomOut();
-            })
-        });
-    </script>
-    <script src="/static/legacy/assets/kindeditor/kindeditor-min.js"></script>
-    <script>
-       KindEditor.ready(function(K) {
-          var options = {
-            width : '100%',
-            height : '300px',
-            items : ['source', '|', 'undo', 'redo', '|', 'justifyleft', 'justifycenter', 'justifyright',
-                'justifyfull', '|', 'fontname', 'fontsize', '|', 'forecolor', 'hilitecolor', 'bold',
-                    'italic', 'underline', 'lineheight', 'removeformat', '|', 'image', 'media'],
-                autoHeightMode : true,
-                filterMode : false,
-                fontSizeTable : ['9px', '10px', '12px', '14px', '16px', '18px', '24px', '32px',"40px","48px"]
-          }
-                  window.editor = K.create('textarea[name="Content"]', options);
-          });
-    </script>
-
-    <script>
-       KindEditor.ready(function(K) {
-          var options = {
-            width : '100%',
-            height : '300px',
-            items : ['source'],
-                autoHeightMode : true,
-                filterMode : false,
-                fontSizeTable : ['9px', '10px', '12px', '14px', '16px', '18px', '24px', '32px',"40px","48px"]
-          }
-                  window.editor = K.create('textarea[name="div1"]', options);
-                  window.editor = K.create('textarea[name="div2"]', options);
-          });
-    </script>
     <script type="text/javascript" src="/static/legacy/assets/js/student_en.js"></script>
     <script type="text/javascript">
         viewGroupedReservations();
