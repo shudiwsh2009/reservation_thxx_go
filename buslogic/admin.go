@@ -430,7 +430,7 @@ func (w *Workflow) GetTeacherInfoByAdmin(username string, userId string, userTyp
 
 func (w *Workflow) EditTeacherInfoByAdmin(username string, fullname string, fullnameEn string, gender string,
 	genderEn string, major string, majorEn string, academic string, academicEn string, aptitude string, aptitudeEn string,
-	problem string, problemEn string, userId string, userType int) (*model.Teacher, error) {
+	problem string, problemEn string, internationalType int, userId string, userType int) (*model.Teacher, error) {
 	if userId == "" {
 		return nil, re.NewRErrorCode("admin not login", nil, re.ErrorNoLogin)
 	} else if userType != model.UserTypeAdmin {
@@ -460,6 +460,7 @@ func (w *Workflow) EditTeacherInfoByAdmin(username string, fullname string, full
 	teacher.AptitudeEn = aptitudeEn
 	teacher.Problem = problem
 	teacher.ProblemEn = problemEn
+	teacher.InternationalType = internationalType
 	if err = w.mongoClient.UpdateTeacher(teacher); err != nil {
 		return nil, re.NewRErrorCode("fail to update teacher", err, re.ErrorDatabase)
 	}
