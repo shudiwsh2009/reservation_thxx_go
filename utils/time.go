@@ -4,15 +4,40 @@ import (
 	"time"
 )
 
-var Weekdays = [...]string{
-	"日",
-	"一",
-	"二",
-	"三",
-	"四",
-	"五",
-	"六",
-}
+var (
+	ChineseShortWeekday = [...]string{
+		"日",
+		"一",
+		"二",
+		"三",
+		"四",
+		"五",
+		"六",
+	}
+	EnglishShortWeekday = [...]string{
+		"Sun",
+		"Mon",
+		"Tue",
+		"Wed",
+		"Thu",
+		"Fri",
+		"Sat",
+	}
+	EnglishShortMonth = [...]string{
+		"Jan",
+		"Feb",
+		"Mar",
+		"Apr",
+		"May",
+		"Jun",
+		"Jul",
+		"Aug",
+		"Sep",
+		"Oct",
+		"Nov",
+		"Dec",
+	}
+)
 
 func ConcatTime(date time.Time, clock time.Time) time.Time {
 	return time.Date(date.Year(), date.Month(), date.Day(), clock.Hour(), clock.Minute(),
