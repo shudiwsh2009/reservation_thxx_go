@@ -16,7 +16,7 @@ import (
 
 const (
 	SmsSuccessStudent   = "%s你好，你已成功预约星期%s（%d月%d日）%s-%s咨询，地点：%s。电话：62792453。"
-	SmsEnSuccessStudent = "Dear %s, you have successfully made an appointment of advising service for %s (%s %s) from %s to %s in %s. Tel: 62792453."
+	SmsEnSuccessStudent = "Dear %s, you have successfully made an appointment of advising service for %s (%s %d) from %s to %s in %s. Tel: 62792453."
 	SmsSuccessTeacher   = "%s您好，%s已预约您星期%s（%d月%d日）%s-%s咨询，地点：%s。电话：62792453。"
 	SmsReminderStudent  = "温馨提示：%s你好，你已成功预约明天%s-%s咨询，地点：%s。电话：62792453。"
 	SmsReminderTeacher  = "温馨提示：%s您好，%s已预约您明天%s-%s咨询，地点：%s。电话：62792453。"
@@ -47,7 +47,7 @@ func (w *Workflow) SendSuccessSMS(reservation *model.Reservation) error {
 		return err
 	}
 	if reservation.InternationalType == model.InternationalTypeChinglish {
-		studentSmsEn := fmt.Sprintf(SmsEnSuccessStudent, reservation.StudentInfo.Fullname, utils.EnglishShortWeekday[reservation.StartTime.Weekday()],
+		studentSmsEn := fmt.Sprintf(SmsEnSuccessStudent, reservation.StudentInfo.Fullname, utils.EnglishWeekday[reservation.StartTime.Weekday()],
 			utils.EnglishShortMonth[reservation.StartTime.Month()], reservation.StartTime.Day(), reservation.StartTime.Format("15:04"),
 			reservation.EndTime.Format("15:04"), reservation.TeacherAddressEn)
 		if err := w.sendSMS(reservation.StudentInfo.Mobile, studentSmsEn); err != nil {

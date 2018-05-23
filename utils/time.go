@@ -14,14 +14,14 @@ var (
 		"五",
 		"六",
 	}
-	EnglishShortWeekday = [...]string{
-		"Sun",
-		"Mon",
-		"Tue",
-		"Wed",
-		"Thu",
-		"Fri",
-		"Sat",
+	EnglishWeekday = [...]string{
+		"Sunday",
+		"Monday",
+		"Tuesday",
+		"Wednesday",
+		"Thursday",
+		"Friday",
+		"Saturday",
 	}
 	EnglishShortMonth = [...]string{
 		"Jan",
