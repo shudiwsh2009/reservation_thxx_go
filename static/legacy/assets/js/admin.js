@@ -166,12 +166,12 @@ function refreshDataTable(reservations) {
 
 function optimize(t) {
 	$("#col_select").width(40);
-	$("#col_time").width(405);
+	$("#col_time").width(305);
 	$("#col_teacher_fullname").width(120);
-	$("#col_teacher_username").width(160);
-	$("#col_teacher_mobile").width(160);
-	$("#col_teacher_address").width(200);
-	$("#col_international_type").width(85);
+	$("#col_teacher_username").width(110);
+	$("#col_teacher_mobile").width(110);
+	$("#col_teacher_address").width(300);
+	$("#col_international_type").width(105);
 	$("#col_status").width(85);
 	$("#col_student").width(85);
 	// $('#col0').css('margin-left',width*0.02+'px')
@@ -233,7 +233,7 @@ function optimize(t) {
 	$(t).css("left", (width - $(t).width()) / 2 - 11 + "px");
 	$(t).css("top", (height - $(t).height()) / 2 - 11 + "px");
 	$("#page_maintable").css("margin-left", 0.5 * ($(window).width()
-		- (40 + 405 + 120 + 160 + 160 + 200 + 85 + 85)) + "px");
+		- (40 + 305 + 120 + 110 + 110 + 300 + 105 + 85 + 85)) + "px");
 }
 
 function addReservation() {
