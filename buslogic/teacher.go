@@ -211,6 +211,7 @@ func (w *Workflow) CancelReservationsByTeacher(reservationIds []string, userId s
 		if w.mongoClient.UpdateReservation(reservation) == nil {
 			canceled++
 		}
+		go w.SendCancelSMS(reservation)
 	}
 	return canceled, nil
 }

@@ -21,6 +21,7 @@ const (
 	SmsReminderStudent  = "温馨提示：%s你好，你已成功预约明天%s-%s咨询，地点：%s。电话：62792453。"
 	SmsReminderTeacher  = "温馨提示：%s您好，%s已预约您明天%s-%s咨询，地点：%s。电话：62792453。"
 	SmsFeedbackStudent  = "温馨提示：%s你好，感谢使用我们的一对一咨询服务，请再次登录乐学预约界面，为咨询师反馈评分，帮助我们成长。"
+	SmsCancelTeacher    = "【预约取消通知】%s咨询师您好，您%d月%d日%s-%s的咨询预约已被取消，请知悉。"
 )
 
 var (
@@ -80,6 +81,15 @@ func (w *Workflow) SendReminderSMS(reservation *model.Reservation) error {
 func (w *Workflow) SendFeedbackSMS(reservation *model.Reservation) error {
 	studentSMS := fmt.Sprintf(SmsFeedbackStudent, reservation.StudentInfo.Fullname)
 	if err := w.sendSMS(reservation.StudentInfo.Mobile, studentSMS); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (w *Workflow) SendCancelSMS(reservation *model.Reservation) error {
+	teacherSMS := fmt.Sprintf(SmsCancelTeacher, reservation.TeacherFullname, reservation.StartTime.Month(), reservation.StartTime.Day(),
+		reservation.StartTime.Format("15:04"), reservation.EndTime.Format("15:04"))
+	if err := w.sendSMS(reservation.TeacherMobile, teacherSMS); err != nil {
 		return err
 	}
 	return nil
