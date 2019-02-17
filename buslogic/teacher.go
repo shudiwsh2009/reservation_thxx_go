@@ -204,6 +204,7 @@ func (w *Workflow) CancelReservationsByTeacher(reservationIds []string, userId s
 			reservation.StartTime.Before(time.Now()) || reservation.TeacherUsername != teacher.Username {
 			continue
 		}
+		studentFullname, studentMobile := reservation.StudentInfo.Fullname, reservation.StudentInfo.Mobile
 		reservation.Status = model.ReservationStatusAvailable
 		reservation.StudentInfo = model.StudentInfo{}
 		reservation.StudentFeedback = model.StudentFeedback{}
@@ -211,7 +212,7 @@ func (w *Workflow) CancelReservationsByTeacher(reservationIds []string, userId s
 		if w.mongoClient.UpdateReservation(reservation) == nil {
 			canceled++
 		}
-		go w.SendCancelSMS(reservation)
+		go w.SendCancelSMS(reservation, studentFullname, studentMobile)
 	}
 	return canceled, nil
 }
