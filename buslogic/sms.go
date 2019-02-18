@@ -118,10 +118,12 @@ func (w *Workflow) sendSMS(mobile string, content string) error {
 	}
 	requestBody := bytes.NewBufferString(payload.Encode())
 	response, err := http.Post(requestUrl, "application/x-www-form-urlencoded;charset=utf8", requestBody)
+	if response != nil {
+		defer response.Body.Close()
+	}
 	if err != nil {
 		return err
 	}
-	defer response.Body.Close()
 	responseBody, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		return err
