@@ -39,7 +39,7 @@ func (w *Workflow) MakeReservationByStudent(reservationId string, fullname strin
 		return nil, re.NewRErrorCode("email format is wrong", nil, re.ErrorFormatEmail)
 	}
 
-	studentReservations, err := w.mongoClient.GetReservationsByStudentUsername(username)
+	studentReservations, err := w.MongoClient().GetReservationsByStudentUsername(username)
 	if err != nil {
 		return nil, re.NewRErrorCode("fail to get reservations", err, re.ErrorDatabase)
 	}
@@ -49,16 +49,16 @@ func (w *Workflow) MakeReservationByStudent(reservationId string, fullname strin
 		}
 	}
 
-	reservation, err := w.mongoClient.GetReservationById(reservationId)
+	reservation, err := w.MongoClient().GetReservationById(reservationId)
 	if err != nil || reservation == nil || reservation.Status == model.ReservationStatusDeleted {
 		return nil, re.NewRErrorCode("fail to get reservation", nil, re.ErrorDatabase)
 	} else if reservation.StartTime.Before(time.Now()) {
 		return nil, re.NewRErrorCode("cannot make outdated reservation", nil, re.ErrorStudentMakeOutdatedReservation)
 	} else if reservation.Status != model.ReservationStatusAvailable {
 		return nil, re.NewRErrorCode("cannot make reservated reservation", nil, re.ErrorStudentMakeReservatedReservation)
-	} else if time.Now().Add(model.MakeReservationLastHour * time.Hour).After(reservation.StartTime) {
+	} else if time.Now().Add(model.MakeReservationLatestDuration).After(reservation.StartTime) {
 		return nil, re.NewRErrorCodeContext("cannot make reservation starting in 3 hours", nil,
-			re.ErrorStudentMakeReservationTooEarly, fmt.Sprintf("%d小时", model.MakeReservationLastHour))
+			re.ErrorStudentMakeReservationTooEarly, fmt.Sprintf("%d小时", int64(model.MakeReservationLatestDuration.Hours())))
 	}
 
 	reservation.Status = model.ReservationStatusReservated
@@ -73,7 +73,7 @@ func (w *Workflow) MakeReservationByStudent(reservationId string, fullname strin
 		Experience:      experience,
 		Problem:         problem,
 	}
-	err = w.mongoClient.UpdateReservation(reservation)
+	err = w.MongoClient().UpdateReservation(reservation)
 	if err != nil {
 		return nil, re.NewRErrorCode("fail to update reservation", err, re.ErrorDatabase)
 	}
@@ -92,7 +92,7 @@ func (w *Workflow) GetFeedbackByStudent(reservationId string, username string) (
 		return nil, re.NewRErrorCode("student username format is wrong", nil, re.ErrorFormatStudentUsername)
 	}
 
-	reservation, err := w.mongoClient.GetReservationById(reservationId)
+	reservation, err := w.MongoClient().GetReservationById(reservationId)
 	if err != nil || reservation == nil || reservation.Status == model.ReservationStatusDeleted {
 		return nil, re.NewRErrorCode("fail to get reservation", err, re.ErrorDatabase)
 	} else if reservation.StartTime.After(time.Now()) {
@@ -125,7 +125,7 @@ func (w *Workflow) SubmitFeedbackByStudent(reservationId string, fullname string
 		return nil, re.NewRErrorCode("student username format is wrong", nil, re.ErrorFormatStudentUsername)
 	}
 
-	reservation, err := w.mongoClient.GetReservationById(reservationId)
+	reservation, err := w.MongoClient().GetReservationById(reservationId)
 	if err != nil || reservation == nil || reservation.Status == model.ReservationStatusDeleted {
 		return nil, re.NewRErrorCode("fail to get reservation", err, re.ErrorDatabase)
 	} else if reservation.StartTime.After(time.Now()) {
@@ -143,7 +143,7 @@ func (w *Workflow) SubmitFeedbackByStudent(reservationId string, fullname string
 		Score:    score,
 		Feedback: feedback,
 	}
-	if err = w.mongoClient.UpdateReservation(reservation); err != nil {
+	if err = w.MongoClient().UpdateReservation(reservation); err != nil {
 		return nil, re.NewRErrorCode("fail to update reservation", err, re.ErrorDatabase)
 	}
 	return reservation, nil
@@ -154,11 +154,11 @@ func (w *Workflow) GetReservationTeacherInfoByStudent(reservationId string) (*mo
 		return nil, re.NewRErrorCodeContext("reservation id is empty", nil, re.ErrorMissingParam, "reservation_id")
 	}
 
-	reservation, err := w.mongoClient.GetReservationById(reservationId)
+	reservation, err := w.MongoClient().GetReservationById(reservationId)
 	if err != nil || reservation == nil || reservation.Status == model.ReservationStatusDeleted {
 		return nil, re.NewRErrorCode("fail to get reservation", err, re.ErrorDatabase)
 	}
-	teacher, err := w.mongoClient.GetTeacherByUsername(reservation.TeacherUsername)
+	teacher, err := w.MongoClient().GetTeacherByUsername(reservation.TeacherUsername)
 	if err != nil || teacher == nil || teacher.UserType != model.UserTypeTeacher {
 		return nil, re.NewRErrorCode("fail to get teacher", err, re.ErrorDatabase)
 	}

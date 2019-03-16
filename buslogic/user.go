@@ -32,7 +32,7 @@ func (w *Workflow) TeacherLogin(username string, password string) (*model.Teache
 	} else if password == "" {
 		return nil, re.NewRErrorCodeContext("password is empty", nil, re.ErrorMissingParam, "password")
 	}
-	teacher, err := w.mongoClient.GetTeacherByUsername(username)
+	teacher, err := w.MongoClient().GetTeacherByUsername(username)
 	if err == nil && teacher != nil && teacher.Password == model.EncodePassword(teacher.Salt, password) {
 		return teacher, nil
 	}
@@ -46,7 +46,7 @@ func (w *Workflow) AdminLogin(username string, password string) (*model.Admin, e
 	} else if password == "" {
 		return nil, re.NewRErrorCodeContext("password is empty", nil, re.ErrorMissingParam, "password")
 	}
-	admin, err := w.mongoClient.GetAdminByUsername(username)
+	admin, err := w.MongoClient().GetAdminByUsername(username)
 	if err == nil && admin != nil && admin.Password == model.EncodePassword(admin.Salt, password) {
 		return admin, nil
 	}
@@ -61,13 +61,13 @@ func (w *Workflow) UpdateSession(userId string, userType int) (map[string]interf
 	result := make(map[string]interface{})
 	switch userType {
 	case model.UserTypeAdmin:
-		admin, err := w.mongoClient.GetAdminById(userId)
+		admin, err := w.MongoClient().GetAdminById(userId)
 		if err != nil || admin == nil || admin.UserType != userType {
 			return nil, re.NewRErrorCode("fail to get admin", err, re.ErrorDatabase)
 		}
 		//result["user"] = w.WrapAdmin(admin)
 	case model.UserTypeTeacher:
-		teacher, err := w.mongoClient.GetTeacherById(userId)
+		teacher, err := w.MongoClient().GetTeacherById(userId)
 		if err != nil || teacher == nil || teacher.UserType != userType {
 			return nil, re.NewRErrorCode("fail to get teacher", err, re.ErrorDatabase)
 		}
@@ -87,22 +87,22 @@ func (w *Workflow) ResetUserPassword(username string, userType int, password str
 	var userId string
 	switch userType {
 	case model.UserTypeTeacher:
-		teacher, err := w.mongoClient.GetTeacherByUsername(username)
+		teacher, err := w.MongoClient().GetTeacherByUsername(username)
 		if err != nil || teacher == nil || teacher.UserType != userType {
 			return re.NewRError("fail to get teacher", err)
 		}
 		teacher.Password = password
 		teacher.PreInsert()
-		err = w.mongoClient.UpdateTeacher(teacher)
+		err = w.MongoClient().UpdateTeacher(teacher)
 		userId = teacher.Id.Hex()
 	case model.UserTypeAdmin:
-		admin, err := w.mongoClient.GetAdminByUsername(username)
+		admin, err := w.MongoClient().GetAdminByUsername(username)
 		if err != nil || admin == nil || admin.UserType != userType {
 			return re.NewRError("fail to get admin", err)
 		}
 		admin.Password = password
 		admin.PreInsert()
-		err = w.mongoClient.UpdateAdmin(admin)
+		err = w.MongoClient().UpdateAdmin(admin)
 		userId = admin.Id.Hex()
 	default:
 		return re.NewRError(fmt.Sprintf("unknown user_type: %d", userType), nil)
@@ -114,12 +114,12 @@ func (w *Workflow) ResetUserPassword(username string, userType int, password str
 }
 
 func (w *Workflow) ClearUserLoginRedisKey(userId string, userType int) error {
-	redisKeys, err := w.redisClient.Keys(fmt.Sprintf(model.RedisKeyLogin, userType, userId, "*")).Result()
+	redisKeys, err := w.RedisClient().Keys(fmt.Sprintf(model.RedisKeyLogin, userType, userId, "*")).Result()
 	if err != nil {
 		return re.NewRError("fail to get user login session keys from redis", err)
 	}
 	for _, k := range redisKeys {
-		if err := w.redisClient.Del(k).Err(); err != nil {
+		if err := w.RedisClient().Del(k).Err(); err != nil {
 			return err
 		}
 	}
@@ -131,7 +131,7 @@ func (w *Workflow) AddNewAdmin(username string, password string) (*model.Admin, 
 	if username == "" || password == "" {
 		return nil, re.NewRError("missing parameters", nil)
 	}
-	oldAdmin, err := w.mongoClient.GetAdminByUsername(username)
+	oldAdmin, err := w.MongoClient().GetAdminByUsername(username)
 	if err != nil {
 		return nil, re.NewRError("fail to get old admin", err)
 	} else if oldAdmin != nil && oldAdmin.UserType == model.UserTypeAdmin {
@@ -142,6 +142,6 @@ func (w *Workflow) AddNewAdmin(username string, password string) (*model.Admin, 
 		Password: password,
 		UserType: model.UserTypeAdmin,
 	}
-	err = w.mongoClient.InsertAdmin(newAdmin)
+	err = w.MongoClient().InsertAdmin(newAdmin)
 	return newAdmin, err
 }

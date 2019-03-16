@@ -2,9 +2,9 @@ package web
 
 import (
 	"github.com/mijia/sweb/form"
+	"github.com/shudiwsh2009/reservation_thxx_go/model"
 	"github.com/shudiwsh2009/reservation_thxx_go/service"
 	"net/http"
-	"github.com/shudiwsh2009/reservation_thxx_go/model"
 )
 
 type ReservationController struct {
@@ -40,6 +40,7 @@ func (rc *ReservationController) MuxHandlers(m JsonMuxer) {
 	m.PostJson(kAdminApiBaseUrl+"/reservation/edit", "EditReservationByAdmin", RoleCookieInjection(rc.EditReservationByAdmin))
 	m.PostJson(kAdminApiBaseUrl+"/reservation/remove", "RemoveReservationsByAdmin", RoleCookieInjection(rc.RemoveReservationsByAdmin))
 	m.PostJson(kAdminApiBaseUrl+"/reservation/cancel", "CancelReservationsByAdmin", RoleCookieInjection(rc.CancelReservationsByAdmin))
+	m.PostJson(kAdminApiBaseUrl+"/reservation/make", "MakeReservationByAdmin", RoleCookieInjection(rc.MakeReservationByAdmin))
 	m.PostJson(kAdminApiBaseUrl+"/reservation/feedback/get", "GetFeedbackByAdmin", RoleCookieInjection(rc.GetFeedbackByAdmin))
 	m.PostJson(kAdminApiBaseUrl+"/reservation/feedback/submit", "SubmitFeedbackByAdmin", RoleCookieInjection(rc.SubmitFeedbackByAdmin))
 	m.PostJson(kAdminApiBaseUrl+"/reservation/student/get", "GetReservationStudentInfoByAdmin", RoleCookieInjection(rc.GetReservationStudentInfoByAdmin))
@@ -423,6 +424,30 @@ func (rc *ReservationController) CancelReservationsByAdmin(w http.ResponseWriter
 		return http.StatusOK, wrapJsonError(err)
 	}
 	result["canceled_count"] = canceled
+
+	return http.StatusOK, wrapJsonOk(result)
+}
+
+func (rc *ReservationController) MakeReservationByAdmin(w http.ResponseWriter, r *http.Request, userId string, userType int) (int, interface{}) {
+	reservationId := form.ParamString(r, "reservation_id", "")
+	fullname := form.ParamString(r, "fullname", "")
+	gender := form.ParamString(r, "gender", "")
+	username := form.ParamString(r, "username", "")
+	school := form.ParamString(r, "school", "")
+	hometown := form.ParamString(r, "hometown", "")
+	mobile := form.ParamString(r, "mobile", "")
+	email := form.ParamString(r, "email", "")
+	experience := form.ParamString(r, "experience", "")
+	problem := form.ParamString(r, "problem", "")
+
+	var result = make(map[string]interface{})
+
+	reservation, err := service.Workflow().MakeReservationByAdmin(reservationId, fullname, gender, username,
+		school, hometown, mobile, email, experience, problem, userId, userType)
+	if err != nil {
+		return http.StatusOK, wrapJsonError(err)
+	}
+	result["reservation"] = service.Workflow().WrapReservation(reservation)
 
 	return http.StatusOK, wrapJsonOk(result)
 }

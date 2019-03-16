@@ -13,7 +13,7 @@ const (
 	ReservationStatusFeedback   = 3
 	ReservationStatusDeleted    = 4
 
-	MakeReservationLastHour = 3 // 最迟提前3小时预约
+	MakeReservationLatestDuration = 3 * time.Hour // 最迟提前3小时预约
 )
 
 type Reservation struct {
