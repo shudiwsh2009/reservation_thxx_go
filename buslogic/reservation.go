@@ -11,7 +11,7 @@ import (
 func (w *Workflow) GetReservationsByStudent(language string) ([]*model.Reservation, error) {
 	from := time.Now().AddDate(0, 0, -7)
 	to := time.Now().AddDate(0, 0, 8)
-	reservations, err := w.mongoClient.GetReservationsBetweenTime(from, to)
+	reservations, err := w.MongoClient().GetReservationsBetweenTime(from, to)
 	if err != nil {
 		return nil, re.NewRErrorCode("fail to get reservations", err, re.ErrorDatabase)
 	}
@@ -36,12 +36,12 @@ func (w *Workflow) GetReservationsByTeacher(userId string, userType int) (*model
 	} else if userType != model.UserTypeTeacher {
 		return nil, nil, re.NewRErrorCode("user is not teacher", nil, re.ErrorNotAuthorized)
 	}
-	teacher, err := w.mongoClient.GetTeacherById(userId)
+	teacher, err := w.MongoClient().GetTeacherById(userId)
 	if err != nil || teacher == nil || teacher.UserType != model.UserTypeTeacher {
 		return nil, nil, re.NewRErrorCode("fail to get teacher", err, re.ErrorDatabase)
 	}
 	from := time.Now().AddDate(0, 0, -7)
-	reservations, err := w.mongoClient.GetReservationsAfterTime(from)
+	reservations, err := w.MongoClient().GetReservationsAfterTime(from)
 	if err != nil {
 		return nil, nil, re.NewRErrorCode("fail to get reservations", err, re.ErrorDatabase)
 	}
@@ -63,12 +63,12 @@ func (w *Workflow) GetReservationsByAdmin(userId string, userType int) (*model.A
 	} else if userType != model.UserTypeAdmin {
 		return nil, nil, re.NewRErrorCode("user is not admin", nil, re.ErrorNotAuthorized)
 	}
-	admin, err := w.mongoClient.GetAdminById(userId)
+	admin, err := w.MongoClient().GetAdminById(userId)
 	if err != nil || admin == nil || admin.UserType != model.UserTypeAdmin {
 		return nil, nil, re.NewRErrorCode("fail to get admin", err, re.ErrorDatabase)
 	}
 	from := time.Now().AddDate(0, 0, -7)
-	reservations, err := w.mongoClient.GetReservationsAfterTime(from)
+	reservations, err := w.MongoClient().GetReservationsAfterTime(from)
 	if err != nil {
 		return nil, nil, re.NewRErrorCode("fail to get reservations", err, re.ErrorDatabase)
 	}
@@ -89,7 +89,7 @@ func (w *Workflow) GetReservationsMonthlyByAdmin(fromDate string, userId string,
 	} else if userType != model.UserTypeAdmin {
 		return nil, nil, re.NewRErrorCode("user is not admin", nil, re.ErrorNotAuthorized)
 	}
-	admin, err := w.mongoClient.GetAdminById(userId)
+	admin, err := w.MongoClient().GetAdminById(userId)
 	if err != nil || admin == nil || admin.UserType != model.UserTypeAdmin {
 		return nil, nil, re.NewRErrorCode("fail to get admin", err, re.ErrorDatabase)
 	}
@@ -98,7 +98,7 @@ func (w *Workflow) GetReservationsMonthlyByAdmin(fromDate string, userId string,
 		return nil, nil, re.NewRErrorCodeContext("from date is not valid", err, re.ErrorInvalidParam, "from_date")
 	}
 	to := from.AddDate(0, 0, 1)
-	reservations, err := w.mongoClient.GetReservationsBetweenTime(from, to)
+	reservations, err := w.MongoClient().GetReservationsBetweenTime(from, to)
 	if err != nil {
 		return nil, nil, re.NewRErrorCode("fail to get reservations", err, re.ErrorDatabase)
 	}
@@ -115,14 +115,14 @@ func (w *Workflow) GetReservationsMonthlyByAdmin(fromDate string, userId string,
 
 // external 将所有咨询移动n天
 func (w *Workflow) ShiftReservationTimeInDays(days int) error {
-	reservations, err := w.mongoClient.GetAllReservations()
+	reservations, err := w.MongoClient().GetAllReservations()
 	if err != nil {
 		return err
 	}
 	for _, r := range reservations {
 		r.StartTime = r.StartTime.AddDate(0, 0, days)
 		r.EndTime = r.EndTime.AddDate(0, 0, days)
-		err = w.mongoClient.UpdateReservationWithoutUpdatedTime(r)
+		err = w.MongoClient().UpdateReservationWithoutUpdatedTime(r)
 		if err != nil {
 			log.Errorf("fail to update reservation %+v, err: %+v", r, err)
 		}

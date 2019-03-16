@@ -33,7 +33,7 @@ func (w *Workflow) AddReservationByAdmin(startTime string, endTime string, usern
 	} else if !utils.IsMobile(mobile) {
 		return nil, re.NewRErrorCode("mobile format is wrong", nil, re.ErrorFormatMobile)
 	}
-	admin, err := w.mongoClient.GetAdminById(userId)
+	admin, err := w.MongoClient().GetAdminById(userId)
 	if err != nil || admin == nil || admin.UserType != model.UserTypeAdmin {
 		return nil, re.NewRErrorCode("fail to get admin", err, re.ErrorDatabase)
 	}
@@ -48,7 +48,7 @@ func (w *Workflow) AddReservationByAdmin(startTime string, endTime string, usern
 	if start.After(end) {
 		return nil, re.NewRErrorCode("start time cannot be after end time", nil, re.ErrorEditReservationEndTimeBeforeStartTime)
 	}
-	teacher, err := w.mongoClient.GetTeacherByUsername(username)
+	teacher, err := w.MongoClient().GetTeacherByUsername(username)
 	if err != nil {
 		return nil, re.NewRErrorCode("fail to get teacher", err, re.ErrorDatabase)
 	} else if teacher == nil || teacher.UserType != model.UserTypeTeacher {
@@ -63,7 +63,7 @@ func (w *Workflow) AddReservationByAdmin(startTime string, endTime string, usern
 			AddressEn:         addressEn,
 			InternationalType: internationalType,
 		}
-		if err = w.mongoClient.InsertTeacher(teacher); err != nil {
+		if err = w.MongoClient().InsertTeacher(teacher); err != nil {
 			return nil, re.NewRErrorCode("fail to insert teacher", err, re.ErrorDatabase)
 		}
 	} else if teacher.Fullname != fullname || teacher.FullnameEn != fullnameEn || teacher.Mobile != mobile ||
@@ -74,14 +74,14 @@ func (w *Workflow) AddReservationByAdmin(startTime string, endTime string, usern
 		teacher.Address = address
 		teacher.AddressEn = addressEn
 		teacher.InternationalType = internationalType
-		if err = w.mongoClient.UpdateTeacher(teacher); err != nil {
+		if err = w.MongoClient().UpdateTeacher(teacher); err != nil {
 			return nil, re.NewRErrorCode("fail to update teacher", err, re.ErrorDatabase)
 		}
 	}
 	// 检查时间是否有冲突
 	theDay := utils.BeginOfDay(start)
 	nextDay := utils.BeginOfTomorrow(start)
-	theDayReservations, err := w.mongoClient.GetReservationsBetweenTime(theDay, nextDay)
+	theDayReservations, err := w.MongoClient().GetReservationsBetweenTime(theDay, nextDay)
 	if err != nil {
 		return nil, re.NewRErrorCode("fail to get the day reservations", err, re.ErrorDatabase)
 	}
@@ -107,7 +107,7 @@ func (w *Workflow) AddReservationByAdmin(startTime string, endTime string, usern
 		TeacherAddress:    teacher.Address,
 		TeacherAddressEn:  teacher.AddressEn,
 	}
-	if err = w.mongoClient.InsertReservation(reservation); err != nil {
+	if err = w.MongoClient().InsertReservation(reservation); err != nil {
 		return nil, re.NewRErrorCode("fail to insert new reservation", err, re.ErrorDatabase)
 	}
 	return reservation, nil
@@ -135,11 +135,11 @@ func (w *Workflow) EditReservationByAdmin(reservationId string, startTime string
 	} else if !utils.IsMobile(mobile) {
 		return nil, re.NewRErrorCode("mobile format is wrong", nil, re.ErrorFormatMobile)
 	}
-	admin, err := w.mongoClient.GetAdminById(userId)
+	admin, err := w.MongoClient().GetAdminById(userId)
 	if err != nil || admin == nil || admin.UserType != model.UserTypeAdmin {
 		return nil, re.NewRErrorCode("fail to get admin", err, re.ErrorDatabase)
 	}
-	reservation, err := w.mongoClient.GetReservationById(reservationId)
+	reservation, err := w.MongoClient().GetReservationById(reservationId)
 	if err != nil || reservation == nil || reservation.Status == model.ReservationStatusDeleted {
 		return nil, re.NewRErrorCode("cannot get reservation", err, re.ErrorDatabase)
 	} else if reservation.Status == model.ReservationStatusReservated {
@@ -158,7 +158,7 @@ func (w *Workflow) EditReservationByAdmin(reservationId string, startTime string
 	} else if start.Before(time.Now()) {
 		return nil, re.NewRErrorCode("cannot edit outdated reservation", nil, re.ErrorEditOutdatedReservation)
 	}
-	teacher, err := w.mongoClient.GetTeacherByUsername(username)
+	teacher, err := w.MongoClient().GetTeacherByUsername(username)
 	if err != nil {
 		return nil, re.NewRErrorCode("fail to get teacher", err, re.ErrorDatabase)
 	} else if teacher == nil || teacher.UserType != model.UserTypeTeacher {
@@ -173,7 +173,7 @@ func (w *Workflow) EditReservationByAdmin(reservationId string, startTime string
 			AddressEn:         addressEn,
 			InternationalType: internationalType,
 		}
-		if err = w.mongoClient.InsertTeacher(teacher); err != nil {
+		if err = w.MongoClient().InsertTeacher(teacher); err != nil {
 			return nil, re.NewRErrorCode("fail to insert teacher", err, re.ErrorDatabase)
 		}
 	} else if teacher.UserType != model.UserTypeTeacher {
@@ -186,14 +186,14 @@ func (w *Workflow) EditReservationByAdmin(reservationId string, startTime string
 		teacher.Address = address
 		teacher.AddressEn = addressEn
 		teacher.InternationalType = internationalType
-		if err = w.mongoClient.UpdateTeacher(teacher); err != nil {
+		if err = w.MongoClient().UpdateTeacher(teacher); err != nil {
 			return nil, re.NewRErrorCode("fail to update teacher", err, re.ErrorDatabase)
 		}
 	}
 	// 检查时间是否有冲突
 	theDay := utils.BeginOfDay(start)
 	nextDay := utils.BeginOfTomorrow(start)
-	theDayReservations, err := w.mongoClient.GetReservationsBetweenTime(theDay, nextDay)
+	theDayReservations, err := w.MongoClient().GetReservationsBetweenTime(theDay, nextDay)
 	if err != nil {
 		return nil, re.NewRErrorCode("fail to get the day reservations", err, re.ErrorDatabase)
 	}
@@ -216,7 +216,7 @@ func (w *Workflow) EditReservationByAdmin(reservationId string, startTime string
 	reservation.TeacherMobile = teacher.Mobile
 	reservation.TeacherAddress = teacher.Address
 	reservation.TeacherAddressEn = teacher.AddressEn
-	if err = w.mongoClient.UpdateReservation(reservation); err != nil {
+	if err = w.MongoClient().UpdateReservation(reservation); err != nil {
 		return nil, re.NewRErrorCode("fail to update reservation", err, re.ErrorDatabase)
 	}
 	return reservation, nil
@@ -228,18 +228,18 @@ func (w *Workflow) RemoveReservationsByAdmin(reservationIds []string, userId str
 	} else if userType != model.UserTypeAdmin {
 		return 0, re.NewRErrorCode("user is not admin", nil, re.ErrorNotAuthorized)
 	}
-	admin, err := w.mongoClient.GetAdminById(userId)
+	admin, err := w.MongoClient().GetAdminById(userId)
 	if err != nil || admin == nil || admin.UserType != model.UserTypeAdmin {
 		return 0, re.NewRErrorCode("fail to get admin", err, re.ErrorDatabase)
 	}
 	removed := 0
 	for _, reservationId := range reservationIds {
-		reservation, err := w.mongoClient.GetReservationById(reservationId)
+		reservation, err := w.MongoClient().GetReservationById(reservationId)
 		if err != nil || reservation == nil || reservation.Status == model.ReservationStatusDeleted {
 			continue
 		}
 		reservation.Status = model.ReservationStatusDeleted
-		if w.mongoClient.UpdateReservation(reservation) == nil {
+		if w.MongoClient().UpdateReservation(reservation) == nil {
 			removed++
 		}
 	}
@@ -252,13 +252,13 @@ func (w *Workflow) CancelReservationsByAdmin(reservationIds []string, userId str
 	} else if userType != model.UserTypeAdmin {
 		return 0, re.NewRErrorCode("user is not admin", nil, re.ErrorNotAuthorized)
 	}
-	admin, err := w.mongoClient.GetAdminById(userId)
+	admin, err := w.MongoClient().GetAdminById(userId)
 	if err != nil || admin == nil || admin.UserType != model.UserTypeAdmin {
 		return 0, re.NewRErrorCode("fail to get admin", err, re.ErrorDatabase)
 	}
 	canceled := 0
 	for _, reservationId := range reservationIds {
-		reservation, err := w.mongoClient.GetReservationById(reservationId)
+		reservation, err := w.MongoClient().GetReservationById(reservationId)
 		if err != nil || reservation == nil || reservation.Status != model.ReservationStatusReservated ||
 			reservation.StartTime.Before(time.Now()) {
 			continue
@@ -268,12 +268,91 @@ func (w *Workflow) CancelReservationsByAdmin(reservationIds []string, userId str
 		reservation.StudentInfo = model.StudentInfo{}
 		reservation.StudentFeedback = model.StudentFeedback{}
 		reservation.TeacherFeedback = model.TeacherFeedback{}
-		if w.mongoClient.UpdateReservation(reservation) == nil {
+		if w.MongoClient().UpdateReservation(reservation) == nil {
 			canceled++
 		}
 		go w.SendCancelSMS(reservation, studentFullname, studentMobile)
 	}
 	return canceled, nil
+}
+
+func (w *Workflow) MakeReservationByAdmin(reservationId string, fullname string, gender string,
+	username string, school string, hometown string, mobile string, email string, experience string,
+	problem string, userId string, userType int) (*model.Reservation, error) {
+	if userId == "" {
+		return nil, re.NewRErrorCode("admin not login", nil, re.ErrorNoLogin)
+	} else if userType != model.UserTypeAdmin {
+		return nil, re.NewRErrorCode("user is not admin", nil, re.ErrorNotAuthorized)
+	} else if reservationId == "" {
+		return nil, re.NewRErrorCodeContext("reservation id is empty", nil, re.ErrorMissingParam, "reservation_id")
+	} else if fullname == "" {
+		return nil, re.NewRErrorCodeContext("fullname is empty", nil, re.ErrorMissingParam, "fullname")
+	} else if gender == "" {
+		return nil, re.NewRErrorCodeContext("gender is empty", nil, re.ErrorMissingParam, "gender")
+	} else if username == "" {
+		return nil, re.NewRErrorCodeContext("username is empty", nil, re.ErrorMissingParam, "username")
+	} else if school == "" {
+		return nil, re.NewRErrorCodeContext("school is empty", nil, re.ErrorMissingParam, "school")
+	} else if hometown == "" {
+		return nil, re.NewRErrorCodeContext("hometown is empty", nil, re.ErrorMissingParam, "hometown")
+	} else if mobile == "" {
+		return nil, re.NewRErrorCodeContext("mobile is empty", nil, re.ErrorMissingParam, "mobile")
+	} else if email == "" {
+		return nil, re.NewRErrorCodeContext("email is empty", nil, re.ErrorMissingParam, "email")
+	} else if experience == "" {
+		return nil, re.NewRErrorCodeContext("experience is empty", nil, re.ErrorMissingParam, "experience")
+	} else if problem == "" {
+		return nil, re.NewRErrorCodeContext("problem is empty", nil, re.ErrorMissingParam, "problem")
+	} else if !utils.IsStudentUsername(username) {
+		return nil, re.NewRErrorCode("student username format is wrong", nil, re.ErrorFormatStudentUsername)
+	} else if !utils.IsMobile(mobile) {
+		return nil, re.NewRErrorCode("mobile format is wrong", nil, re.ErrorFormatMobile)
+	} else if !utils.IsEmail(email) {
+		return nil, re.NewRErrorCode("email format is wrong", nil, re.ErrorFormatEmail)
+	}
+
+	studentReservations, err := w.MongoClient().GetReservationsByStudentUsername(username)
+	if err != nil {
+		return nil, re.NewRErrorCode("fail to get reservations", err, re.ErrorDatabase)
+	}
+	for _, r := range studentReservations {
+		if r.Status == model.ReservationStatusReservated && r.StartTime.After(time.Now()) {
+			return nil, re.NewRErrorCode("already have reservation", nil, re.ErrorStudentAlreadyHaveReservation)
+		}
+	}
+
+	reservation, err := w.MongoClient().GetReservationById(reservationId)
+	if err != nil || reservation == nil || reservation.Status == model.ReservationStatusDeleted {
+		return nil, re.NewRErrorCode("fail to get reservation", nil, re.ErrorDatabase)
+	} else if reservation.StartTime.Before(time.Now()) {
+		return nil, re.NewRErrorCode("cannot make outdated reservation", nil, re.ErrorStudentMakeOutdatedReservation)
+	} else if reservation.Status != model.ReservationStatusAvailable {
+		return nil, re.NewRErrorCode("cannot make reservated reservation", nil, re.ErrorStudentMakeReservatedReservation)
+	} else if time.Now().Add(model.MakeReservationLatestDuration).After(reservation.StartTime) {
+		return nil, re.NewRErrorCodeContext("cannot make reservation starting in 3 hours", nil,
+			re.ErrorStudentMakeReservationTooEarly, fmt.Sprintf("%d小时", int64(model.MakeReservationLatestDuration.Hours())))
+	}
+
+	reservation.Status = model.ReservationStatusReservated
+	reservation.StudentInfo = model.StudentInfo{
+		Fullname:        fullname,
+		Gender:          gender,
+		Username: username,
+		School:          school,
+		Hometown:        hometown,
+		Mobile:          mobile,
+		Email:           email,
+		Experience:      experience,
+		Problem:         problem,
+	}
+	err = w.MongoClient().UpdateReservation(reservation)
+	if err != nil {
+		return nil, re.NewRErrorCode("fail to update reservation", err, re.ErrorDatabase)
+	}
+
+	//send success sms
+	go w.SendSuccessSMS(reservation)
+	return reservation, nil
 }
 
 func (w *Workflow) GetFeedbackByAdmin(reservationId string, userId string, userType int) (*model.Reservation, error) {
@@ -284,11 +363,11 @@ func (w *Workflow) GetFeedbackByAdmin(reservationId string, userId string, userT
 	} else if reservationId == "" {
 		return nil, re.NewRErrorCodeContext("reservation_id is empty", nil, re.ErrorMissingParam, "reservation_id")
 	}
-	admin, err := w.mongoClient.GetAdminById(userId)
+	admin, err := w.MongoClient().GetAdminById(userId)
 	if err != nil || admin == nil || admin.UserType != model.UserTypeAdmin {
 		return nil, re.NewRErrorCode("fail to get admin", err, re.ErrorDatabase)
 	}
-	reservation, err := w.mongoClient.GetReservationById(reservationId)
+	reservation, err := w.MongoClient().GetReservationById(reservationId)
 	if err != nil || reservation == nil || reservation.Status == model.ReservationStatusDeleted {
 		return nil, re.NewRErrorCode("fail to get reservation", err, re.ErrorDatabase)
 	} else if reservation.StartTime.After(time.Now()) {
@@ -321,11 +400,11 @@ func (w *Workflow) SubmitFeedbackByAdmin(reservationId string, teacherFullname s
 	} else if adviceToCenter == "" {
 		return nil, re.NewRErrorCodeContext("advice_to_center is empty", nil, re.ErrorMissingParam, "advice_to_center")
 	}
-	admin, err := w.mongoClient.GetAdminById(userId)
+	admin, err := w.MongoClient().GetAdminById(userId)
 	if err != nil || admin == nil || admin.UserType != model.UserTypeAdmin {
 		return nil, re.NewRErrorCode("fail to get admin", err, re.ErrorDatabase)
 	}
-	reservation, err := w.mongoClient.GetReservationById(reservationId)
+	reservation, err := w.MongoClient().GetReservationById(reservationId)
 	if err != nil || reservation == nil || reservation.Status == model.ReservationStatusDeleted {
 		return nil, re.NewRErrorCode("fail to get reservation", err, re.ErrorDatabase)
 	} else if reservation.StartTime.After(time.Now()) {
@@ -343,7 +422,7 @@ func (w *Workflow) SubmitFeedbackByAdmin(reservationId string, teacherFullname s
 		Solution:          solution,
 		AdviceToCenter:    adviceToCenter,
 	}
-	if err = w.mongoClient.UpdateReservation(reservation); err != nil {
+	if err = w.MongoClient().UpdateReservation(reservation); err != nil {
 		return nil, re.NewRErrorCode("fail to update reservation", err, re.ErrorDatabase)
 	}
 	if sendFeedbackSms {
@@ -360,11 +439,11 @@ func (w *Workflow) GetReservationStudentInfoByAdmin(reservationId string, userId
 	} else if reservationId == "" {
 		return nil, re.NewRErrorCodeContext("reservation_id is empty", nil, re.ErrorMissingParam, "reservation_id")
 	}
-	admin, err := w.mongoClient.GetAdminById(userId)
+	admin, err := w.MongoClient().GetAdminById(userId)
 	if err != nil || admin == nil || admin.UserType != model.UserTypeAdmin {
 		return nil, re.NewRErrorCode("fail to get admin", err, re.ErrorDatabase)
 	}
-	reservation, err := w.mongoClient.GetReservationById(reservationId)
+	reservation, err := w.MongoClient().GetReservationById(reservationId)
 	if err != nil || reservation == nil || reservation.Status == model.ReservationStatusDeleted {
 		return nil, re.NewRErrorCode("fail to get reservation", err, re.ErrorDatabase)
 	} else if reservation.Status == model.ReservationStatusAvailable {
@@ -380,30 +459,30 @@ func (w *Workflow) SearchTeacherByAdmin(fullname string, fullnameEn string, user
 	} else if userType != model.UserTypeAdmin {
 		return nil, re.NewRErrorCode("user is not admin", nil, re.ErrorNotAuthorized)
 	}
-	admin, err := w.mongoClient.GetAdminById(userId)
+	admin, err := w.MongoClient().GetAdminById(userId)
 	if err != nil || admin == nil || admin.UserType != model.UserTypeAdmin {
 		return nil, re.NewRErrorCode("fail to get admin", err, re.ErrorDatabase)
 	}
 	if fullname != "" {
-		teacher, err := w.mongoClient.GetTeacherByFullname(fullname)
+		teacher, err := w.MongoClient().GetTeacherByFullname(fullname)
 		if err == nil && teacher != nil && teacher.UserType == model.UserTypeTeacher {
 			return teacher, nil
 		}
 	}
 	if fullnameEn != "" {
-		teacher, err := w.mongoClient.GetTeacherByFullnameEn(fullnameEn)
+		teacher, err := w.MongoClient().GetTeacherByFullnameEn(fullnameEn)
 		if err == nil && teacher != nil && teacher.UserType == model.UserTypeTeacher {
 			return teacher, nil
 		}
 	}
 	if username != "" {
-		teacher, err := w.mongoClient.GetTeacherByUsername(username)
+		teacher, err := w.MongoClient().GetTeacherByUsername(username)
 		if err == nil && teacher != nil && teacher.UserType == model.UserTypeTeacher {
 			return teacher, nil
 		}
 	}
 	if mobile != "" {
-		teacher, err := w.mongoClient.GetTeacherByMobile(mobile)
+		teacher, err := w.MongoClient().GetTeacherByMobile(mobile)
 		if err == nil && teacher != nil && teacher.UserType == model.UserTypeTeacher {
 			return teacher, nil
 		}
@@ -419,11 +498,11 @@ func (w *Workflow) GetTeacherInfoByAdmin(username string, userId string, userTyp
 	} else if username == "" {
 		return nil, re.NewRErrorCodeContext("username is empty", nil, re.ErrorMissingParam, "username")
 	}
-	admin, err := w.mongoClient.GetAdminById(userId)
+	admin, err := w.MongoClient().GetAdminById(userId)
 	if err != nil || admin == nil || admin.UserType != model.UserTypeAdmin {
 		return nil, re.NewRErrorCode("fail to get admin", err, re.ErrorDatabase)
 	}
-	teacher, err := w.mongoClient.GetTeacherByUsername(username)
+	teacher, err := w.MongoClient().GetTeacherByUsername(username)
 	if err != nil || teacher == nil || teacher.UserType != model.UserTypeTeacher {
 		return nil, re.NewRErrorCode("fail to get teacher", err, re.ErrorNoUser)
 	}
@@ -442,11 +521,11 @@ func (w *Workflow) EditTeacherInfoByAdmin(username string, fullname string, full
 	} else if fullname == "" && fullnameEn == "" {
 		return nil, re.NewRErrorCodeContext("fullname is empty", nil, re.ErrorMissingParam, "fullname")
 	}
-	admin, err := w.mongoClient.GetAdminById(userId)
+	admin, err := w.MongoClient().GetAdminById(userId)
 	if err != nil || admin == nil || admin.UserType != model.UserTypeAdmin {
 		return nil, re.NewRErrorCode("fail to get admin", err, re.ErrorDatabase)
 	}
-	teacher, err := w.mongoClient.GetTeacherByUsername(username)
+	teacher, err := w.MongoClient().GetTeacherByUsername(username)
 	if err != nil || teacher == nil || teacher.UserType != model.UserTypeTeacher {
 		return nil, re.NewRErrorCode("fail to get teacher", err, re.ErrorDatabase)
 	}
@@ -463,7 +542,7 @@ func (w *Workflow) EditTeacherInfoByAdmin(username string, fullname string, full
 	teacher.Problem = problem
 	teacher.ProblemEn = problemEn
 	teacher.InternationalType = internationalType
-	if err = w.mongoClient.UpdateTeacher(teacher); err != nil {
+	if err = w.MongoClient().UpdateTeacher(teacher); err != nil {
 		return nil, re.NewRErrorCode("fail to update teacher", err, re.ErrorDatabase)
 	}
 	return teacher, nil
@@ -477,7 +556,7 @@ func (w *Workflow) ExportReservationsByAdmin(reservationIds []string, userId str
 	}
 	reservations := make([]*model.Reservation, 0)
 	for _, rId := range reservationIds {
-		reservation, err := w.mongoClient.GetReservationById(rId)
+		reservation, err := w.MongoClient().GetReservationById(rId)
 		if err == nil && reservation != nil && reservation.Status != model.ReservationStatusDeleted {
 			reservations = append(reservations, reservation)
 		}
@@ -500,7 +579,7 @@ func (w *Workflow) ExportReservationArrangementsByAdmin(fromDate string, userId 
 	} else if userType != model.UserTypeAdmin {
 		return "", re.NewRErrorCode("user is not admin", nil, re.ErrorNotAuthorized)
 	}
-	admin, err := w.mongoClient.GetAdminById(userId)
+	admin, err := w.MongoClient().GetAdminById(userId)
 	if err != nil || admin == nil || admin.UserType != model.UserTypeAdmin {
 		return "", re.NewRErrorCode("fail to get admin", err, re.ErrorDatabase)
 	}
@@ -512,7 +591,7 @@ func (w *Workflow) ExportReservationArrangementsByAdmin(fromDate string, userId 
 		}
 	}
 	to := from.AddDate(0, 0, 1)
-	reservations, err := w.mongoClient.GetReservationsBetweenTime(from, to)
+	reservations, err := w.MongoClient().GetReservationsBetweenTime(from, to)
 	if err != nil {
 		return "", re.NewRErrorCode("fail to get reservations", err, re.ErrorDatabase)
 	}

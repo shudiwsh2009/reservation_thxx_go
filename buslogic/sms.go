@@ -143,7 +143,7 @@ func (w *Workflow) SendTomorrowReservationReminderSMS() {
 	today := utils.BeginOfDay(time.Now())
 	from := today.AddDate(0, 0, 1)
 	to := today.AddDate(0, 0, 2)
-	reservations, err := w.mongoClient.GetReservationsBetweenTime(from, to)
+	reservations, err := w.MongoClient().GetReservationsBetweenTime(from, to)
 	if err != nil {
 		log.Errorf("获取咨询列表失败：%v", err)
 		return
