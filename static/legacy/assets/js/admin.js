@@ -608,7 +608,7 @@ function makeReservation(index) {
 			请概括你最想要咨询的问题：<br>\
 			<textarea id='problem'></textarea><br>\
 			<button type='button' onclick='makeReservationConfirm(\"" + index + "\");'>确定</button>\
-			<button type='button' onclick='$(\".yuyue_admin\").remove();'>取消</button>\
+			<button type='button' onclick='$(\".admin_chakan\").remove();'>取消</button>\
 		</div>\
 	");
 	optimize(".admin_chakan");
