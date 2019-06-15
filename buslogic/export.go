@@ -244,7 +244,7 @@ func (w *Workflow) ExportReservationArrangementsToFile(reservations []*model.Res
 		row = sheet.AddRow()
 		cell = row.AddCell()
 		cell.SetStyle(textCenterStyle)
-		cell.SetValue(fmt.Sprintf("%s-%s", ts.Format("15:04"), ts.Add(30*time.Minute).Format("15:04")))
+		cell.SetValue(fmt.Sprintf("%s-%s", ts.Format("15:04"), ts.Add(30 * time.Minute).Format("15:04")))
 		for _, room := range arrangement.Rooms {
 			if r, ok := room.Timetable[ts.Format("15:04")]; ok {
 				cell = row.AddCell()
@@ -282,10 +282,12 @@ func (w *Workflow) ExportReservationArrangementsToFile(reservations []*model.Res
 				firstStudentCell := sheet.Cell(j, 2*i+2)
 				firstTeacherCell.Merge(0, k-j-1)
 				firstTeacherCell.SetValue(textTopStyle)
-				firstTeacherCell.SetValue(fmt.Sprintf("%s\n%s", reservation.TeacherFullname, reservation.TeacherMobile))
+				firstTeacherCell.SetValue(fmt.Sprintf("%s\n%s\n%s",
+					reservation.TeacherFullname, reservation.TeacherMobile, reservation.TeacherAddress))
 				firstStudentCell.Merge(0, k-j-1)
 				firstStudentCell.SetValue(textTopStyle)
-				firstStudentCell.SetValue(fmt.Sprintf("%s\n%s", reservation.StudentInfo.Fullname, reservation.StudentInfo.Mobile))
+				firstStudentCell.SetValue(fmt.Sprintf("%s\n%s",
+					reservation.StudentInfo.Fullname, reservation.StudentInfo.Mobile))
 				j = k
 			} else {
 				j++

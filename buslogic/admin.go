@@ -597,7 +597,7 @@ func (w *Workflow) ExportReservationArrangementsByAdmin(fromDate string, userId 
 	}
 	filteredReservations := make([]*model.Reservation, 0, len(reservations))
 	for _, r := range reservations {
-		if r.Status == model.ReservationStatusReservated && (r.TeacherAddress == "" || strings.Contains(r.TeacherAddress, "紫荆C楼407室")) {
+		if r.Status == model.ReservationStatusReservated && (r.TeacherAddress == "" || strings.Contains(r.TeacherAddress, "C楼")) {
 			filteredReservations = append(filteredReservations, r)
 		}
 	}
