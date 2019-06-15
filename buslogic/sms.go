@@ -15,14 +15,15 @@ import (
 )
 
 const (
-	SmsSuccessStudent   = "%s你好，你已成功预约星期%s（%d月%d日）%s-%s咨询，地点：%s。电话：62792453。"
-	SmsEnSuccessStudent = "Dear %s, you have successfully made an appointment of advising service for %s (%s %d) from %s to %s in %s. Tel: 62792453."
-	SmsSuccessTeacher   = "%s您好，%s已预约您星期%s（%d月%d日）%s-%s咨询，地点：%s。电话：62792453。"
-	SmsReminderStudent  = "温馨提示：%s你好，你已成功预约明天%s-%s咨询，地点：%s。电话：62792453。"
-	SmsReminderTeacher  = "温馨提示：%s您好，%s已预约您明天%s-%s咨询，地点：%s。电话：62792453。"
-	SmsFeedbackStudent  = "温馨提示：%s你好，感谢使用我们的一对一咨询服务，请再次登录乐学预约界面，为咨询师反馈评分，帮助我们成长。"
-	SmsCancelTeacher    = "【预约取消通知】%s咨询师您好，您%d月%d日%s-%s的咨询预约已被取消，请知悉。"
-	SmsCancelStudent    = "【预约取消通知】%s同学您好，您%d月%d日%s-%s的咨询因故被取消，请知悉。电话：62792453。"
+	SmsSuccessStudent       = "%s你好，你已成功预约星期%s（%d月%d日）%s-%s咨询，地点：%s。电话：62792453。"
+	SmsEnSuccessStudent     = "Dear %s, you have successfully made an appointment of advising service for %s (%s %d) from %s to %s in %s. Tel: 62792453."
+	SmsSuccessTeacher       = "%s您好，%s已预约您星期%s（%d月%d日）%s-%s咨询，地点：%s。电话：62792453。"
+	SmsReminderStudent      = "温馨提示：%s你好，你已成功预约明天%s-%s咨询，地点：%s。电话：62792453。"
+	SmsReminderTeacher      = "温馨提示：%s您好，%s已预约您明天%s-%s咨询，地点：%s。电话：62792453。"
+	SmsFeedbackStudent      = "温馨提示：%s你好，感谢使用我们的一对一咨询服务，请再次登录乐学预约界面，为咨询师反馈评分，帮助我们成长。"
+	SmsFeedbackStudentNight = "温馨提示：%s你好，你的咨询已经结束，请及时通过咨询预约平台填写反馈；如已填过反馈，请忽略本短信提醒。中心电话：62792453。"
+	SmsCancelTeacher        = "【预约取消通知】%s咨询师您好，您%d月%d日%s-%s的咨询预约已被取消，请知悉。"
+	SmsCancelStudent        = "【预约取消通知】%s同学您好，您%d月%d日%s-%s的咨询因故被取消，请知悉。电话：62792453。"
 )
 
 var (
@@ -81,6 +82,14 @@ func (w *Workflow) SendReminderSMS(reservation *model.Reservation) error {
 
 func (w *Workflow) SendFeedbackSMS(reservation *model.Reservation) error {
 	studentSMS := fmt.Sprintf(SmsFeedbackStudent, reservation.StudentInfo.Fullname)
+	if err := w.sendSMS(reservation.StudentInfo.Mobile, studentSMS); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (w *Workflow) SendFeedbackNightSMS(reservation *model.Reservation) error {
+	studentSMS := fmt.Sprintf(SmsFeedbackStudentNight, reservation.StudentInfo.Fullname)
 	if err := w.sendSMS(reservation.StudentInfo.Mobile, studentSMS); err != nil {
 		return err
 	}
@@ -160,4 +169,28 @@ func (w *Workflow) SendTomorrowReservationReminderSMS() {
 		}
 	}
 	log.Infof("发送%d个预约记录的提醒短信，成功%d个，失败%d个", succCnt+failCnt, succCnt, failCnt)
+}
+
+// external 每天22:00提醒当天咨询的同学填写反馈
+func (w *Workflow) SendTodayFeedbackReminderSMS() {
+	from := utils.BeginOfDay(time.Now())
+	to := from.AddDate(0, 0, 1)
+	reservations, err := w.MongoClient().GetReservationsBetweenTime(from, to)
+	if err != nil {
+		log.Errorf("获取咨询列表失败: %+v", err)
+		return
+	}
+	succCnt, failCnt := 0, 0
+	for _, reservation := range reservations {
+		if reservation.Status == model.ReservationStatusReservated ||
+			reservation.Status == model.ReservationStatusFeedback {
+			if err = w.SendFeedbackNightSMS(reservation); err == nil {
+				succCnt++
+			} else {
+				log.Errorf("发送短信失败：%+v %+v", reservation, err)
+				failCnt++
+			}
+		}
+	}
+	log.Infof("发送%d个预约记录的反馈短信，成功%d个，失败%d个", succCnt+failCnt, succCnt, failCnt)
 }

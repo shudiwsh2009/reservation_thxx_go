@@ -25,6 +25,8 @@ func main() {
 	if *method == "reminder" {
 		// 每晚发送第二天咨询的提醒短信
 		workflow.SendTomorrowReservationReminderSMS()
+	} else if *method == "feedback-reminder" {
+		workflow.SendTodayFeedbackReminderSMS()
 	} else if *method == "reset-user-password" {
 		// 重置用户密码
 		if err := workflow.ResetUserPassword(*username, *userType, *password); err != nil {
