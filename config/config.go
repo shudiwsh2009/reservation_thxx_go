@@ -7,24 +7,26 @@ import (
 )
 
 type Config struct {
-	isStaging         bool     `json:"-"`
-	AppEnv            string   `json:"app_env"`
-	SMSUid            string   `json:"sms_uid"`
-	SMSKey            string   `json:"sms_key"`
-	SMTPHost          string   `json:"smtp_host"`
-	SMTPUser          string   `json:"smtp_user"`
-	SMTPPassword      string   `json:"smtp_password"`
-	EmailAddressAdmin []string `json:"email_address_admin"`
-	EmailAddressDev   []string `json:"email_address_dev"`
-	MongoHost         string   `json:"mongo_host"`
-	MongoAuthDatabase string   `json:"mongo_auth_database"`
-	MongoAuthUser     string   `json:"mongo_auth_user"`
-	MongoAuthPassword string   `json:"mongo_auth_password"`
-	MongoDatabase     string   `json:"mongo_database"`
-	RedisAddress      string   `json:"redis_address"`
-	RedisPassword     string   `json:"redis_password"`
-	RedisDatabase     int      `json:"redis_database"`
-	SessionKeyCode    string   `json:"session_key_code"`
+	isStaging                  bool     `json:"-"`
+	AppEnv                     string   `json:"app_env"`
+	SMSUid                     string   `json:"sms_uid"`
+	SMSKey                     string   `json:"sms_key"`
+	SMTPHost                   string   `json:"smtp_host"`
+	SMTPUser                   string   `json:"smtp_user"`
+	SMTPPassword               string   `json:"smtp_password"`
+	EmailAddressAdmin          []string `json:"email_address_admin"`
+	EmailAddressDev            []string `json:"email_address_dev"`
+	MongoHost                  string   `json:"mongo_host"`
+	MongoAuthDatabase          string   `json:"mongo_auth_database"`
+	MongoAuthUser              string   `json:"mongo_auth_user"`
+	MongoAuthPassword          string   `json:"mongo_auth_password"`
+	MongoDatabase              string   `json:"mongo_database"`
+	RedisAddress               string   `json:"redis_address"`
+	RedisPassword              string   `json:"redis_password"`
+	RedisDatabase              int      `json:"redis_database"`
+	SessionKeyCode             string   `json:"session_key_code"`
+	StudentVerificationEnabled bool     `json:"student_verification_enabled"`
+	StudentVerificationFile    string   `json:"student_verification_file"`
 }
 
 var conf *Config

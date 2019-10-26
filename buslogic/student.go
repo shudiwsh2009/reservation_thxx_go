@@ -2,6 +2,7 @@ package buslogic
 
 import (
 	"fmt"
+	"github.com/shudiwsh2009/reservation_thxx_go/config"
 	"github.com/shudiwsh2009/reservation_thxx_go/model"
 	re "github.com/shudiwsh2009/reservation_thxx_go/rerror"
 	"github.com/shudiwsh2009/reservation_thxx_go/utils"
@@ -37,6 +38,8 @@ func (w *Workflow) MakeReservationByStudent(reservationId string, fullname strin
 		return nil, re.NewRErrorCode("mobile format is wrong", nil, re.ErrorFormatMobile)
 	} else if !utils.IsEmail(email) {
 		return nil, re.NewRErrorCode("email format is wrong", nil, re.ErrorFormatEmail)
+	} else if config.Instance().StudentVerificationEnabled && !w.verifyStudent(username, fullname) {
+		return nil, re.NewRErrorCode("student verification failed", nil, re.ErrorStudentFullnameNotMatch)
 	}
 
 	studentReservations, err := w.MongoClient().GetReservationsByStudentUsername(username)
@@ -63,15 +66,15 @@ func (w *Workflow) MakeReservationByStudent(reservationId string, fullname strin
 
 	reservation.Status = model.ReservationStatusReservated
 	reservation.StudentInfo = model.StudentInfo{
-		Fullname:        fullname,
-		Gender:          gender,
-		Username: username,
-		School:          school,
-		Hometown:        hometown,
-		Mobile:          mobile,
-		Email:           email,
-		Experience:      experience,
-		Problem:         problem,
+		Fullname:   fullname,
+		Gender:     gender,
+		Username:   username,
+		School:     school,
+		Hometown:   hometown,
+		Mobile:     mobile,
+		Email:      email,
+		Experience: experience,
+		Problem:    problem,
 	}
 	err = w.MongoClient().UpdateReservation(reservation)
 	if err != nil {

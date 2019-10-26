@@ -1,6 +1,7 @@
 package buslogic
 
 import (
+	"fmt"
 	"github.com/shudiwsh2009/reservation_thxx_go/model"
 	re "github.com/shudiwsh2009/reservation_thxx_go/rerror"
 	"github.com/shudiwsh2009/reservation_thxx_go/utils"
@@ -217,6 +218,92 @@ func (w *Workflow) CancelReservationsByTeacher(reservationIds []string, userId s
 	return canceled, nil
 }
 
+func (w *Workflow) MakeReservationByTeacher(reservationId string, fullname string, gender string,
+	username string, school string, hometown string, mobile string, email string, experience string,
+	problem string, userId string, userType int) (*model.Reservation, error) {
+	if userId == "" {
+		return nil, re.NewRErrorCode("teacher not login", nil, re.ErrorNoLogin)
+	} else if userType != model.UserTypeTeacher {
+		return nil, re.NewRErrorCode("user is not teacher", nil, re.ErrorNotAuthorized)
+	} else if reservationId == "" {
+		return nil, re.NewRErrorCodeContext("reservation id is empty", nil, re.ErrorMissingParam, "reservation_id")
+	} else if fullname == "" {
+		return nil, re.NewRErrorCodeContext("fullname is empty", nil, re.ErrorMissingParam, "fullname")
+	} else if gender == "" {
+		return nil, re.NewRErrorCodeContext("gender is empty", nil, re.ErrorMissingParam, "gender")
+	} else if username == "" {
+		return nil, re.NewRErrorCodeContext("username is empty", nil, re.ErrorMissingParam, "username")
+	} else if school == "" {
+		return nil, re.NewRErrorCodeContext("school is empty", nil, re.ErrorMissingParam, "school")
+	} else if hometown == "" {
+		return nil, re.NewRErrorCodeContext("hometown is empty", nil, re.ErrorMissingParam, "hometown")
+	} else if mobile == "" {
+		return nil, re.NewRErrorCodeContext("mobile is empty", nil, re.ErrorMissingParam, "mobile")
+	} else if email == "" {
+		return nil, re.NewRErrorCodeContext("email is empty", nil, re.ErrorMissingParam, "email")
+	} else if experience == "" {
+		return nil, re.NewRErrorCodeContext("experience is empty", nil, re.ErrorMissingParam, "experience")
+	} else if problem == "" {
+		return nil, re.NewRErrorCodeContext("problem is empty", nil, re.ErrorMissingParam, "problem")
+	} else if !utils.IsStudentUsername(username) {
+		return nil, re.NewRErrorCode("student username format is wrong", nil, re.ErrorFormatStudentUsername)
+	} else if !utils.IsMobile(mobile) {
+		return nil, re.NewRErrorCode("mobile format is wrong", nil, re.ErrorFormatMobile)
+	} else if !utils.IsEmail(email) {
+		return nil, re.NewRErrorCode("email format is wrong", nil, re.ErrorFormatEmail)
+	}
+
+	teacher, err := w.MongoClient().GetTeacherById(userId)
+	if err != nil || teacher == nil || teacher.UserType != model.UserTypeTeacher {
+		return nil, re.NewRErrorCode("fail to get teacher", err, re.ErrorDatabase)
+	}
+
+	studentReservations, err := w.MongoClient().GetReservationsByStudentUsername(username)
+	if err != nil {
+		return nil, re.NewRErrorCode("fail to get reservations", err, re.ErrorDatabase)
+	}
+	for _, r := range studentReservations {
+		if r.Status == model.ReservationStatusReservated && r.StartTime.After(time.Now()) {
+			return nil, re.NewRErrorCode("already have reservation", nil, re.ErrorStudentAlreadyHaveReservation)
+		}
+	}
+
+	reservation, err := w.MongoClient().GetReservationById(reservationId)
+	if err != nil || reservation == nil || reservation.Status == model.ReservationStatusDeleted {
+		return nil, re.NewRErrorCode("fail to get reservation", nil, re.ErrorDatabase)
+	} else if reservation.TeacherUsername != teacher.Username {
+		return nil, re.NewRErrorCode("cannot make other teacher's reservation", nil, re.ErrorNotAuthorized)
+	} else if reservation.StartTime.Before(time.Now()) {
+		return nil, re.NewRErrorCode("cannot make outdated reservation", nil, re.ErrorStudentMakeOutdatedReservation)
+	} else if reservation.Status != model.ReservationStatusAvailable {
+		return nil, re.NewRErrorCode("cannot make reservated reservation", nil, re.ErrorStudentMakeReservatedReservation)
+	} else if time.Now().Add(model.MakeReservationLatestDuration).After(reservation.StartTime) {
+		return nil, re.NewRErrorCodeContext("cannot make reservation starting in 3 hours", nil,
+			re.ErrorStudentMakeReservationTooEarly, fmt.Sprintf("%d小时", int64(model.MakeReservationLatestDuration.Hours())))
+	}
+
+	reservation.Status = model.ReservationStatusReservated
+	reservation.StudentInfo = model.StudentInfo{
+		Fullname:   fullname,
+		Gender:     gender,
+		Username:   username,
+		School:     school,
+		Hometown:   hometown,
+		Mobile:     mobile,
+		Email:      email,
+		Experience: experience,
+		Problem:    problem,
+	}
+	err = w.MongoClient().UpdateReservation(reservation)
+	if err != nil {
+		return nil, re.NewRErrorCode("fail to update reservation", err, re.ErrorDatabase)
+	}
+
+	//send success sms
+	go w.SendSuccessSMS(reservation)
+	return reservation, nil
+}
+
 func (w *Workflow) GetFeedbackByTeacher(reservationId string, userId string, userType int) (*model.Reservation, error) {
 	if userId == "" {
 		return nil, re.NewRErrorCode("teacher not login", nil, re.ErrorNoLogin)
@@ -318,6 +405,27 @@ func (w *Workflow) GetReservationStudentInfoByTeacher(reservationId string, user
 		return nil, re.NewRErrorCode("cannot get feedback of other one's reservation", nil, re.ErrorTeacherViewOtherReservation)
 	}
 	return &reservation.StudentInfo, nil
+}
+
+func (w *Workflow) SendSMSByTeacher(mobile string, content string, userId string, userType int) error {
+	if userId == "" {
+		return re.NewRErrorCode("teacher not login", nil, re.ErrorNoLogin)
+	} else if userType != model.UserTypeTeacher {
+		return re.NewRErrorCode("user is not teacher", nil, re.ErrorNotAuthorized)
+	} else if mobile == "" {
+		return re.NewRErrorCodeContext("mobile is empty", nil, re.ErrorMissingParam, "mobile")
+	} else if content == "" {
+		return re.NewRErrorCodeContext("content is empty", nil, re.ErrorMissingParam, "content")
+	} else if !utils.IsMobile(mobile) {
+		return re.NewRErrorCode("mobile format is wrong", nil, re.ErrorFormatMobile)
+	}
+
+	teacher, err := w.MongoClient().GetTeacherById(userId)
+	if err != nil || teacher == nil || teacher.UserType != model.UserTypeTeacher {
+		return re.NewRErrorCode("fail to get teacher", err, re.ErrorDatabase)
+	}
+
+	return w.sendSMS(mobile, content)
 }
 
 func (w *Workflow) WrapSimpleTeacher(teacher *model.Teacher) map[string]interface{} {

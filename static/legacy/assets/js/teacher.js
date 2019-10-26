@@ -61,7 +61,7 @@ function refreshDataTable(reservations) {
 		if (reservations[i].status === 1) {
 			$("#col_status").append("<div class='table_cell' id='cell_status_" + i + "'>未预约</div>");
 			$("#col_student").append("<div class='table_cell' id='cell_student_" + i + "'>"
-				+ "<button type='button' id='cell_student_view_" + i + "' disabled='true'>查看"
+				+ "<button type='button' id='cell_student_view_" + i + "' onclick='makeReservation(" + i + ");'>帮约"
 				+ "</button></div>");
 		} else if (reservations[i].status === 2) {
 			$("#col_status").append("<div class='table_cell' id='cell_status_" + i + "'>已预约</div>");
@@ -359,11 +359,37 @@ function removeReservations() {
 		<div class='delete_teacher_pre'>\
 			确认删除选中的咨询记录？\
 			<br>\
-			<button type='button' onclick='$(\".delete_teacher_pre\").remove();removeReservationsConfirm();'>确认</button>\
+			<button type='button' onclick='$(\".delete_teacher_pre\").remove();removeReservationsCheck();'>确认</button>\
 			<button type='button' onclick='$(\".delete_teacher_pre\").remove();'>取消</button>\
 		</div>\
 	");
 	optimize(".delete_teacher_pre");
+}
+
+function removeReservationsCheck() {
+	var doubleCheck = false;
+	for (var i = 0; i < reservations.length; ++i) {
+		if ($("#cell_checkbox_" + i)[0].checked) {
+			var status = reservations[i].status;
+			if (status === 2 || status === 3) {
+				doubleCheck = true;
+				break;
+			}
+		}
+	}
+	if (doubleCheck) {
+		$("body").append("\
+			<div class='delete_teacher_pre'>\
+				选中的咨询记录中有已经被预约或咨询的时段，请再次确认是否删除？\
+				<br>\
+				<button type='button' onclick='$(\".delete_teacher_pre\").remove();removeReservationsConfirm();'>确认</button>\
+				<button type='button' onclick='$(\".delete_teacher_pre\").remove();'>取消</button>\
+			</div>\
+		");
+		optimize(".delete_teacher_pre");
+	} else {
+		removeReservationsConfirm();
+	}
 }
 
 function removeReservationsConfirm() {
@@ -430,6 +456,115 @@ function cancelReservationsConfirm() {
 			}
 		}
 	});
+}
+
+function makeReservation(index) {
+	$("body").append("\
+		<div class='admin_chakan' id='make_reservation_data_" + index + "' style='text-align:left'>\
+			<div style='text-align:center;font-size:23px'>咨询申请表</div><br>\
+			姓　　名：<input id='fullname'/><br>\
+			性　　别：<select id='gender'><option value=''>请选择</option><option value='男'>男</option><option value='女'>女</option></select><br>\
+			学　　号：<input id='username'/><br>\
+			院　　系：<input id='school'/><br>\
+			生 源 地：<input id='hometown'/><br>\
+			手　　机：<input id='mobile'/><br>\
+			邮　　箱：<input id='email'/><br>\
+			以前曾做过学习发展咨询、职业咨询或心理咨询吗？<select id='experience'><option value=''>请选择</option><option value='是'>是</option><option value='否'>否</option></select><br>\
+			请概括你最想要咨询的问题：<br>\
+			<textarea id='problem'></textarea><br>\
+			<button type='button' onclick='makeReservationConfirm(\"" + index + "\");'>确定</button>\
+			<button type='button' onclick='$(\".admin_chakan\").remove();'>取消</button>\
+		</div>\
+	");
+	optimize(".admin_chakan");
+}
+
+function makeReservationConfirm(index) {
+	var fullname = $("#fullname").val();
+	if (fullname === "") {
+		alert("姓名为空");
+		return;
+	}
+	var gender = $("#gender").val();
+	if (gender === "") {
+		alert("性别为空");
+		return;
+	}
+	var username = $("#username").val();
+	if (username === "") {
+		alert("学号为空");
+		return;
+	}
+	var school = $("#school").val();
+	if (school === "") {
+		alert("院系为空");
+		return;
+	}
+	var hometown = $("#hometown").val();
+	if (hometown === "") {
+		alert("生源地为空");
+		return;
+	}
+	var mobile = $("#mobile").val();
+	if (mobile === "") {
+		alert("手机为空");
+		return;
+	}
+	var email = $("#email").val();
+	if (email === "") {
+		alert("邮箱为空");
+		return;
+	}
+	var experience = $("#experience").val();
+	if (experience === "") {
+		alert("咨询经历为空");
+		return;
+	}
+	var problem = $("#problem").val();
+	if (problem === "") {
+		alert("咨询问题为空");
+		return;
+	}
+	var payload = {
+		reservation_id: reservations[index].id,
+		fullname: fullname,
+		gender: gender,
+		username: username,
+		school: school,
+		hometown: hometown,
+		mobile: mobile,
+		email: email,
+		experience: experience,
+		problem: problem,
+	};
+	$.ajax({
+		type: "POST",
+		async: false,
+		url: "/api/teacher/reservation/make",
+		data: payload,
+		dataType: "json",
+		success: function(data) {
+			if (data.status === "OK") {
+				makeReservationSuccess(index);
+			} else {
+				alert(data.err_msg);
+			}
+		},
+	});
+}
+
+function makeReservationSuccess(index) {
+	$(".admin_chakan").remove();
+	$("#cell_student_view_" + index).attr("disabled", "true");
+	$("#cell_student_view_" + index).text("查看");
+	$("body").append("\
+		<div class='yuyue_stu_success'>\
+			你已预约成功，<br>\
+			请关注短信提醒。<br>\
+			<button type='button' onclick='$(\".yuyue_stu_success\").remove();viewReservations();'>确定</button>\
+		</div>\
+	");
+	optimize(".yuyue_stu_success");
 }
 
 function getFeedback(index) {
@@ -581,4 +716,51 @@ function showStudent(student) {
 		</div>\
 	");
 	optimize(".admin_chakan");
+}
+
+function sendSms() {
+	$("body").append("\
+		<div class='send_sms_teacher_pre'>\
+			自定义发送短信\
+			<br>\
+			　手机号：<input id='mobile' type='tel' style='width:300px;'><br><br>\
+			短信内容：<textarea id='content' style='width:300px;'></textarea><br>\
+			<button type='button' onclick='sendSmsConfirm();'>确认</button>\
+			<button type='button' onclick='$(\".send_sms_teacher_pre\").remove();'>取消</button>\
+		</div>\
+	");
+	$('#content').text('有任何问题欢迎联系学习发展中心，learning@tsinghua.edu.cn, 62792453');
+	optimize(".send_sms_teacher_pre");
+}
+
+function sendSmsConfirm() {
+	var mobile = $("#mobile").val();
+	if (mobile === "") {
+		alert("手机为空");
+		return;
+	}
+	var content = $("#content").val();
+	if (content === "") {
+		alert("内容为空");
+		return;
+	}
+	var payload = {
+		mobile: mobile,
+		content: content,
+	};
+	$.ajax({
+		type: "POST",
+		async: false,
+		url: "/api/teacher/sms/send",
+		data: payload,
+		dataType: "json",
+		success: function(data) {
+			if (data.status === "OK") {
+				$(".send_sms_teacher_pre").remove();
+				alert("发送成功");
+			} else {
+				alert(data.err_msg);
+			}
+		}
+	});
 }

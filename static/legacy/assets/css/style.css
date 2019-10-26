@@ -151,7 +151,7 @@ select{
   padding: 10px;
   text-align: center;
 }
-.yuyue_stu_pre, .fankui_stu_pre, .fankui_tch_pre, .tch_login, .delete_admin_pre, .cancel_admin_pre, .delete_teacher_pre, .cancel_teacher_pre{
+.yuyue_stu_pre, .fankui_stu_pre, .fankui_tch_pre, .tch_login, .delete_admin_pre, .cancel_admin_pre, .delete_teacher_pre, .cancel_teacher_pre, .send_sms_admin_pre, .send_sms_teacher_pre {
 	position: fixed;
 	border: 2px solid #777;
 	border-radius: 9px;
