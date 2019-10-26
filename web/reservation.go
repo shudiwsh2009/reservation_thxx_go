@@ -33,6 +33,7 @@ func (rc *ReservationController) MuxHandlers(m JsonMuxer) {
 	m.PostJson(kTeacherApiBaseUrl+"/reservation/feedback/get", "GetFeedbackByTeacher", RoleCookieInjection(rc.GetFeedbackByTeacher))
 	m.PostJson(kTeacherApiBaseUrl+"/reservation/feedback/submit", "SubmitFeedbackByTeacher", RoleCookieInjection(rc.SubmitFeedbackByTeacher))
 	m.PostJson(kTeacherApiBaseUrl+"/reservation/student/get", "GetReservationStudentInfoByTeacher", RoleCookieInjection(rc.GetReservationStudentInfoByTeacher))
+	m.PostJson(kTeacherApiBaseUrl+"/sms/send", "SendSMSByTeacher", RoleCookieInjection(rc.SendSMSByTeacher))
 
 	m.GetJson(kAdminApiBaseUrl+"/reservation/view", "ViewReservationsByAdmin", RoleCookieInjection(rc.ViewReservationsByAdmin))
 	m.GetJson(kAdminApiBaseUrl+"/reservation/view/monthly", "ViewReservationsMonthlyByAdmin", RoleCookieInjection(rc.ViewReservationsMonthlyByAdmin))
@@ -49,6 +50,7 @@ func (rc *ReservationController) MuxHandlers(m JsonMuxer) {
 	m.PostJson(kAdminApiBaseUrl+"/teacher/edit", "EditTeacherInfoByAdmin", RoleCookieInjection(rc.EditTeacherInfoByAdmin))
 	m.PostJson(kAdminApiBaseUrl+"/reservation/export", "ExportReservationsByAdmin", RoleCookieInjection(rc.ExportReservationsByAdmin))
 	m.PostJson(kAdminApiBaseUrl+"/reservation/export/arrangements", "ExportReservationArrangementsByAdmin", RoleCookieInjection(rc.ExportReservationArrangementsByAdmin))
+	m.PostJson(kAdminApiBaseUrl+"/sms/send", "SendSMSByAdmin", RoleCookieInjection(rc.SendSMSByAdmin))
 }
 
 func (rc *ReservationController) ViewReservationsByStudent(w http.ResponseWriter, r *http.Request, userId string, userType int) (int, interface{}) {
@@ -314,6 +316,20 @@ func (rc *ReservationController) GetReservationStudentInfoByTeacher(w http.Respo
 		return http.StatusOK, wrapJsonError(err)
 	}
 	result["student"] = service.Workflow().WrapStudenInfo(studentInfo)
+
+	return http.StatusOK, wrapJsonOk(result)
+}
+
+func (rc *ReservationController) SendSMSByTeacher(w http.ResponseWriter, r *http.Request, userId string, userType int) (int, interface{}) {
+	mobile := form.ParamString(r, "mobile", "")
+	content := form.ParamString(r, "content", "")
+
+	var result = make(map[string]interface{})
+
+	err := service.Workflow().SendSMSByTeacher(mobile, content, userId, userType)
+	if err != nil {
+		return http.StatusOK, wrapJsonError(err)
+	}
 
 	return http.StatusOK, wrapJsonOk(result)
 }
@@ -596,6 +612,20 @@ func (rc *ReservationController) ExportReservationArrangementsByAdmin(w http.Res
 		return http.StatusOK, wrapJsonError(err)
 	}
 	result["url"] = "/" + url
+
+	return http.StatusOK, wrapJsonOk(result)
+}
+
+func (rc *ReservationController) SendSMSByAdmin(w http.ResponseWriter, r *http.Request, userId string, userType int) (int, interface{}) {
+	mobile := form.ParamString(r, "mobile", "")
+	content := form.ParamString(r, "content", "")
+
+	var result = make(map[string]interface{})
+
+	err := service.Workflow().SendSMSByAdmin(mobile, content, userId, userType)
+	if err != nil {
+		return http.StatusOK, wrapJsonError(err)
+	}
 
 	return http.StatusOK, wrapJsonOk(result)
 }

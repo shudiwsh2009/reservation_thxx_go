@@ -335,15 +335,15 @@ func (w *Workflow) MakeReservationByAdmin(reservationId string, fullname string,
 
 	reservation.Status = model.ReservationStatusReservated
 	reservation.StudentInfo = model.StudentInfo{
-		Fullname:        fullname,
-		Gender:          gender,
-		Username: username,
-		School:          school,
-		Hometown:        hometown,
-		Mobile:          mobile,
-		Email:           email,
-		Experience:      experience,
-		Problem:         problem,
+		Fullname:   fullname,
+		Gender:     gender,
+		Username:   username,
+		School:     school,
+		Hometown:   hometown,
+		Mobile:     mobile,
+		Email:      email,
+		Experience: experience,
+		Problem:    problem,
 	}
 	err = w.MongoClient().UpdateReservation(reservation)
 	if err != nil {
@@ -611,4 +611,25 @@ func (w *Workflow) ExportReservationArrangementsByAdmin(fromDate string, userId 
 		return "", err
 	}
 	return path, nil
+}
+
+func (w *Workflow) SendSMSByAdmin(mobile string, content string, userId string, userType int) error {
+	if userId == "" {
+		return re.NewRErrorCode("admin not login", nil, re.ErrorNoLogin)
+	} else if userType != model.UserTypeAdmin {
+		return re.NewRErrorCode("user is not admin", nil, re.ErrorNotAuthorized)
+	} else if mobile == "" {
+		return re.NewRErrorCodeContext("mobile is empty", nil, re.ErrorMissingParam, "mobile")
+	} else if content == "" {
+		return re.NewRErrorCodeContext("content is empty", nil, re.ErrorMissingParam, "content")
+	} else if !utils.IsMobile(mobile) {
+		return re.NewRErrorCode("mobile format is wrong", nil, re.ErrorFormatMobile)
+	}
+
+	admin, err := w.MongoClient().GetAdminById(userId)
+	if err != nil || admin == nil || admin.UserType != model.UserTypeAdmin {
+		return re.NewRErrorCode("fail to get admin", err, re.ErrorDatabase)
+	}
+
+	return w.sendSMS(mobile, content)
 }

@@ -996,3 +996,50 @@ function editTeacher(teacherUsername) {
 		}
 	});
 }
+
+function sendSms() {
+	$("body").append("\
+		<div class='send_sms_admin_pre'>\
+			自定义发送短信\
+			<br>\
+			　手机号：<input id='mobile' type='tel' style='width:300px;'><br><br>\
+			短信内容：<textarea id='content' style='width:300px;'></textarea><br>\
+			<button type='button' onclick='sendSmsConfirm();'>确认</button>\
+			<button type='button' onclick='$(\".send_sms_admin_pre\").remove();'>取消</button>\
+		</div>\
+	");
+	$('#content').text('有任何问题欢迎联系学习发展中心，learning@tsinghua.edu.cn, 62792453');
+	optimize(".send_sms_admin_pre");
+}
+
+function sendSmsConfirm() {
+	var mobile = $("#mobile").val();
+	if (mobile === "") {
+		alert("手机为空");
+		return;
+	}
+	var content = $("#content").val();
+	if (content === "") {
+		alert("内容为空");
+		return;
+	}
+	var payload = {
+		mobile: mobile,
+		content: content,
+	};
+	$.ajax({
+		type: "POST",
+		async: false,
+		url: "/api/admin/sms/send",
+		data: payload,
+		dataType: "json",
+		success: function(data) {
+			if (data.status === "OK") {
+				$(".send_sms_admin_pre").remove();
+				alert("发送成功");
+			} else {
+				alert(data.err_msg);
+			}
+		}
+	});
+}

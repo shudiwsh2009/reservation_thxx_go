@@ -320,6 +320,27 @@ func (w *Workflow) GetReservationStudentInfoByTeacher(reservationId string, user
 	return &reservation.StudentInfo, nil
 }
 
+func (w *Workflow) SendSMSByTeacher(mobile string, content string, userId string, userType int) error {
+	if userId == "" {
+		return re.NewRErrorCode("teacher not login", nil, re.ErrorNoLogin)
+	} else if userType != model.UserTypeTeacher {
+		return re.NewRErrorCode("user is not teacher", nil, re.ErrorNotAuthorized)
+	} else if mobile == "" {
+		return re.NewRErrorCodeContext("mobile is empty", nil, re.ErrorMissingParam, "mobile")
+	} else if content == "" {
+		return re.NewRErrorCodeContext("content is empty", nil, re.ErrorMissingParam, "content")
+	} else if !utils.IsMobile(mobile) {
+		return re.NewRErrorCode("mobile format is wrong", nil, re.ErrorFormatMobile)
+	}
+
+	teacher, err := w.MongoClient().GetTeacherById(userId)
+	if err != nil || teacher == nil || teacher.UserType != model.UserTypeTeacher {
+		return re.NewRErrorCode("fail to get teacher", err, re.ErrorDatabase)
+	}
+
+	return w.sendSMS(mobile, content)
+}
+
 func (w *Workflow) WrapSimpleTeacher(teacher *model.Teacher) map[string]interface{} {
 	var result = make(map[string]interface{})
 	if teacher == nil {
