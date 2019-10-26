@@ -30,6 +30,7 @@ func (rc *ReservationController) MuxHandlers(m JsonMuxer) {
 	m.PostJson(kTeacherApiBaseUrl+"/reservation/edit", "EditReservationByTeacher", RoleCookieInjection(rc.EditReservationByTeacher))
 	m.PostJson(kTeacherApiBaseUrl+"/reservation/remove", "RemoveReservationsByTeacher", RoleCookieInjection(rc.RemoveReservationsByTeacher))
 	m.PostJson(kTeacherApiBaseUrl+"/reservation/cancel", "CancelReservationsByTeacher", RoleCookieInjection(rc.CancelReservationsByTeacher))
+	m.PostJson(kTeacherApiBaseUrl+"/reservation/make", "MakeReservationByTeacher", RoleCookieInjection(rc.MakeReservationByTeacher))
 	m.PostJson(kTeacherApiBaseUrl+"/reservation/feedback/get", "GetFeedbackByTeacher", RoleCookieInjection(rc.GetFeedbackByTeacher))
 	m.PostJson(kTeacherApiBaseUrl+"/reservation/feedback/submit", "SubmitFeedbackByTeacher", RoleCookieInjection(rc.SubmitFeedbackByTeacher))
 	m.PostJson(kTeacherApiBaseUrl+"/reservation/student/get", "GetReservationStudentInfoByTeacher", RoleCookieInjection(rc.GetReservationStudentInfoByTeacher))
@@ -254,6 +255,30 @@ func (rc *ReservationController) CancelReservationsByTeacher(w http.ResponseWrit
 		return http.StatusOK, wrapJsonError(err)
 	}
 	result["canceled_count"] = canceled
+
+	return http.StatusOK, wrapJsonOk(result)
+}
+
+func (rc *ReservationController) MakeReservationByTeacher(w http.ResponseWriter, r *http.Request, userId string, userType int) (int, interface{}) {
+	reservationId := form.ParamString(r, "reservation_id", "")
+	fullname := form.ParamString(r, "fullname", "")
+	gender := form.ParamString(r, "gender", "")
+	username := form.ParamString(r, "username", "")
+	school := form.ParamString(r, "school", "")
+	hometown := form.ParamString(r, "hometown", "")
+	mobile := form.ParamString(r, "mobile", "")
+	email := form.ParamString(r, "email", "")
+	experience := form.ParamString(r, "experience", "")
+	problem := form.ParamString(r, "problem", "")
+
+	var result = make(map[string]interface{})
+
+	reservation, err := service.Workflow().MakeReservationByTeacher(reservationId, fullname, gender, username,
+		school, hometown, mobile, email, experience, problem, userId, userType)
+	if err != nil {
+		return http.StatusOK, wrapJsonError(err)
+	}
+	result["reservation"] = service.Workflow().WrapReservation(reservation)
 
 	return http.StatusOK, wrapJsonOk(result)
 }

@@ -61,7 +61,7 @@ function refreshDataTable(reservations) {
 		if (reservations[i].status === 1) {
 			$("#col_status").append("<div class='table_cell' id='cell_status_" + i + "'>未预约</div>");
 			$("#col_student").append("<div class='table_cell' id='cell_student_" + i + "'>"
-				+ "<button type='button' id='cell_student_view_" + i + "' disabled='true'>查看"
+				+ "<button type='button' id='cell_student_view_" + i + "' onclick='makeReservation(" + i + ");'>帮约"
 				+ "</button></div>");
 		} else if (reservations[i].status === 2) {
 			$("#col_status").append("<div class='table_cell' id='cell_status_" + i + "'>已预约</div>");
@@ -430,6 +430,115 @@ function cancelReservationsConfirm() {
 			}
 		}
 	});
+}
+
+function makeReservation(index) {
+	$("body").append("\
+		<div class='admin_chakan' id='make_reservation_data_" + index + "' style='text-align:left'>\
+			<div style='text-align:center;font-size:23px'>咨询申请表</div><br>\
+			姓　　名：<input id='fullname'/><br>\
+			性　　别：<select id='gender'><option value=''>请选择</option><option value='男'>男</option><option value='女'>女</option></select><br>\
+			学　　号：<input id='username'/><br>\
+			院　　系：<input id='school'/><br>\
+			生 源 地：<input id='hometown'/><br>\
+			手　　机：<input id='mobile'/><br>\
+			邮　　箱：<input id='email'/><br>\
+			以前曾做过学习发展咨询、职业咨询或心理咨询吗？<select id='experience'><option value=''>请选择</option><option value='是'>是</option><option value='否'>否</option></select><br>\
+			请概括你最想要咨询的问题：<br>\
+			<textarea id='problem'></textarea><br>\
+			<button type='button' onclick='makeReservationConfirm(\"" + index + "\");'>确定</button>\
+			<button type='button' onclick='$(\".admin_chakan\").remove();'>取消</button>\
+		</div>\
+	");
+	optimize(".admin_chakan");
+}
+
+function makeReservationConfirm(index) {
+	var fullname = $("#fullname").val();
+	if (fullname === "") {
+		alert("姓名为空");
+		return;
+	}
+	var gender = $("#gender").val();
+	if (gender === "") {
+		alert("性别为空");
+		return;
+	}
+	var username = $("#username").val();
+	if (username === "") {
+		alert("学号为空");
+		return;
+	}
+	var school = $("#school").val();
+	if (school === "") {
+		alert("院系为空");
+		return;
+	}
+	var hometown = $("#hometown").val();
+	if (hometown === "") {
+		alert("生源地为空");
+		return;
+	}
+	var mobile = $("#mobile").val();
+	if (mobile === "") {
+		alert("手机为空");
+		return;
+	}
+	var email = $("#email").val();
+	if (email === "") {
+		alert("邮箱为空");
+		return;
+	}
+	var experience = $("#experience").val();
+	if (experience === "") {
+		alert("咨询经历为空");
+		return;
+	}
+	var problem = $("#problem").val();
+	if (problem === "") {
+		alert("咨询问题为空");
+		return;
+	}
+	var payload = {
+		reservation_id: reservations[index].id,
+		fullname: fullname,
+		gender: gender,
+		username: username,
+		school: school,
+		hometown: hometown,
+		mobile: mobile,
+		email: email,
+		experience: experience,
+		problem: problem,
+	};
+	$.ajax({
+		type: "POST",
+		async: false,
+		url: "/api/teacher/reservation/make",
+		data: payload,
+		dataType: "json",
+		success: function(data) {
+			if (data.status === "OK") {
+				makeReservationSuccess(index);
+			} else {
+				alert(data.err_msg);
+			}
+		},
+	});
+}
+
+function makeReservationSuccess(index) {
+	$(".admin_chakan").remove();
+	$("#cell_student_view_" + index).attr("disabled", "true");
+	$("#cell_student_view_" + index).text("查看");
+	$("body").append("\
+		<div class='yuyue_stu_success'>\
+			你已预约成功，<br>\
+			请关注短信提醒。<br>\
+			<button type='button' onclick='$(\".yuyue_stu_success\").remove();viewReservations();'>确定</button>\
+		</div>\
+	");
+	optimize(".yuyue_stu_success");
 }
 
 function getFeedback(index) {

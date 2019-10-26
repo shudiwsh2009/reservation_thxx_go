@@ -310,6 +310,10 @@ func (w *Workflow) MakeReservationByAdmin(reservationId string, fullname string,
 	} else if !utils.IsEmail(email) {
 		return nil, re.NewRErrorCode("email format is wrong", nil, re.ErrorFormatEmail)
 	}
+	admin, err := w.MongoClient().GetAdminById(userId)
+	if err != nil || admin == nil || admin.UserType != model.UserTypeAdmin {
+		return nil, re.NewRErrorCode("fail to get admin", err, re.ErrorDatabase)
+	}
 
 	studentReservations, err := w.MongoClient().GetReservationsByStudentUsername(username)
 	if err != nil {
