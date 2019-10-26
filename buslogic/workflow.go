@@ -23,7 +23,10 @@ func NewWorkflow() *Workflow {
 		redisClient: model.NewRedisClient(),
 	}
 	if config.Instance().StudentVerificationEnabled {
-		ret.loadStudentVerification(config.Instance().StudentVerificationFile)
+		err = ret.loadStudentVerification(config.Instance().StudentVerificationFile)
+		if err != nil {
+			log.Fatalf("读取学号验证文件失败：%+v", err)
+		}
 	}
 	return ret
 }
