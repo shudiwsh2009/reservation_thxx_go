@@ -35,6 +35,7 @@ const (
 	ErrorStudentMakeOutdatedReservation   = 402
 	ErrorStudentMakeReservatedReservation = 403
 	ErrorStudentMakeReservationTooEarly   = 405
+	ErrorStudentFullnameNotMatch          = 406
 	// 咨询师错误
 	ErrorTeacherEditOtherReservation = 502
 	ErrorTeacherViewOtherReservation = 503
@@ -94,6 +95,8 @@ func ReturnMessage(code int, args ...interface{}) string {
 		return "不能预约已被预约的咨询"
 	case ErrorStudentMakeReservationTooEarly:
 		return fmt.Sprintf("距咨询开始不足%s，无法预约", args...)
+	case ErrorStudentFullnameNotMatch:
+		return "预约失败，姓名与学号不匹配"
 	case ErrorFeedbackOtherReservation:
 		return "只能反馈自己预约的咨询"
 	case ErrorTeacherEditOtherReservation:
