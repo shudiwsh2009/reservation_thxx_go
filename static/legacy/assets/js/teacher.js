@@ -359,11 +359,37 @@ function removeReservations() {
 		<div class='delete_teacher_pre'>\
 			确认删除选中的咨询记录？\
 			<br>\
-			<button type='button' onclick='$(\".delete_teacher_pre\").remove();removeReservationsConfirm();'>确认</button>\
+			<button type='button' onclick='$(\".delete_teacher_pre\").remove();removeReservationsCheck();'>确认</button>\
 			<button type='button' onclick='$(\".delete_teacher_pre\").remove();'>取消</button>\
 		</div>\
 	");
 	optimize(".delete_teacher_pre");
+}
+
+function removeReservationsCheck() {
+	var doubleCheck = false;
+	for (var i = 0; i < reservations.length; ++i) {
+		if ($("#cell_checkbox_" + i)[0].checked) {
+			var status = reservations[i].status;
+			if (status === 2 || status === 3) {
+				doubleCheck = true;
+				break;
+			}
+		}
+	}
+	if (doubleCheck) {
+		$("body").append("\
+			<div class='delete_teacher_pre'>\
+				选中的咨询记录中有已经被预约或咨询的时段，请再次确认是否删除？\
+				<br>\
+				<button type='button' onclick='$(\".delete_teacher_pre\").remove();removeReservationsConfirm();'>确认</button>\
+				<button type='button' onclick='$(\".delete_teacher_pre\").remove();'>取消</button>\
+			</div>\
+		");
+		optimize(".delete_teacher_pre");
+	} else {
+		removeReservationsConfirm();
+	}
 }
 
 function removeReservationsConfirm() {
