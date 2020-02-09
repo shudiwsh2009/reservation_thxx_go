@@ -791,3 +791,44 @@ function sendSmsConfirm() {
 		}
 	});
 }
+
+function editSmsSuffix() {
+	$("body").append("\
+		<div class='edit_sms_suffix_pre'>\
+			编辑预约短信后缀\
+			<br>\
+			中文后缀：<textarea id='sms_suffix' style='width:300px;'></textarea><br><br>\
+			英文后缀：<textarea id='sms_suffix_en' style='width:300px;'></textarea><br>\
+			<button type='button' onclick='editSmsSuffixConfirm();'>确认</button>\
+			<button type='button' onclick='$(\".edit_sms_suffix_pre\").remove();'>取消</button>\
+		</div>\
+	");
+	$('#sms_suffix').text(teacher.sms_suffix);
+	$('#sms_suffix_en').text(teacher.sms_suffix_en);
+	optimize(".edit_sms_suffix_pre");
+}
+
+function editSmsSuffixConfirm() {
+	var smsSuffix = $('#sms_suffix').val();
+	var smsSuffixEn = $('#sms_suffix_en').val();
+	var payload = {
+		sms_suffix: smsSuffix,
+		sms_suffix_en: smsSuffixEn,
+	};
+	$.ajax({
+		type: "POST",
+		async: false,
+		url: "/api/teacher/sms_suffix/update",
+		data: payload,
+		dataType: "json",
+		success: function(data) {
+			if (data.status === "OK") {
+				$(".edit_sms_suffix_pre").remove();
+				alert("编辑成功");
+				viewReservations();
+			} else {
+				alert(data.err_msg);
+			}
+		}
+	});
+}

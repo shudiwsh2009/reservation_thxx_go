@@ -42,10 +42,13 @@ var (
 	}
 )
 
-func (w *Workflow) SendSuccessSMS(reservation *model.Reservation) error {
+func (w *Workflow) SendSuccessSMS(reservation *model.Reservation, teacher *model.Teacher) error {
 	studentSMS := fmt.Sprintf(SmsSuccessStudent, reservation.StudentInfo.Fullname, utils.ChineseShortWeekday[reservation.StartTime.Weekday()],
 		reservation.StartTime.Month(), reservation.StartTime.Day(), reservation.StartTime.Format("15:04"),
 		reservation.EndTime.Format("15:04"), reservation.TeacherAddress)
+	if teacher.SmsSuffix != "" {
+		studentSMS += teacher.SmsSuffix
+	}
 	if err := w.sendSMS(reservation.StudentInfo.Mobile, studentSMS); err != nil {
 		return err
 	}
@@ -53,6 +56,9 @@ func (w *Workflow) SendSuccessSMS(reservation *model.Reservation) error {
 		studentSmsEn := fmt.Sprintf(SmsEnSuccessStudent, reservation.StudentInfo.Fullname, utils.EnglishWeekday[reservation.StartTime.Weekday()],
 			utils.EnglishShortMonth[reservation.StartTime.Month()], reservation.StartTime.Day(), reservation.StartTime.Format("15:04"),
 			reservation.EndTime.Format("15:04"), reservation.TeacherAddressEn)
+		if teacher.SmsSuffixEn != "" {
+			studentSmsEn += teacher.SmsSuffixEn
+		}
 		if err := w.sendSMS(reservation.StudentInfo.Mobile, studentSmsEn); err != nil {
 			return err
 		}

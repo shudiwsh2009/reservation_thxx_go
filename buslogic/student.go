@@ -81,8 +81,13 @@ func (w *Workflow) MakeReservationByStudent(reservationId string, fullname strin
 		return nil, re.NewRErrorCode("fail to update reservation", err, re.ErrorDatabase)
 	}
 
+	teacher, err := w.MongoClient().GetTeacherByUsername(reservation.TeacherUsername)
+	if err != nil || teacher == nil {
+		return nil, re.NewRErrorCode("failed to GetTeacherByUsername", nil, re.ErrorDatabase)
+	}
+
 	//send success sms
-	go w.SendSuccessSMS(reservation)
+	go w.SendSuccessSMS(reservation, teacher)
 	return reservation, nil
 }
 

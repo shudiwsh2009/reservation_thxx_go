@@ -34,6 +34,7 @@ func (rc *ReservationController) MuxHandlers(m JsonMuxer) {
 	m.PostJson(kTeacherApiBaseUrl+"/reservation/feedback/get", "GetFeedbackByTeacher", RoleCookieInjection(rc.GetFeedbackByTeacher))
 	m.PostJson(kTeacherApiBaseUrl+"/reservation/feedback/submit", "SubmitFeedbackByTeacher", RoleCookieInjection(rc.SubmitFeedbackByTeacher))
 	m.PostJson(kTeacherApiBaseUrl+"/reservation/student/get", "GetReservationStudentInfoByTeacher", RoleCookieInjection(rc.GetReservationStudentInfoByTeacher))
+	m.PostJson(kTeacherApiBaseUrl+"/sms_suffix/update", "UpdateSmsSuffixByTeacher", RoleCookieInjection(rc.UpdateSmsSuffixByTeacher))
 	m.PostJson(kTeacherApiBaseUrl+"/sms/send", "SendSMSByTeacher", RoleCookieInjection(rc.SendSMSByTeacher))
 
 	m.GetJson(kAdminApiBaseUrl+"/reservation/view", "ViewReservationsByAdmin", RoleCookieInjection(rc.ViewReservationsByAdmin))
@@ -341,6 +342,20 @@ func (rc *ReservationController) GetReservationStudentInfoByTeacher(w http.Respo
 		return http.StatusOK, wrapJsonError(err)
 	}
 	result["student"] = service.Workflow().WrapStudenInfo(studentInfo)
+
+	return http.StatusOK, wrapJsonOk(result)
+}
+
+func (rc *ReservationController) UpdateSmsSuffixByTeacher(w http.ResponseWriter, r *http.Request, userId string, userType int) (int, interface{}) {
+	smsSuffix := form.ParamString(r, "sms_suffix", "")
+	smsSuffixEn := form.ParamString(r, "sms_suffix_en", "")
+
+	var result = make(map[string]interface{})
+
+	_, err := service.Workflow().UpdateSmsSuffixByTeacher(smsSuffix, smsSuffixEn, userId, userType)
+	if err != nil {
+		return http.StatusOK, wrapJsonError(err)
+	}
 
 	return http.StatusOK, wrapJsonOk(result)
 }

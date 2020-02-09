@@ -300,7 +300,7 @@ func (w *Workflow) MakeReservationByTeacher(reservationId string, fullname strin
 	}
 
 	//send success sms
-	go w.SendSuccessSMS(reservation)
+	go w.SendSuccessSMS(reservation, teacher)
 	return reservation, nil
 }
 
@@ -407,6 +407,24 @@ func (w *Workflow) GetReservationStudentInfoByTeacher(reservationId string, user
 	return &reservation.StudentInfo, nil
 }
 
+func (w *Workflow) UpdateSmsSuffixByTeacher(smsSuffix string, smsSuffixEn string, userId string, userType int) (*model.Teacher, error) {
+	if userId == "" {
+		return nil, re.NewRErrorCode("teacher not login", nil, re.ErrorNoLogin)
+	} else if userType != model.UserTypeTeacher {
+		return nil, re.NewRErrorCode("user is not teacher", nil, re.ErrorNotAuthorized)
+	}
+	teacher, err := w.MongoClient().GetTeacherById(userId)
+	if err != nil || teacher == nil || teacher.UserType != model.UserTypeTeacher {
+		return nil, re.NewRErrorCode("fail to get teacher", err, re.ErrorDatabase)
+	}
+	teacher.SmsSuffix = smsSuffix
+	teacher.SmsSuffixEn = smsSuffixEn
+	if err = w.MongoClient().UpdateTeacher(teacher); err != nil {
+		return nil, re.NewRErrorCode("fail to update teacher", err, re.ErrorDatabase)
+	}
+	return teacher, nil
+}
+
 func (w *Workflow) SendSMSByTeacher(mobile string, content string, userId string, userType int) error {
 	if userId == "" {
 		return re.NewRErrorCode("teacher not login", nil, re.ErrorNoLogin)
@@ -458,5 +476,7 @@ func (w *Workflow) WrapTeacher(teacher *model.Teacher) map[string]interface{} {
 	}
 	result["username"] = teacher.Username
 	result["mobile"] = teacher.Mobile
+	result["sms_suffix"] = teacher.SmsSuffix
+	result["sms_suffix_en"] = teacher.SmsSuffixEn
 	return result
 }

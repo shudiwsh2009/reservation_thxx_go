@@ -43,6 +43,8 @@ type Teacher struct {
 	AptitudeEn        string        `bson:"aptitude_en"`
 	Problem           string        `bson:"problem"` // 可咨询的问题
 	ProblemEn         string        `bson:"problem_en"`
+	SmsSuffix         string        `bson:"sms_suffix"` // 发送短信自动添加后缀
+	SmsSuffixEn       string        `bson:"sms_suffix_en"`
 	InternationalType int           `bson:"international_type"` // 国际化类型：0、仅中文 1、中英双语
 	CreatedAt         time.Time     `bson:"created_at"`
 	UpdatedAt         time.Time     `bson:"updated_at"`
