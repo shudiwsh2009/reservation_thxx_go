@@ -681,6 +681,10 @@ function successFeedback() {
 }
 
 function getStudent(index) {
+	apiGetStudent(index, showStudent);
+}
+
+function apiGetStudent(index, succCallback) {
 	var payload = {
 		reservation_id: reservations[index].id,
 	};
@@ -692,7 +696,7 @@ function getStudent(index) {
 		dataType: "json",
 		success: function(data) {
 			if (data.status === "OK") {
-				showStudent(data.payload.student);
+				succCallback(data.payload.student);
 			} else {
 				alert(data.err_msg);
 			}
@@ -719,6 +723,23 @@ function showStudent(student) {
 }
 
 function sendSms() {
+	var checkedIndex = -1;
+	for (var i = 0; i < reservations.length; i++) {
+		if ($("#cell_checkbox_" + i)[0].checked) {
+			if (checkedIndex == -1) {
+				checkedIndex = i;
+			} else {
+				alert("不能选中多个预约发送短信");
+				return;
+			}
+		}
+	}
+	if (checkedIndex != -1) {
+		if (reservations[checkedIndex].status != 2 && reservations[checkedIndex].status != 3) {
+			alert("无法给未预约的咨询发送短信");
+			return;
+		}
+	}
 	$("body").append("\
 		<div class='send_sms_teacher_pre'>\
 			自定义发送短信\
@@ -729,6 +750,12 @@ function sendSms() {
 			<button type='button' onclick='$(\".send_sms_teacher_pre\").remove();'>取消</button>\
 		</div>\
 	");
+	if (checkedIndex != -1) {
+		var setMobile = function(student) {
+			$('#mobile').val(student.mobile);
+		};
+		apiGetStudent(checkedIndex, setMobile);
+	}
 	$('#content').text('有任何问题欢迎联系学习发展中心，learning@tsinghua.edu.cn, 62792453');
 	optimize(".send_sms_teacher_pre");
 }
