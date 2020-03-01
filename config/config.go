@@ -12,6 +12,7 @@ type Config struct {
 	SMSUid                     string   `json:"sms_uid"`
 	SMSKey                     string   `json:"sms_key"`
 	SMTPHost                   string   `json:"smtp_host"`
+	SMTPPort                   string   `json:"smtp_port"`
 	SMTPUser                   string   `json:"smtp_user"`
 	SMTPPassword               string   `json:"smtp_password"`
 	EmailAddressAdmin          []string `json:"email_address_admin"`

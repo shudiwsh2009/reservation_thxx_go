@@ -18,7 +18,7 @@ func SendEmail(m *email.Message) error {
 	}
 
 	auth := smtp.PlainAuth("", config.Instance().SMTPUser, config.Instance().SMTPPassword, config.Instance().SMTPHost)
-	if err := email.Send(config.Instance().SMTPHost+":587", auth, m); err != nil {
+	if err := email.Send(fmt.Sprintf("%s:%s", config.Instance().SMTPHost, config.Instance().SMTPPort), auth, m); err != nil {
 		return re.NewRError(fmt.Sprintf("failed to send email %+v", m), err)
 	}
 	return nil
