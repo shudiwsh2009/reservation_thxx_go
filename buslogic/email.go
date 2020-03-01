@@ -1,9 +1,11 @@
 package buslogic
 
 import (
+	"fmt"
 	"github.com/mijia/sweb/log"
 	"github.com/scorredoira/email"
 	"github.com/shudiwsh2009/reservation_thxx_go/config"
+	re "github.com/shudiwsh2009/reservation_thxx_go/rerror"
 	"net/mail"
 	"net/smtp"
 	"strings"
@@ -17,8 +19,7 @@ func SendEmail(m *email.Message) error {
 
 	auth := smtp.PlainAuth("", config.Instance().SMTPUser, config.Instance().SMTPPassword, config.Instance().SMTPHost)
 	if err := email.Send(config.Instance().SMTPHost+":587", auth, m); err != nil {
-		log.Infof("Fail to send email %+v", m)
-		return err
+		return re.NewRError(fmt.Sprintf("failed to send email %+v", m), err)
 	}
 	return nil
 }

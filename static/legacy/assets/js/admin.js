@@ -1034,7 +1034,7 @@ function sendSms() {
 			<button type='button' onclick='$(\".send_sms_admin_pre\").remove();'>取消</button>\
 		</div>\
 	");
-	$('#content').text('有任何问题欢迎联系学习发展中心，learning@tsinghua.edu.cn, 62792453');
+	$('#content').text('有任何问题欢迎联系学习发展中心，62792453');
 	optimize(".send_sms_admin_pre");
 }
 

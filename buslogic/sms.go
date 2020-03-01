@@ -11,6 +11,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strconv"
 	"time"
 )
 
@@ -27,18 +28,19 @@ const (
 )
 
 var (
-	SMS_ERROR_MSG = map[string]string{
-		"-1":  "没有该用户账户",
-		"-2":  "接口密钥不正确",
-		"-21": "MD5接口密钥加密不正确",
-		"-3":  "短信数量不足",
-		"-11": "该用户被禁用",
-		"-14": "短信内容出现非法字符",
-		"-4":  "手机号格式不正确",
-		"-41": "手机号码为空",
-		"-42": "短信内容为空",
-		"-51": "短信签名格式不正确",
-		"-6":  "IP限制",
+	SMS_ERROR_MSG = map[int]string{
+		-1:  "没有该用户账户",
+		-2:  "接口密钥不正确",
+		-21: "MD5接口密钥加密不正确",
+		-3:  "短信数量不足",
+		-11: "该用户被禁用",
+		-14: "短信内容出现非法字符",
+		-4:  "手机号格式不正确",
+		-41: "手机号码为空",
+		-42: "短信内容为空",
+		-51: "短信签名格式不正确",
+		-52: "短信签名太长",
+		-6:  "IP限制",
 	}
 )
 
@@ -143,14 +145,18 @@ func (w *Workflow) sendSMS(mobile string, content string) error {
 	if err != nil {
 		return err
 	}
-	errCode := string(responseBody)
-	if errMsg, ok := SMS_ERROR_MSG[errCode]; ok {
-		log.Errorf("Fail to send SMS \"%s\" to %s: %s", content, mobile, errMsg)
-		EmailWarn("thxxfzzx报警：短信发送失败", fmt.Sprintf("Fail to send SMS \"%s\" to %s: %s", content, mobile, errMsg))
-		return re.NewRError(fmt.Sprintf("短信发送失败：%s", errMsg), nil)
+
+	errCode, err := strconv.Atoi(string(responseBody))
+	if err != nil {
+		return re.NewRError(fmt.Sprintf("短信发送失败：failed to strconv.Atoi %s", responseBody), err)
 	}
-	log.Infof("Send SMS \"%s\" to %s: return %s", content, mobile, errCode)
-	return nil
+	if errCode > 0 {
+		log.Infof("Send SMS \"%s\" to %s: return %s", content, mobile, errCode)
+		return nil
+	}
+	errMsg, _ := SMS_ERROR_MSG[errCode]
+	EmailWarn("thxxfzzx报警：短信发送失败", fmt.Sprintf("Fail to send SMS \"%s\" to %s: errCode = %d, errMsg = %s", content, mobile, errCode, errMsg))
+	return re.NewRError(fmt.Sprintf("Fail to send SMS \"%s\" to %s: errCode = %d, errMsg = %s", content, mobile, errCode, errMsg), nil)
 }
 
 // external 每天20:00发送第二天预约咨询的提醒短信

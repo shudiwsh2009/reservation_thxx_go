@@ -756,7 +756,7 @@ function sendSms() {
 		};
 		apiGetStudent(checkedIndex, setMobile);
 	}
-	$('#content').text('有任何问题欢迎联系学习发展中心，learning@tsinghua.edu.cn, 62792453');
+	$('#content').text('有任何问题欢迎联系学习发展中心，62792453');
 	optimize(".send_sms_teacher_pre");
 }
 
