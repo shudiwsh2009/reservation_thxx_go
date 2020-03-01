@@ -155,7 +155,7 @@ func (w *Workflow) sendSMS(mobile string, content string) error {
 		return nil
 	}
 	errMsg, _ := SMS_ERROR_MSG[errCode]
-	EmailWarn("thxxfzzx报警：短信发送失败", fmt.Sprintf("Fail to send SMS \"%s\" to %s: errCode = %d, errMsg = %s", content, mobile, errCode, errMsg))
+	EmailWarn("短信发送失败", fmt.Sprintf("Fail to send SMS \"%s\" to %s: errCode = %d, errMsg = %s", content, mobile, errCode, errMsg))
 	return re.NewRError(fmt.Sprintf("Fail to send SMS \"%s\" to %s: errCode = %d, errMsg = %s", content, mobile, errCode, errMsg), nil)
 }
 

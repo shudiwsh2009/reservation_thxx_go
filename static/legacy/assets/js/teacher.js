@@ -832,3 +832,80 @@ function editSmsSuffixConfirm() {
 		}
 	});
 }
+
+function sendEmail() {
+	var checkedIndex = -1;
+	for (var i = 0; i < reservations.length; i++) {
+		if ($("#cell_checkbox_" + i)[0].checked) {
+			if (checkedIndex == -1) {
+				checkedIndex = i;
+			} else {
+				alert("不能选中多个预约发送邮件");
+				return;
+			}
+		}
+	}
+	if (checkedIndex != -1) {
+		if (reservations[checkedIndex].status != 2 && reservations[checkedIndex].status != 3) {
+			alert("无法给未预约的咨询发送邮件");
+			return;
+		}
+	}
+	$("body").append("\
+		<div class='send_email_teacher_pre'>\
+			自定义发送邮件\
+			<br>\
+			　　邮箱：<input id='email' style='width:300px;'><br><br>\
+			邮件主题：<input id='subject' style='width:300px;'><br>\
+			邮件正文：<textarea id='body' style='width:300px;'></textarea><br>\
+			<button type='button' onclick='sendEmailConfirm();'>确认</button>\
+			<button type='button' onclick='$(\".send_email_teacher_pre\").remove();'>取消</button>\
+		</div>\
+	");
+	if (checkedIndex != -1) {
+		var setEmail = function(student) {
+			$('#email').val(student.email);
+		};
+		apiGetStudent(checkedIndex, setEmail);
+	}
+	$('#body').text('有任何问题欢迎联系学习发展中心，learning@tsinghua.edu.cn, 62792453');
+	optimize(".send_email_teacher_pre");
+}
+
+function sendEmailConfirm() {
+	var email = $("#email").val();
+	if (email === "") {
+		alert("邮箱为空");
+		return;
+	}
+	var subject = $("#subject").val();
+	if (subject === "") {
+		alert("邮件主题为空");
+		return;
+	}
+	var body = $("#body").val();
+	if (body === "") {
+		alert("邮件正文为空");
+		return;
+	}
+	var payload = {
+		email: email,
+		subject: subject,
+		body: body,
+	};
+	$.ajax({
+		type: "POST",
+		async: false,
+		url: "/api/teacher/email/send",
+		data: payload,
+		dataType: "json",
+		success: function(data) {
+			if (data.status === "OK") {
+				$(".send_email_teacher_pre").remove();
+				alert("发送成功");
+			} else {
+				alert(data.err_msg);
+			}
+		}
+	});
+}

@@ -642,3 +642,26 @@ func (w *Workflow) SendSMSByAdmin(mobile string, content string, userId string, 
 
 	return w.sendSMS(mobile, content)
 }
+
+func (w *Workflow) SendEmailByAdmin(email string, subject string, body string, userId string, userType int) error {
+	if userId == "" {
+		return re.NewRErrorCode("admin not login", nil, re.ErrorNoLogin)
+	} else if userType != model.UserTypeAdmin {
+		return re.NewRErrorCode("user is not admin", nil, re.ErrorNotAuthorized)
+	} else if email == "" {
+		return re.NewRErrorCodeContext("email is empty", nil, re.ErrorMissingParam, "email")
+	} else if subject == "" {
+		return re.NewRErrorCodeContext("subject is empty", nil, re.ErrorMissingParam, "subject")
+	} else if body == "" {
+		return re.NewRErrorCodeContext("body is empty", nil, re.ErrorMissingParam, "body")
+	} else if !utils.IsEmail(email) {
+		return re.NewRErrorCode("email format is wrong", nil, re.ErrorFormatEmail)
+	}
+
+	admin, err := w.MongoClient().GetAdminById(userId)
+	if err != nil || admin == nil || admin.UserType != model.UserTypeAdmin {
+		return re.NewRErrorCode("fail to get admin", err, re.ErrorDatabase)
+	}
+
+	return SendEmail(subject, body, []string{email})
+}

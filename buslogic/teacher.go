@@ -446,6 +446,29 @@ func (w *Workflow) SendSMSByTeacher(mobile string, content string, userId string
 	return w.sendSMS(mobile, content)
 }
 
+func (w *Workflow) SendEmailByTeacher(email string, subject string, body string, userId string, userType int) error {
+	if userId == "" {
+		return re.NewRErrorCode("teacher not login", nil, re.ErrorNoLogin)
+	} else if userType != model.UserTypeTeacher {
+		return re.NewRErrorCode("user is not teacher", nil, re.ErrorNotAuthorized)
+	} else if email == "" {
+		return re.NewRErrorCodeContext("email is empty", nil, re.ErrorMissingParam, "email")
+	} else if subject == "" {
+		return re.NewRErrorCodeContext("subject is empty", nil, re.ErrorMissingParam, "subject")
+	} else if body == "" {
+		return re.NewRErrorCodeContext("body is empty", nil, re.ErrorMissingParam, "body")
+	} else if !utils.IsEmail(email) {
+		return re.NewRErrorCode("email format is wrong", nil, re.ErrorFormatEmail)
+	}
+
+	teacher, err := w.MongoClient().GetTeacherById(userId)
+	if err != nil || teacher == nil || teacher.UserType != model.UserTypeTeacher {
+		return re.NewRErrorCode("fail to get teacher", err, re.ErrorDatabase)
+	}
+
+	return SendEmail(subject, body, []string{email})
+}
+
 func (w *Workflow) WrapSimpleTeacher(teacher *model.Teacher) map[string]interface{} {
 	var result = make(map[string]interface{})
 	if teacher == nil {
