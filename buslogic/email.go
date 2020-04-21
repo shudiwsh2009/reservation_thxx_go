@@ -1,13 +1,13 @@
 package buslogic
 
 import (
+	"crypto/tls"
 	"fmt"
+	"github.com/jordan-wright/email"
 	"github.com/mijia/sweb/log"
-	"github.com/scorredoira/email"
 	"github.com/shudiwsh2009/reservation_thxx_go/config"
 	re "github.com/shudiwsh2009/reservation_thxx_go/rerror"
 	"github.com/shudiwsh2009/reservation_thxx_go/utils"
-	"net/mail"
 	"net/smtp"
 	"strings"
 )
@@ -27,12 +27,15 @@ func SendEmail(subject string, body string, receivers []string) error {
 		return nil
 	}
 
-	m := email.NewMessage(subject, body)
-	m.From = mail.Address{Name: "", Address: config.Instance().SMTPUser}
+	m := email.NewEmail()
+	m.From = config.Instance().SMTPUser
 	m.To = receivers
+	m.Subject = subject
+	m.Text = []byte(body)
 
 	auth := smtp.PlainAuth("", config.Instance().SMTPUser, config.Instance().SMTPPassword, config.Instance().SMTPHost)
-	if err := email.Send(fmt.Sprintf("%s:%s", config.Instance().SMTPHost, config.Instance().SMTPPort), auth, m); err != nil {
+	if err := m.SendWithTLS(fmt.Sprintf("%s:%s", config.Instance().SMTPHost, config.Instance().SMTPPort),
+		auth, &tls.Config{ServerName: config.Instance().SMTPHost}); err != nil {
 		return re.NewRError(fmt.Sprintf("failed to send email %+v", m), err)
 	}
 	log.Infof("Send Email to %s, subject: \"%s\", body: \"%s\"", strings.Join(receivers, ","), subject, body)
