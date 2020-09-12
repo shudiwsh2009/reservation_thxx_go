@@ -15,9 +15,9 @@ const (
 
 	MakeReservationLatestDuration = 3 * time.Hour // 最迟提前3小时预约
 
-	LocationBoth    = 0 // 线上、线下均可
 	LocationOnline  = 1 // 线上咨询
 	LocationOffline = 2 // 线下咨询
+	LocationBoth    = 3 // 线上线下均可
 )
 
 type Reservation struct {
