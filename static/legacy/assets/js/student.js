@@ -106,11 +106,20 @@ function refreshDataTableForGroups(reservationGroups) {
 				<div class='clearfix children'></div>\
 			</div>\
 		");
+
         for (var j = 0; j < group.reservations.length; j++) {
             var id = group.reservations[j].id;
+            var locationStr = "";
+            if (group.reservations[j].location === 0) {
+                locationStr = "线上线下均可";
+            } else if (group.reservations[j].location === 1) {
+                locationStr = "线上咨询"
+            } else if (group.reservations[j].location === 2) {
+                locationStr = "线下咨询"
+            }
             $("#col_time_" + group.date).append("<div class='table_cell' id='cell_time_" + id + "'>"
                 + group.reservations[j].start_time.substr(2) + "-"
-                + group.reservations[j].end_time.split(" ")[1] + "</div>");
+                + group.reservations[j].end_time.split(" ")[1] + "<br>" + locationStr + "</div>");
             $("#col_teacher_" + group.date).append("<div class='table_cell' id='cell_teacher_" + id
                 + "'><button type='button' id='cell_teacher_b_" + id + "' onclick='getTeacher(\"" + id
                 + "\")'>" + group.reservations[j].teacher_fullname + "</button></div>");

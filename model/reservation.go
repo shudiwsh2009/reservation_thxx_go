@@ -14,6 +14,10 @@ const (
 	ReservationStatusDeleted    = 4
 
 	MakeReservationLatestDuration = 3 * time.Hour // 最迟提前3小时预约
+
+	LocationBoth    = 0 // 线上、线下均可
+	LocationOnline  = 1 // 线上咨询
+	LocationOffline = 2 // 线下咨询
 )
 
 type Reservation struct {
@@ -22,6 +26,7 @@ type Reservation struct {
 	EndTime           time.Time       `bson:"end_time"`
 	Status            int             `bson:"status"`
 	InternationalType int             `bson:"international_type"`
+	Location          int             `bson:"location"`
 	TeacherUsername   string          `bson:"teacher_username"`
 	TeacherFullname   string          `bson:"teacher_fullname"`
 	TeacherFullnameEn string          `bson:"teacher_fullname_en"`

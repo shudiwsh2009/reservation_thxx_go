@@ -437,10 +437,11 @@ func (rc *ReservationController) AddReservationByAdmin(w http.ResponseWriter, r 
 	address := form.ParamString(r, "address", "")
 	addressEn := form.ParamString(r, "address_en", "")
 	internationalType := form.ParamInt(r, "international_type", 0)
+	location := form.ParamInt(r, "location", 0)
 
 	var result = make(map[string]interface{})
 
-	reservation, err := service.Workflow().AddReservationByAdmin(startTime, endTime, username, fullname, fullnameEn, mobile, address, addressEn, internationalType, userId, userType)
+	reservation, err := service.Workflow().AddReservationByAdmin(startTime, endTime, username, fullname, fullnameEn, mobile, address, addressEn, internationalType, location, userId, userType)
 	if err != nil {
 		return http.StatusOK, wrapJsonError(err)
 	}
@@ -460,11 +461,12 @@ func (rc *ReservationController) EditReservationByAdmin(w http.ResponseWriter, r
 	address := form.ParamString(r, "address", "")
 	addressEn := form.ParamString(r, "address_en", "")
 	internationalType := form.ParamInt(r, "international_type", 0)
+	location := form.ParamInt(r, "location", 0)
 
 	var result = make(map[string]interface{})
 
 	reservation, err := service.Workflow().EditReservationByAdmin(reservationId, startTime, endTime, username,
-		fullname, fullnameEn, mobile, address, addressEn, internationalType, userId, userType)
+		fullname, fullnameEn, mobile, address, addressEn, internationalType, location, userId, userType)
 	if err != nil {
 		return http.StatusOK, wrapJsonError(err)
 	}

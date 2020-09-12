@@ -115,10 +115,18 @@ function refreshDataTable(reservations) {
 	";
 
     for (var i = 0; i < reservations.length; ++i) {
+        var locationStr = "";
+        if (reservations[i].location === 0) {
+            locationStr = "线上线下均可";
+        } else if (reservations[i].location === 1) {
+            locationStr = "线上咨询"
+        } else if (reservations[i].location === 2) {
+            locationStr = "线下咨询"
+        }
         $("#col_select").append("<div class='table_cell' id='cell_select_" + i + "'>"
             + "<input class='checkbox' type='checkbox' id='cell_checkbox_" + i + "'></div>");
         $("#col_time").append("<div class='table_cell' id='cell_time_" + i + "' onclick='editReservation("
-            + i + ")'>" + reservations[i].start_time + "至" + reservations[i].end_time + "</div>");
+            + i + ")'>" + reservations[i].start_time + "至" + reservations[i].end_time + "<br>" + locationStr + "</div>");
         $("#col_teacher_fullname").append("<div class='table_cell' id='cell_teacher_fullname_"
             + i + "' onclick='getTeacher(" + i + ")'>" + reservations[i].teacher_fullname + "<br>"
             + reservations[i].teacher_fullname_en + "</div>");
@@ -240,7 +248,8 @@ function addReservation() {
     $("#cell_time_add")[0].onclick = "";
     $("#cell_time_add")[0].innerHTML = "<input type='text' id='input_date' style='width: 80px'/>日，"
         + "<input style='width:20px' id='start_hour'/>时<input style='width:20px' id='start_minute'/>分"
-        + "至<input style='width:20px' id='end_hour'/>时<input style='width:20px' id='end_minute'/>分";
+        + "至<input style='width:20px' id='end_hour'/>时<input style='width:20px' id='end_minute'/>分<br>"
+        + "<select id='location'><option value='0'>线上线下均可</option><option value='1'>线上咨询</option><option value='2'>线下咨询</option></select>";
     $("#cell_teacher_fullname_add")[0].innerHTML = "<input id='teacher_fullname' style='width:60px'/>"
         + "<button type='button' onclick='searchTeacher();'>搜索</button><br>"
         + "<input id='teacher_fullname_en' style='width:60px'/>";
@@ -337,6 +346,7 @@ function addReservationConfirm() {
         address: address,
         address_en: address_en,
         international_type: $("#international_type").val(),
+        location: $("#location").val(),
     };
     $.ajax({
         type: "POST",
@@ -358,7 +368,8 @@ function editReservation(index) {
     $("#cell_time_" + index)[0].onclick = "";
     $("#cell_time_" + index)[0].innerHTML = "<input type='text' id='input_date' style='width: 80px'/>日，"
         + "<input style='width:20px' id='start_hour'/>时<input style='width:20px' id='start_minute'/>分"
-        + "至<input style='width:20px' id='end_hour'/>时<input style='width:20px' id='end_minute'/>分";
+        + "至<input style='width:20px' id='end_hour'/>时<input style='width:20px' id='end_minute'/>分<br>"
+        + "<select id='location" + index + "'><option value='0'>线上线下均可</option><option value='1'>线上咨询</option><option value='2'>线下咨询</option></select>";
     $("#cell_teacher_fullname_" + index)[0].onclick = "";
     $("#cell_teacher_fullname_" + index)[0].innerHTML = "<input id='teacher_fullname" + index + "' style='width:60px' "
         + "value='" + reservations[index].teacher_fullname + "'/>"
@@ -386,6 +397,7 @@ function editReservation(index) {
         firstDay: 1
     });
     $("#international_type" + index).val(reservations[index].international_type);
+    $("#location" + index).val(reservations[index].location);
     optimize();
 }
 
@@ -465,6 +477,7 @@ function editReservationConfirm(index) {
         address: address,
         address_en: address_en,
         international_type: $("#international_type" + index).val(),
+        location: $("#location" + index).val(),
     };
     $.ajax({
         type: "POST",

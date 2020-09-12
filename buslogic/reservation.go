@@ -195,6 +195,7 @@ func (w *Workflow) WrapSimpleReservation(reservation *model.Reservation) map[str
 	result["end_time"] = reservation.EndTime.Format("2006-01-02 15:04")
 	result["status"] = reservation.Status
 	result["international_type"] = reservation.InternationalType
+	result["location"] = reservation.Location
 	if reservation.Status == model.ReservationStatusReservated && reservation.StartTime.Before(time.Now()) {
 		result["status"] = model.ReservationStatusFeedback
 	}

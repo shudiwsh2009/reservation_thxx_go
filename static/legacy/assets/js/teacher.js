@@ -48,11 +48,19 @@ function refreshDataTable(reservations) {
 	";
 
     for (var i = 0; i < reservations.length; ++i) {
+        var locationStr = "";
+        if (reservations[i].location === 0) {
+            locationStr = "线上线下均可";
+        } else if (reservations[i].location === 1) {
+            locationStr = "线上咨询"
+        } else if (reservations[i].location === 2) {
+            locationStr = "线下咨询"
+        }
         $("#col_select").append("<div class='table_cell' id='cell_select_" + i + "'>"
             + "<input class='checkbox' type='checkbox' id='cell_checkbox_" + i + "'></div>");
         $("#col_time").append("<div class='table_cell' id='cell_time_" + i + "' onclick='editReservation("
             + i + ")'>" + reservations[i].start_time.split(" ")[0].substr(2) + "<br>"
-            + reservations[i].start_time.split(" ")[1] + "-" + reservations[i].end_time.split(" ")[1] + "</div>");
+            + reservations[i].start_time.split(" ")[1] + "-" + reservations[i].end_time.split(" ")[1] + "<br>" + locationStr + "</div>");
         $("#col_teacher_fullname").append("<div class='table_cell' id='cell_teacher_fullname_"
             + i + "'>" + reservations[i].teacher_fullname + "<br>"
             + reservations[i].teacher_fullname_en + "</div>");

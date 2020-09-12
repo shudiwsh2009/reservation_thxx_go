@@ -12,7 +12,7 @@ import (
 )
 
 func (w *Workflow) AddReservationByAdmin(startTime string, endTime string, username string, fullname string,
-	fullnameEn string, mobile string, address string, addressEn string, internationalType int,
+	fullnameEn string, mobile string, address string, addressEn string, internationalType int, location int,
 	userId string, userType int) (*model.Reservation, error) {
 	if userId == "" {
 		return nil, re.NewRErrorCode("admin not login", nil, re.ErrorNoLogin)
@@ -32,6 +32,8 @@ func (w *Workflow) AddReservationByAdmin(startTime string, endTime string, usern
 		return nil, re.NewRErrorCodeContext("address is empty", nil, re.ErrorMissingParam, "address")
 	} else if !utils.IsMobile(mobile) {
 		return nil, re.NewRErrorCode("mobile format is wrong", nil, re.ErrorFormatMobile)
+	} else if location != model.LocationBoth && location != model.LocationOnline && location != model.LocationOffline {
+		return nil, re.NewRErrorCodeContext("location is invalid", nil, re.ErrorInvalidParam, "location")
 	}
 	admin, err := w.MongoClient().GetAdminById(userId)
 	if err != nil || admin == nil || admin.UserType != model.UserTypeAdmin {
@@ -100,6 +102,7 @@ func (w *Workflow) AddReservationByAdmin(startTime string, endTime string, usern
 		EndTime:           end,
 		Status:            model.ReservationStatusAvailable,
 		InternationalType: teacher.InternationalType,
+		Location:          location,
 		TeacherUsername:   teacher.Username,
 		TeacherFullname:   teacher.Fullname,
 		TeacherFullnameEn: teacher.FullnameEn,
@@ -114,7 +117,7 @@ func (w *Workflow) AddReservationByAdmin(startTime string, endTime string, usern
 }
 
 func (w *Workflow) EditReservationByAdmin(reservationId string, startTime string, endTime string, username string,
-	fullname string, fullnameEn string, mobile string, address string, addressEn string, internationalType int,
+	fullname string, fullnameEn string, mobile string, address string, addressEn string, internationalType int, location int,
 	userId string, userType int) (*model.Reservation, error) {
 	if userId == "" {
 		return nil, re.NewRErrorCode("admin not login", nil, re.ErrorNoLogin)
@@ -134,6 +137,8 @@ func (w *Workflow) EditReservationByAdmin(reservationId string, startTime string
 		return nil, re.NewRErrorCodeContext("address is empty", nil, re.ErrorMissingParam, "address")
 	} else if !utils.IsMobile(mobile) {
 		return nil, re.NewRErrorCode("mobile format is wrong", nil, re.ErrorFormatMobile)
+	} else if location != model.LocationBoth && location != model.LocationOnline && location != model.LocationOffline {
+		return nil, re.NewRErrorCodeContext("location is invalid", nil, re.ErrorInvalidParam, "location")
 	}
 	admin, err := w.MongoClient().GetAdminById(userId)
 	if err != nil || admin == nil || admin.UserType != model.UserTypeAdmin {
@@ -210,6 +215,7 @@ func (w *Workflow) EditReservationByAdmin(reservationId string, startTime string
 	reservation.StartTime = start
 	reservation.EndTime = end
 	reservation.InternationalType = internationalType
+	reservation.Location = location
 	reservation.TeacherUsername = teacher.Username
 	reservation.TeacherFullname = teacher.Fullname
 	reservation.TeacherFullnameEn = teacher.FullnameEn
