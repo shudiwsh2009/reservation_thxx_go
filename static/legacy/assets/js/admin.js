@@ -634,6 +634,7 @@ function cancelReservationsConfirm() {
 }
 
 function makeReservation(index) {
+    let reservation = reservations[index];
     $("body").append("\
 		<div class='admin_chakan' id='make_reservation_data_" + index + "' style='text-align:left'>\
 			<div style='text-align:center;font-size:23px'>咨询申请表</div><br>\
@@ -644,6 +645,7 @@ function makeReservation(index) {
 			生 源 地：<input id='hometown'/><br>\
 			手　　机：<input id='mobile'/><br>\
 			邮　　箱：<input id='email'/><br>\
+			<div id='location_div'></div>\
 			以前曾做过学习发展咨询、职业咨询或心理咨询吗？<select id='experience'><option value=''>请选择</option><option value='是'>是</option><option value='否'>否</option></select><br>\
 			请概括你最想要咨询的问题：<br>\
 			<textarea id='problem'></textarea><br>\
@@ -651,6 +653,17 @@ function makeReservation(index) {
 			<button type='button' onclick='$(\".admin_chakan\").remove();'>取消</button>\
 		</div>\
 	");
+    if (reservation.location === 1) {
+        $("#location_div").append("<select id='location'></select>");
+        $("#location").append(new Option("线上咨询", 1));
+    } else if (reservation.location === 2) {
+        $("#location_div").append("<select id='location'></select>");
+        $("#location").append(new Option("线下咨询", 2));
+    } else if (reservation.location === 3) {
+        $("#location_div").append("<select id='location'></select>");
+        $("#location").append(new Option("线上咨询", 1));
+        $("#location").append(new Option("线下咨询", 2));
+    }
     optimize(".admin_chakan");
 }
 
@@ -711,6 +724,7 @@ function makeReservationConfirm(index) {
         email: email,
         experience: experience,
         problem: problem,
+        location: $("#location").val(),
     };
     $.ajax({
         type: "POST",

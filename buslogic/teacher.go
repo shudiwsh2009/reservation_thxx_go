@@ -226,7 +226,7 @@ func (w *Workflow) CancelReservationsByTeacher(reservationIds []string, userId s
 
 func (w *Workflow) MakeReservationByTeacher(reservationId string, fullname string, gender string,
 	username string, school string, hometown string, mobile string, email string, experience string,
-	problem string, userId string, userType int) (*model.Reservation, error) {
+	problem string, location int, userId string, userType int) (*model.Reservation, error) {
 	if userId == "" {
 		return nil, re.NewRErrorCode("teacher not login", nil, re.ErrorNoLogin)
 	} else if userType != model.UserTypeTeacher {
@@ -299,6 +299,7 @@ func (w *Workflow) MakeReservationByTeacher(reservationId string, fullname strin
 		Email:      email,
 		Experience: experience,
 		Problem:    problem,
+		Location:   location,
 	}
 	err = w.MongoClient().UpdateReservation(reservation)
 	if err != nil {

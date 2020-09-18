@@ -276,11 +276,12 @@ func (rc *ReservationController) MakeReservationByTeacher(w http.ResponseWriter,
 	email := form.ParamString(r, "email", "")
 	experience := form.ParamString(r, "experience", "")
 	problem := form.ParamString(r, "problem", "")
+	location := form.ParamInt(r, "location", 0)
 
 	var result = make(map[string]interface{})
 
 	reservation, err := service.Workflow().MakeReservationByTeacher(reservationId, fullname, gender, username,
-		school, hometown, mobile, email, experience, problem, userId, userType)
+		school, hometown, mobile, email, experience, problem, location, userId, userType)
 	if err != nil {
 		return http.StatusOK, wrapJsonError(err)
 	}
@@ -517,11 +518,12 @@ func (rc *ReservationController) MakeReservationByAdmin(w http.ResponseWriter, r
 	email := form.ParamString(r, "email", "")
 	experience := form.ParamString(r, "experience", "")
 	problem := form.ParamString(r, "problem", "")
+	location := form.ParamInt(r, "location", 0)
 
 	var result = make(map[string]interface{})
 
 	reservation, err := service.Workflow().MakeReservationByAdmin(reservationId, fullname, gender, username,
-		school, hometown, mobile, email, experience, problem, userId, userType)
+		school, hometown, mobile, email, experience, problem, location, userId, userType)
 	if err != nil {
 		return http.StatusOK, wrapJsonError(err)
 	}
