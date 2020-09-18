@@ -11,7 +11,7 @@ import (
 
 func (w *Workflow) MakeReservationByStudent(reservationId string, fullname string, gender string,
 	username string, school string, hometown string, mobile string, email string, experience string,
-	problem string) (*model.Reservation, error) {
+	problem string, location int) (*model.Reservation, error) {
 	if reservationId == "" {
 		return nil, re.NewRErrorCodeContext("reservation id is empty", nil, re.ErrorMissingParam, "reservation_id")
 	} else if fullname == "" {
@@ -75,6 +75,7 @@ func (w *Workflow) MakeReservationByStudent(reservationId string, fullname strin
 		Email:      email,
 		Experience: experience,
 		Problem:    problem,
+		Location:   location,
 	}
 	err = w.MongoClient().UpdateReservation(reservation)
 	if err != nil {
@@ -173,7 +174,7 @@ func (w *Workflow) GetReservationTeacherInfoByStudent(reservationId string) (*mo
 	return teacher, nil
 }
 
-func (w *Workflow) WrapStudenInfo(studentInfo *model.StudentInfo) map[string]interface{} {
+func (w *Workflow) WrapStudentInfo(studentInfo *model.StudentInfo) map[string]interface{} {
 	var result = make(map[string]interface{})
 	if studentInfo == nil {
 		return result
@@ -187,5 +188,6 @@ func (w *Workflow) WrapStudenInfo(studentInfo *model.StudentInfo) map[string]int
 	result["email"] = studentInfo.Email
 	result["experience"] = studentInfo.Experience
 	result["problem"] = studentInfo.Problem
+	result["location"] = studentInfo.Location
 	return result
 }

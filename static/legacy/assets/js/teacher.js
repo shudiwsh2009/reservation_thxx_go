@@ -719,6 +719,12 @@ function apiGetStudent(index, succCallback) {
 }
 
 function showStudent(student) {
+    var locationStr = "";
+    if (student.location === 1) {
+        locationStr = "线上咨询";
+    } else if (student.location === 2) {
+        locationStr = "线下咨询"
+    }
     $("body").append("\
 		<div class='admin_chakan' style='text-align: left'>\
 			姓名：" + student.fullname + "<br>\
@@ -728,6 +734,7 @@ function showStudent(student) {
 			手机：" + student.mobile + "<br>\
 			生源地：" + student.hometown + "<br>\
 			邮箱：" + student.email + "<br>\
+			" + (locationStr === "" ? "" : "咨询方式：" + locationStr + "<br>") + "\
 			是否使用本系统：" + student.experience + "<br>\
 			咨询问题：" + student.problem + "<br>\
 			<button type='button' onclick='$(\".admin_chakan\").remove();'>返回</button>\

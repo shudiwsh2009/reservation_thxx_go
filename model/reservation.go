@@ -79,6 +79,7 @@ type StudentInfo struct {
 	Email      string `bson:"email"`
 	Experience string `bson:"experience"`
 	Problem    string `bson:"problem"`
+	Location   int    `bson:"location"`
 }
 
 type StudentFeedback struct {

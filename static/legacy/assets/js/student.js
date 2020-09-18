@@ -88,6 +88,7 @@ function refreshDataTable(reservations) {
 }
 
 function refreshDataTableForGroups(reservationGroups) {
+    $("#page_maintable")[0].innerHTML = "";
     for (var i = 0; i < reservationGroups.length; i++) {
         var group = reservationGroups[i];
         $("#page_maintable").append("\
@@ -229,6 +230,7 @@ function makeReservation(id) {
 }
 
 function makeReservationData(id) {
+    let reservation = getReservationById(id);
     $("body").append("\
 		<div class='yuyue_stu' id='make_reservation_data_" + id + "' style='text-align:left;height:370px;overflow:scroll'>\
 			<div style='text-align:center;font-size:23px'>咨询申请表</div><br>\
@@ -239,6 +241,7 @@ function makeReservationData(id) {
 			生 源 地：<input id='hometown'/><br>\
 			手　　机：<input id='mobile'/><br>\
 			邮　　箱：<input id='email'/><br>\
+			<div id='location_div'></div>\
 			以前曾做过学习发展咨询、职业咨询或心理咨询吗？<select id='experience'><option value=''>请选择</option><option value='是'>是</option><option value='否'>否</option></select><br>\
 			请概括你最想要咨询的问题：<br>\
 			<textarea id='problem'></textarea><br>\
@@ -246,6 +249,17 @@ function makeReservationData(id) {
 			<button type='button' onclick='$(\".yuyue_stu\").remove();'>取消</button>\
 		</div>\
 	");
+    if (reservation.location === 1) {
+        $("#location_div").append("<select id='location'></select>");
+        $("#location").append(new Option("线上咨询", 1));
+    } else if (reservation.location === 2) {
+        $("#location_div").append("<select id='location'></select>");
+        $("#location").append(new Option("线下咨询", 2));
+    } else if (reservation.location === 3) {
+        $("#location_div").append("<select id='location'></select>");
+        $("#location").append(new Option("线上咨询", 1));
+        $("#location").append(new Option("线下咨询", 2));
+    }
     optimize(".yuyue_stu");
 }
 
@@ -306,6 +320,7 @@ function makeReservationConfirm(id) {
         email: email,
         experience: experience,
         problem: problem,
+        location: $("#location").val(),
     };
     $.ajax({
         type: "POST",
@@ -331,7 +346,7 @@ function makeReservationSuccess(id) {
 		<div class='yuyue_stu_success'>\
 			你已预约成功，<br>\
 			请关注短信提醒。<br>\
-			<button type='button' onclick='$(\".yuyue_stu_success\").remove();viewReservations();'>确定</button>\
+			<button type='button' onclick='$(\".yuyue_stu_success\").remove();viewGroupedReservations();'>确定</button>\
 		</div>\
 	");
     optimize(".yuyue_stu_success");
