@@ -9,7 +9,7 @@ import (
 )
 
 func (w *Workflow) AddReservationByTeacher(startTime string, endTime string, fullname string, fullnameEn string,
-	mobile string, userId string, userType int) (*model.Reservation, error) {
+	mobile string, location int, userId string, userType int) (*model.Reservation, error) {
 	if userId == "" {
 		return nil, re.NewRErrorCode("teacher not login", nil, re.ErrorNoLogin)
 	} else if userType != model.UserTypeTeacher {
@@ -24,6 +24,8 @@ func (w *Workflow) AddReservationByTeacher(startTime string, endTime string, ful
 		return nil, re.NewRErrorCodeContext("mobile is empty", nil, re.ErrorMissingParam, "mobile")
 	} else if !utils.IsMobile(mobile) {
 		return nil, re.NewRErrorCode("mobile format is wrong", nil, re.ErrorFormatMobile)
+	} else if location != model.LocationBoth && location != model.LocationOnline && location != model.LocationOffline {
+		return nil, re.NewRErrorCodeContext("location is invalid", nil, re.ErrorInvalidParam, "location")
 	}
 	teacher, err := w.MongoClient().GetTeacherById(userId)
 	if err != nil || teacher == nil || teacher.UserType != model.UserTypeTeacher {
@@ -70,6 +72,7 @@ func (w *Workflow) AddReservationByTeacher(startTime string, endTime string, ful
 		EndTime:           end,
 		Status:            model.ReservationStatusAvailable,
 		InternationalType: teacher.InternationalType,
+		Location:          location,
 		TeacherUsername:   teacher.Username,
 		TeacherFullname:   teacher.Fullname,
 		TeacherFullnameEn: teacher.FullnameEn,
@@ -84,7 +87,7 @@ func (w *Workflow) AddReservationByTeacher(startTime string, endTime string, ful
 }
 
 func (w *Workflow) EditReservationByTeacher(reservationId string, startTime string, endTime string, fullname string,
-	fullnameEn string, mobile string, userId string, userType int) (*model.Reservation, error) {
+	fullnameEn string, mobile string, location int, userId string, userType int) (*model.Reservation, error) {
 	if userId == "" {
 		return nil, re.NewRErrorCode("teacher not login", nil, re.ErrorNoLogin)
 	} else if userType != model.UserTypeTeacher {
@@ -101,6 +104,8 @@ func (w *Workflow) EditReservationByTeacher(reservationId string, startTime stri
 		return nil, re.NewRErrorCodeContext("mobile is empty", nil, re.ErrorMissingParam, "mobile")
 	} else if !utils.IsMobile(mobile) {
 		return nil, re.NewRErrorCode("mobile format is wrong", nil, re.ErrorFormatMobile)
+	} else if location != model.LocationBoth && location != model.LocationOnline && location != model.LocationOffline {
+		return nil, re.NewRErrorCodeContext("location is invalid", nil, re.ErrorInvalidParam, "location")
 	}
 	teacher, err := w.MongoClient().GetTeacherById(userId)
 	if err != nil || teacher == nil || teacher.UserType != model.UserTypeTeacher {
@@ -154,6 +159,7 @@ func (w *Workflow) EditReservationByTeacher(reservationId string, startTime stri
 	// 更新咨询
 	reservation.StartTime = start
 	reservation.EndTime = end
+	reservation.Location = location
 	reservation.TeacherFullname = teacher.Fullname
 	reservation.TeacherFullnameEn = teacher.FullnameEn
 	reservation.TeacherMobile = teacher.Mobile

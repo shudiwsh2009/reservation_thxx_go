@@ -153,7 +153,8 @@ function addReservation() {
     $("#cell_time_add")[0].onclick = "";
     $("#cell_time_add")[0].innerHTML = "<input type='text' id='input_date' style='width: 60px'/><br>"
         + "<input style='width:15px' id='start_hour'/>时<input style='width:15px' id='start_minute'/>分<br>"
-        + "<input style='width:15px' id='end_hour'/>时<input style='width:15px' id='end_minute'/>分";
+        + "<input style='width:15px' id='end_hour'/>时<input style='width:15px' id='end_minute'/>分<br>"
+        + "<select id='location'><option value='1'>线上咨询</option><option value='2'>线下咨询</option><option value='3'>线上线下均可</option></select>";
     $("#cell_teacher_fullname_add")[0].innerHTML = "<input id='teacher_fullname' style='width:80px' value='" + teacher.fullname + "'/><br>"
         + "<input id='teacher_fullname_en' style='width:80px' value='" + teacher.fullname_en + "'/>";
     $("#cell_teacher_mobile_add")[0].innerHTML = "<input id='teacher_mobile' style='width:120px' value='" + teacher.mobile + "'/>";
@@ -174,6 +175,7 @@ function addReservation() {
             $("#input_date").DatePickerHide();
         },
     });
+    $("#location").val(3);
     optimize("add");
 }
 
@@ -239,6 +241,7 @@ function addReservationConfirm() {
         fullname: $("#teacher_fullname").val(),
         fullname_en: $("#teacher_fullname_en").val(),
         mobile: $("#teacher_mobile").val(),
+        location: $("#location").val(),
     };
     $.ajax({
         type: "POST",
@@ -261,7 +264,8 @@ function editReservation(index) {
     $("#cell_time_" + index)[0].onclick = "";
     $("#cell_time_" + index)[0].innerHTML = "<input type='text' id='input_date' style='width:60px'/><br>"
         + "<input style='width:15px' id='start_hour'/>时<input style='width:15px' id='start_minute'/>分"
-        + "<input style='width:15px' id='end_hour'/>时<input style='width:15px' id='end_minute'/>分";
+        + "<input style='width:15px' id='end_hour'/>时<input style='width:15px' id='end_minute'/>分<br>"
+        + "<select id='location" + index + "'><option value='1'>线上咨询</option><option value='2'>线下咨询</option><option value='3'>线上线下均可</option></select>";
     $("#cell_teacher_fullname_" + index)[0].innerHTML = "<input id='teacher_fullname" + index + "' style='width:80px' "
         + "value='" + reservations[index].teacher_fullname + "'/><br>"
         + "<input id='teacher_fullname_en" + index + "' style='width:80px' "
@@ -285,6 +289,7 @@ function editReservation(index) {
             $("#input_date").DatePickerHide();
         },
     });
+    $("#location" + index).val(reservations[index].location > 0 ? reservations[index].location : 3);
     optimize();
 }
 
@@ -345,6 +350,7 @@ function editReservationConfirm(index) {
         fullname: $("#teacher_fullname" + index).val(),
         fullname_en: $("#teacher_fullname_en" + index).val(),
         mobile: $("#teacher_mobile" + index).val(),
+        location: $("#location" + index).val(),
     };
     $.ajax({
         type: "POST",
