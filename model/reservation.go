@@ -26,8 +26,8 @@ var (
 		LocationOffline: "线下咨询",
 	}
 	LocationDescEn = map[int]string{
-		LocationOnline:  "Online",
-		LocationOffline: "Offline",
+		LocationOnline:  "online",
+		LocationOffline: "offline",
 	}
 )
 

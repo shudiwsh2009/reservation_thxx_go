@@ -19,7 +19,7 @@ const (
 	SmsSuccessStudent               = "%s你好，你已成功预约星期%s（%d月%d日）%s-%s咨询，地点：%s。电话：62792453。"
 	SmsSuccessStudentWithLocation   = "%s你好，你已成功预约星期%s（%d月%d日）%s-%s咨询，地点：%s，咨询方式：%s。电话：62792453。"
 	SmsEnSuccessStudent             = "Dear %s, you have successfully made an appointment of advising service for %s (%s %d) from %s to %s in %s. Tel: 62792453."
-	SmsEnSuccessStudentWithLocation = "Dear %s, you have successfully made an appointment of advising service for %s (%s %d) from %s to %s in %s. The consultation method is %s. Tel: 62792453."
+	SmsEnSuccessStudentWithLocation = "Dear %s, you have successfully made an appointment of advising service for %s (%s %d) from %s to %s in %s. The service will be %s. Tel: 62792453."
 	SmsSuccessTeacher               = "%s您好，%s已预约您星期%s（%d月%d日）%s-%s咨询，地点：%s。电话：62792453。"
 	SmsSuccessTeacherWithLocation   = "%s您好，%s已预约您星期%s（%d月%d日）%s-%s咨询，地点：%s，咨询方式：%s。电话：62792453。"
 	SmsReminderStudent              = "温馨提示：%s你好，你已成功预约明天%s-%s咨询，地点：%s。电话：62792453。"
