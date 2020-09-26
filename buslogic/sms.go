@@ -16,15 +16,18 @@ import (
 )
 
 const (
-	SmsSuccessStudent       = "%s你好，你已成功预约星期%s（%d月%d日）%s-%s咨询，地点：%s。电话：62792453。"
-	SmsEnSuccessStudent     = "Dear %s, you have successfully made an appointment of advising service for %s (%s %d) from %s to %s in %s. Tel: 62792453."
-	SmsSuccessTeacher       = "%s您好，%s已预约您星期%s（%d月%d日）%s-%s咨询，地点：%s。电话：62792453。"
-	SmsReminderStudent      = "温馨提示：%s你好，你已成功预约明天%s-%s咨询，地点：%s。电话：62792453。"
-	SmsReminderTeacher      = "温馨提示：%s您好，%s已预约您明天%s-%s咨询，地点：%s。电话：62792453。"
-	SmsFeedbackStudent      = "温馨提示：%s你好，感谢使用我们的一对一咨询服务，请再次登录乐学预约界面，为咨询师反馈评分，帮助我们成长。"
-	SmsFeedbackStudentNight = "温馨提示：%s你好，你的咨询已经结束，请及时通过咨询预约平台填写反馈；如已填过反馈，请忽略本短信提醒。中心电话：62792453。"
-	SmsCancelTeacher        = "【预约取消通知】%s咨询师您好，您%d月%d日%s-%s的咨询预约已被取消，请知悉。"
-	SmsCancelStudent        = "【预约取消通知】%s同学您好，您%d月%d日%s-%s的咨询因故被取消，请知悉。电话：62792453。"
+	SmsSuccessStudent               = "%s你好，你已成功预约星期%s（%d月%d日）%s-%s咨询，地点：%s。电话：62792453。"
+	SmsSuccessStudentWithLocation   = "%s你好，你已成功预约星期%s（%d月%d日）%s-%s咨询，地点：%s，咨询方式：%s。电话：62792453。"
+	SmsEnSuccessStudent             = "Dear %s, you have successfully made an appointment of advising service for %s (%s %d) from %s to %s in %s. Tel: 62792453."
+	SmsEnSuccessStudentWithLocation = "Dear %s, you have successfully made an appointment of advising service for %s (%s %d) from %s to %s in %s. The consultation method is %s. Tel: 62792453."
+	SmsSuccessTeacher               = "%s您好，%s已预约您星期%s（%d月%d日）%s-%s咨询，地点：%s。电话：62792453。"
+	SmsSuccessTeacherWithLocation   = "%s您好，%s已预约您星期%s（%d月%d日）%s-%s咨询，地点：%s，咨询方式：%s。电话：62792453。"
+	SmsReminderStudent              = "温馨提示：%s你好，你已成功预约明天%s-%s咨询，地点：%s。电话：62792453。"
+	SmsReminderTeacher              = "温馨提示：%s您好，%s已预约您明天%s-%s咨询，地点：%s。电话：62792453。"
+	SmsFeedbackStudent              = "温馨提示：%s你好，感谢使用我们的一对一咨询服务，请再次登录乐学预约界面，为咨询师反馈评分，帮助我们成长。"
+	SmsFeedbackStudentNight         = "温馨提示：%s你好，你的咨询已经结束，请及时通过咨询预约平台填写反馈；如已填过反馈，请忽略本短信提醒。中心电话：62792453。"
+	SmsCancelTeacher                = "【预约取消通知】%s咨询师您好，您%d月%d日%s-%s的咨询预约已被取消，请知悉。"
+	SmsCancelStudent                = "【预约取消通知】%s同学您好，您%d月%d日%s-%s的咨询因故被取消，请知悉。电话：62792453。"
 )
 
 var (
@@ -48,16 +51,27 @@ func (w *Workflow) SendSuccessSMS(reservation *model.Reservation, teacher *model
 	studentSMS := fmt.Sprintf(SmsSuccessStudent, reservation.StudentInfo.Fullname, utils.ChineseShortWeekday[reservation.StartTime.Weekday()],
 		reservation.StartTime.Month(), reservation.StartTime.Day(), reservation.StartTime.Format("15:04"),
 		reservation.EndTime.Format("15:04"), reservation.TeacherAddress)
+	if locationDesc, ok := model.LocationDesc[reservation.StudentInfo.Location]; ok {
+		studentSMS = fmt.Sprintf(SmsSuccessStudentWithLocation, reservation.StudentInfo.Fullname, utils.ChineseShortWeekday[reservation.StartTime.Weekday()],
+			reservation.StartTime.Month(), reservation.StartTime.Day(), reservation.StartTime.Format("15:04"),
+			reservation.EndTime.Format("15:04"), reservation.TeacherAddress, locationDesc)
+	}
 	if teacher.SmsSuffix != "" {
 		studentSMS += teacher.SmsSuffix
 	}
 	if err := w.sendSMS(reservation.StudentInfo.Mobile, studentSMS); err != nil {
 		return err
 	}
+
 	if reservation.InternationalType == model.InternationalTypeChinglish {
 		studentSmsEn := fmt.Sprintf(SmsEnSuccessStudent, reservation.StudentInfo.Fullname, utils.EnglishWeekday[reservation.StartTime.Weekday()],
 			utils.EnglishShortMonth[reservation.StartTime.Month()], reservation.StartTime.Day(), reservation.StartTime.Format("15:04"),
 			reservation.EndTime.Format("15:04"), reservation.TeacherAddressEn)
+		if locationDesc, ok := model.LocationDescEn[reservation.StudentInfo.Location]; ok {
+			studentSmsEn = fmt.Sprintf(SmsEnSuccessStudentWithLocation, reservation.StudentInfo.Fullname, utils.EnglishWeekday[reservation.StartTime.Weekday()],
+				utils.EnglishShortMonth[reservation.StartTime.Month()], reservation.StartTime.Day(), reservation.StartTime.Format("15:04"),
+				reservation.EndTime.Format("15:04"), reservation.TeacherAddressEn, locationDesc)
+		}
 		if teacher.SmsSuffixEn != "" {
 			studentSmsEn += teacher.SmsSuffixEn
 		}
@@ -65,12 +79,19 @@ func (w *Workflow) SendSuccessSMS(reservation *model.Reservation, teacher *model
 			return err
 		}
 	}
+
 	teacherSMS := fmt.Sprintf(SmsSuccessTeacher, reservation.TeacherFullname, reservation.StudentInfo.Fullname,
 		utils.ChineseShortWeekday[reservation.StartTime.Weekday()], reservation.StartTime.Month(), reservation.StartTime.Day(),
 		reservation.StartTime.Format("15:04"), reservation.EndTime.Format("15:04"), reservation.TeacherAddress)
+	if locationDesc, ok := model.LocationDesc[reservation.StudentInfo.Location]; ok {
+		teacherSMS = fmt.Sprintf(SmsSuccessTeacherWithLocation, reservation.TeacherFullname, reservation.StudentInfo.Fullname,
+			utils.ChineseShortWeekday[reservation.StartTime.Weekday()], reservation.StartTime.Month(), reservation.StartTime.Day(),
+			reservation.StartTime.Format("15:04"), reservation.EndTime.Format("15:04"), reservation.TeacherAddress, locationDesc)
+	}
 	if err := w.sendSMS(reservation.TeacherMobile, teacherSMS); err != nil {
 		return err
 	}
+
 	return nil
 }
 

@@ -20,6 +20,17 @@ const (
 	LocationBoth    = 3 // 线上线下均可
 )
 
+var (
+	LocationDesc = map[int]string{
+		LocationOnline:  "线上咨询",
+		LocationOffline: "线下咨询",
+	}
+	LocationDescEn = map[int]string{
+		LocationOnline:  "Online",
+		LocationOffline: "Offline",
+	}
+)
+
 type Reservation struct {
 	Id                bson.ObjectId   `bson:"_id"`
 	StartTime         time.Time       `bson:"start_time"`
