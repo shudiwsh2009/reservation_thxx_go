@@ -36,7 +36,7 @@ func NewMongoClient() *MongoClient {
 		log.Fatalf("连接数据库失败：%v", err)
 	}
 	//defer session.Close()
-	session.SetMode(mgo.Monotonic, true)
+	session.SetMode(mgo.Eventual, true)
 	mongo := session.DB(config.Instance().MongoDatabase)
 	dbTeacher = mongo.C("teacher")
 	dbAdmin = mongo.C("admin")
