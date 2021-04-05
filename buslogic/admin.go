@@ -367,7 +367,7 @@ func (w *Workflow) MakeReservationByAdmin(reservationId string, fullname string,
 	}
 
 	//send success sms
-	go w.SendSuccessSMS(reservation, teacher)
+	go w.NotifyMakeReservationSuccess(reservation, teacher)
 	return reservation, nil
 }
 

@@ -49,7 +49,7 @@ var (
 	}
 )
 
-func (w *Workflow) SendSuccessSMS(reservation *model.Reservation, teacher *model.Teacher) error {
+func (w *Workflow) NotifyMakeReservationSuccess(reservation *model.Reservation, teacher *model.Teacher) error {
 	studentSMS := fmt.Sprintf(SmsSuccessStudent, reservation.StudentInfo.Fullname, utils.ChineseShortWeekday[reservation.StartTime.Weekday()],
 		reservation.StartTime.Month(), reservation.StartTime.Day(), reservation.StartTime.Format("15:04"),
 		reservation.EndTime.Format("15:04"), reservation.TeacherAddress)
@@ -64,6 +64,7 @@ func (w *Workflow) SendSuccessSMS(reservation *model.Reservation, teacher *model
 	if err := w.sendSMS(reservation.StudentInfo.Mobile, studentSMS); err != nil {
 		return err
 	}
+	go SendEmail("咨询预约成功", studentSMS, []string{reservation.StudentInfo.Email})
 
 	if reservation.InternationalType == model.InternationalTypeChinglish {
 		studentSmsEn := fmt.Sprintf(SmsEnSuccessStudent, reservation.StudentInfo.Fullname, utils.EnglishWeekday[reservation.StartTime.Weekday()],
@@ -80,6 +81,7 @@ func (w *Workflow) SendSuccessSMS(reservation *model.Reservation, teacher *model
 		if err := w.sendSMS(reservation.StudentInfo.Mobile, studentSmsEn); err != nil {
 			return err
 		}
+		go SendEmail("Appointment of advising service", studentSmsEn, []string{reservation.StudentInfo.Email})
 	}
 
 	teacherSMS := fmt.Sprintf(SmsSuccessTeacher, reservation.TeacherFullname, reservation.StudentInfo.Fullname,
