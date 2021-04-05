@@ -186,7 +186,7 @@ func (w *Workflow) sendSMS(mobile string, content string) error {
 		return re.NewRError(fmt.Sprintf("短信发送失败：failed to strconv.Atoi %s", responseBody), err)
 	}
 	if errCode > 0 {
-		log.Infof("Send SMS \"%s\" to %s: return %s", content, mobile, errCode)
+		log.Infof("Send SMS \"%s\" to %s: return %d", content, mobile, errCode)
 		return nil
 	}
 	errMsg, _ := SMS_ERROR_MSG[errCode]
