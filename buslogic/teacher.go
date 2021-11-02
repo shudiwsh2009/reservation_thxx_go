@@ -72,6 +72,7 @@ func (w *Workflow) AddReservationByTeacher(startTime string, endTime string, ful
 		EndTime:           end,
 		Status:            model.ReservationStatusAvailable,
 		InternationalType: teacher.InternationalType,
+		GraduateType:      teacher.GraduateType,
 		Location:          location,
 		TeacherUsername:   teacher.Username,
 		TeacherFullname:   teacher.Fullname,
@@ -496,6 +497,7 @@ func (w *Workflow) WrapSimpleTeacher(teacher *model.Teacher) map[string]interfac
 	result["problem"] = teacher.Problem
 	result["problem_en"] = teacher.ProblemEn
 	result["international_type"] = teacher.InternationalType
+	result["graduate_type"] = teacher.GraduateType
 	return result
 }
 

@@ -20,6 +20,10 @@ const (
 
 	InternationalTypeChinese   = 0
 	InternationalTypeChinglish = 1
+
+	GraduateTypeBoth  = 0 // 均可
+	GraduateTypeUnder = 1 // 仅限本科生
+	GraduateTypePost  = 2 // 仅限研究生
 )
 
 type Teacher struct {
@@ -46,6 +50,7 @@ type Teacher struct {
 	SmsSuffix         string        `bson:"sms_suffix"` // 发送短信自动添加后缀
 	SmsSuffixEn       string        `bson:"sms_suffix_en"`
 	InternationalType int           `bson:"international_type"` // 国际化类型：0、仅中文 1、中英双语
+	GraduateType      int           `bson:"graduate_type"` // 学生类型：0、均可 1、仅本科生 2、仅研究生
 	CreatedAt         time.Time     `bson:"created_at"`
 	UpdatedAt         time.Time     `bson:"updated_at"`
 }
