@@ -644,11 +644,12 @@ func (rc *ReservationController) EditTeacherInfoByAdmin(w http.ResponseWriter, r
 	problem := form.ParamString(r, "problem", "")
 	problemEn := form.ParamString(r, "problem_en", "")
 	internationalType := form.ParamInt(r, "international_type", model.InternationalTypeChinese)
+	graduateType := form.ParamInt(r, "graduate_type", model.GraduateTypeBoth)
 
 	var result = make(map[string]interface{})
 
 	_, err := service.Workflow().EditTeacherInfoByAdmin(username, fullname, fullnameEn, gender, genderEn, major, majorEn,
-		academic, academicEn, aptitude, aptitudeEn, problem, problemEn, internationalType, userId, userType)
+		academic, academicEn, aptitude, aptitudeEn, problem, problemEn, internationalType, graduateType, userId, userType)
 	if err != nil {
 		return http.StatusOK, wrapJsonError(err)
 	}

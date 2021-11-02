@@ -497,6 +497,7 @@ func (w *Workflow) WrapSimpleTeacher(teacher *model.Teacher) map[string]interfac
 	result["problem"] = teacher.Problem
 	result["problem_en"] = teacher.ProblemEn
 	result["international_type"] = teacher.InternationalType
+	result["graduate_type"] = teacher.GraduateType
 	return result
 }
 
