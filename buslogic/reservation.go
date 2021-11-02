@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func (w *Workflow) GetReservationsByStudent(language string) ([]*model.Reservation, error) {
+func (w *Workflow) GetReservationsByStudent(language string, student string) ([]*model.Reservation, error) {
 	from := time.Now().AddDate(0, 0, -7)
 	to := time.Now().AddDate(0, 0, 8)
 	reservations, err := w.MongoClient().GetReservationsBetweenTime(from, to)
@@ -20,9 +20,14 @@ func (w *Workflow) GetReservationsByStudent(language string) ([]*model.Reservati
 		if r.Status == model.ReservationStatusAvailable && r.StartTime.Before(time.Now()) {
 			continue
 		}
-		if (language == "zh_cn" && (r.InternationalType == model.InternationalTypeChinese || r.InternationalType == model.InternationalTypeChinglish)) ||
-			(language == "en_us" && r.InternationalType == model.InternationalTypeChinglish) {
-			// 过滤支持的语言
+		// 过滤支持的语言
+		matchInternationType := (language == "zh_cn" && (r.InternationalType == model.InternationalTypeChinese || r.InternationalType == model.InternationalTypeChinglish)) ||
+			(language == "en_us" && r.InternationalType == model.InternationalTypeChinglish)
+		// 过滤学生类型
+		matchGraduateType := r.GraduateType == model.GraduateTypeBoth ||
+			(student == "undergraduate" && r.GraduateType == model.GraduateTypeUnder) ||
+			(student == "postgraduate" && r.GraduateType == model.GraduateTypePost)
+		if matchInternationType && matchGraduateType {
 			result = append(result, r)
 		}
 	}
@@ -195,6 +200,7 @@ func (w *Workflow) WrapSimpleReservation(reservation *model.Reservation) map[str
 	result["end_time"] = reservation.EndTime.Format("2006-01-02 15:04")
 	result["status"] = reservation.Status
 	result["international_type"] = reservation.InternationalType
+	result["graduate_type"] = reservation.GraduateType
 	result["location"] = reservation.Location
 	if reservation.Status == model.ReservationStatusReservated && reservation.StartTime.Before(time.Now()) {
 		result["status"] = model.ReservationStatusFeedback

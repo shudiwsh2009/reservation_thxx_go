@@ -37,6 +37,7 @@ type Reservation struct {
 	EndTime           time.Time       `bson:"end_time"`
 	Status            int             `bson:"status"`
 	InternationalType int             `bson:"international_type"`
+	GraduateType      int             `bson:"graduate_type"`
 	Location          int             `bson:"location"`
 	TeacherUsername   string          `bson:"teacher_username"`
 	TeacherFullname   string          `bson:"teacher_fullname"`
@@ -84,7 +85,7 @@ type StudentInfo struct {
 	Fullname   string `bson:"fullname"`
 	Gender     string `bson:"gender"`
 	Username   string `bson:"username"`
-	School     string `bson:"school`
+	School     string `bson:"school"`
 	Hometown   string `bson:"hometown"`
 	Mobile     string `bson:"mobile"`
 	Email      string `bson:"email"`

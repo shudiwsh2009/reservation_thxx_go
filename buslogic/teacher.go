@@ -72,6 +72,7 @@ func (w *Workflow) AddReservationByTeacher(startTime string, endTime string, ful
 		EndTime:           end,
 		Status:            model.ReservationStatusAvailable,
 		InternationalType: teacher.InternationalType,
+		GraduateType:      teacher.GraduateType,
 		Location:          location,
 		TeacherUsername:   teacher.Username,
 		TeacherFullname:   teacher.Fullname,

@@ -12,8 +12,8 @@ import (
 )
 
 func (w *Workflow) AddReservationByAdmin(startTime string, endTime string, username string, fullname string,
-	fullnameEn string, mobile string, address string, addressEn string, internationalType int, location int,
-	userId string, userType int) (*model.Reservation, error) {
+	fullnameEn string, mobile string, address string, addressEn string, internationalType int, graduateType int,
+	location int, userId string, userType int) (*model.Reservation, error) {
 	if userId == "" {
 		return nil, re.NewRErrorCode("admin not login", nil, re.ErrorNoLogin)
 	} else if userType != model.UserTypeAdmin {
@@ -64,18 +64,21 @@ func (w *Workflow) AddReservationByAdmin(startTime string, endTime string, usern
 			Address:           address,
 			AddressEn:         addressEn,
 			InternationalType: internationalType,
+			GraduateType:      graduateType,
 		}
 		if err = w.MongoClient().InsertTeacher(teacher); err != nil {
 			return nil, re.NewRErrorCode("fail to insert teacher", err, re.ErrorDatabase)
 		}
 	} else if teacher.Fullname != fullname || teacher.FullnameEn != fullnameEn || teacher.Mobile != mobile ||
-		teacher.Address != address || teacher.AddressEn != addressEn || teacher.InternationalType != internationalType {
+		teacher.Address != address || teacher.AddressEn != addressEn || teacher.InternationalType != internationalType ||
+		teacher.GraduateType != graduateType {
 		teacher.Fullname = fullname
 		teacher.FullnameEn = fullnameEn
 		teacher.Mobile = mobile
 		teacher.Address = address
 		teacher.AddressEn = addressEn
 		teacher.InternationalType = internationalType
+		teacher.GraduateType = graduateType
 		if err = w.MongoClient().UpdateTeacher(teacher); err != nil {
 			return nil, re.NewRErrorCode("fail to update teacher", err, re.ErrorDatabase)
 		}
@@ -102,6 +105,7 @@ func (w *Workflow) AddReservationByAdmin(startTime string, endTime string, usern
 		EndTime:           end,
 		Status:            model.ReservationStatusAvailable,
 		InternationalType: teacher.InternationalType,
+		GraduateType:      teacher.GraduateType,
 		Location:          location,
 		TeacherUsername:   teacher.Username,
 		TeacherFullname:   teacher.Fullname,
@@ -117,8 +121,8 @@ func (w *Workflow) AddReservationByAdmin(startTime string, endTime string, usern
 }
 
 func (w *Workflow) EditReservationByAdmin(reservationId string, startTime string, endTime string, username string,
-	fullname string, fullnameEn string, mobile string, address string, addressEn string, internationalType int, location int,
-	userId string, userType int) (*model.Reservation, error) {
+	fullname string, fullnameEn string, mobile string, address string, addressEn string, internationalType int,
+	graduateType int, location int, userId string, userType int) (*model.Reservation, error) {
 	if userId == "" {
 		return nil, re.NewRErrorCode("admin not login", nil, re.ErrorNoLogin)
 	} else if userType != model.UserTypeAdmin {
@@ -177,6 +181,7 @@ func (w *Workflow) EditReservationByAdmin(reservationId string, startTime string
 			Address:           address,
 			AddressEn:         addressEn,
 			InternationalType: internationalType,
+			GraduateType:      graduateType,
 		}
 		if err = w.MongoClient().InsertTeacher(teacher); err != nil {
 			return nil, re.NewRErrorCode("fail to insert teacher", err, re.ErrorDatabase)
@@ -191,6 +196,7 @@ func (w *Workflow) EditReservationByAdmin(reservationId string, startTime string
 		teacher.Address = address
 		teacher.AddressEn = addressEn
 		teacher.InternationalType = internationalType
+		teacher.GraduateType = graduateType
 		if err = w.MongoClient().UpdateTeacher(teacher); err != nil {
 			return nil, re.NewRErrorCode("fail to update teacher", err, re.ErrorDatabase)
 		}
@@ -214,7 +220,8 @@ func (w *Workflow) EditReservationByAdmin(reservationId string, startTime string
 	// 更新咨询
 	reservation.StartTime = start
 	reservation.EndTime = end
-	reservation.InternationalType = internationalType
+	reservation.InternationalType = teacher.InternationalType
+	reservation.GraduateType = teacher.GraduateType
 	reservation.Location = location
 	reservation.TeacherUsername = teacher.Username
 	reservation.TeacherFullname = teacher.Fullname
