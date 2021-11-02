@@ -34,7 +34,7 @@ $(MAC_TARGET): $(GO_FILES)
 
 $(MAC_EXTERNAL): $(GO_FILES)
 	@printf "Building mac external go binary ......\n"
-	@env GOOS=darwin GOARCH=amd64 go build -race -o $@ ./external
+	@env GOOS=darwin GOARCH=amd64 go build -o $@ ./external
 
 $(LINUX_TARGET): $(GO_FILES)
 	@printf "Building linux go binary ......\n"
