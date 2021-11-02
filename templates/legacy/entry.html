@@ -20,9 +20,12 @@
                 <div class="white-border" id="login-form" style="margin-top: 20px">
                     <form class="form-signin">
                         <h3 class="form-signin-heading">请选择身份</h3>
-                        <button class="btn btn-lg btn-primary btn-block btn-getting-started" type="button" style="font-size: 20px" onclick="window.location.href='/appointment/student'">我是学生</button>
-                        <button class="btn btn-lg btn-primary btn-block btn-getting-started" type="button" style="font-size: 20px" onclick="window.location.href='/appointment/student/en'">
-                        International student</button>
+                        <button class="btn btn-lg btn-primary btn-block btn-getting-started" type="button" style="font-size: 20px" onclick="window.location.href='/appointment/student?student=undergraduate'">我是本科生</button>
+                        <button class="btn btn-lg btn-primary btn-block btn-getting-started" type="button" style="font-size: 20px" onclick="window.location.href='/appointment/student?student=postgraduate'">我是研究生</button>
+                        <button class="btn btn-lg btn-primary btn-block btn-getting-started" type="button" style="font-size: 16px" onclick="window.location.href='/appointment/student/en?student=undergraduate'">
+                        International undergraduate</button>
+                        <button class="btn btn-lg btn-primary btn-block btn-getting-started" type="button" style="font-size: 16px" onclick="window.location.href='/appointment/student/en?student=postgraduate'">
+                        International postgraduate</button>
                         <button class="btn btn-lg btn-primary btn-block btn-getting-started" type="button" style="font-size: 20px" onclick="window.location.href='/appointment/teacher'">我是咨询师</button>
                         <br />
                     </form>

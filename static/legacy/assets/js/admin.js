@@ -88,7 +88,7 @@ function refreshDataTable(reservations) {
 			</div>\
 		</div>\
 		<div class='table_col' id='col_time'>\
-			<div class='table_head table_cell'>时间</div>\
+			<div class='table_head table_cell'>时间地点</div>\
 		</div>\
 		<div class='table_col' id='col_teacher_fullname'>\
 			<div class='table_head table_cell'>咨询师</div>\
@@ -105,11 +105,14 @@ function refreshDataTable(reservations) {
 		<div class='table_col' id='col_international_type'>\
         	<div class='table_head table_cell'>支持语言</div>\
         </div>\
+        <div class='table_col' id='col_graduate_type'>\
+            <div class='table_head table_cell'>学生类型</div>\
+        </div>\
 		<div class='table_col' id='col_status'>\
 			<div class='table_head table_cell'>状态</div>\
 		</div>\
 		<div class='table_col' id='col_student'>\
-			<div class='table_head table_cell'>学生</div>\
+			<div class='table_head table_cell'>学生信息</div>\
 		</div>\
 		<div class='clearfix'></div>\
 	";
@@ -142,6 +145,13 @@ function refreshDataTable(reservations) {
         } else if (reservations[i].international_type === 1) {
             $("#col_international_type").append("<div class='table_cell' id='cell_international_type_" + i + "'>中英双语</div>");
         }
+        if (reservations[i].graduate_type === 0) {
+            $("#col_graduate_type").append("<div class='table_cell' id='cell_graduate_type_" + i + "'>均可</div>");
+        } else if (reservations[i].graduate_type === 1) {
+            $("#col_graduate_type").append("<div class='table_cell' id='cell_graduate_type_" + i + "'>仅本科生</div>");
+        } else if (reservations[i].graduate_type === 2) {
+            $("#col_graduate_type").append("<div class='table_cell' id='cell_graduate_type_" + i + "'>仅研究生</div>");
+        }
         if (reservations[i].status === 1) {
             $("#col_status").append("<div class='table_cell' id='cell_status_" + i + "'>未预约</div>");
             $("#col_student").append("<div class='table_cell' id='cell_student_" + i + "'>"
@@ -168,6 +178,7 @@ function refreshDataTable(reservations) {
     $("#col_teacher_mobile").append("<div class='table_cell' id='cell_teacher_mobile_add'></div>");
     $("#col_teacher_address").append("<div class='table_cell' id='cell_teacher_address_add'></div>");
     $("#col_international_type").append("<div class='table_cell' id='cell_international_type_add'></div>");
+    $("#col_graduate_type").append("<div class='table_cell' id='cell_graduate_type_add'></div>");
     $("#col_status").append("<div class='table_cell' id='cell_status_add'></div>");
     $("#col_student").append("<div class='table_cell' id='cell_student_add'></div>");
 }
@@ -180,6 +191,7 @@ function optimize(t) {
     $("#col_teacher_mobile").width(110);
     $("#col_teacher_address").width(300);
     $("#col_international_type").width(105);
+    $("#col_graduate_type").width(105);
     $("#col_status").width(85);
     $("#col_student").width(85);
     // $('#col0').css('margin-left',width*0.02+'px')
@@ -192,6 +204,7 @@ function optimize(t) {
             $("#cell_teacher_mobile_" + i).height(),
             $("#cell_teacher_address_" + i).height(),
             $("#cell_international_type_" + i).height(),
+            $("#cell_graduate_type_" + i).height(),
             $("#cell_status_" + i).height(),
             $("#cell_student_" + i).height()
         );
@@ -202,6 +215,7 @@ function optimize(t) {
         $("#cell_teacher_mobile_" + i).height(maxHeight);
         $("#cell_teacher_address_" + i).height(maxHeight);
         $("#cell_international_type_" + i).height(maxHeight);
+        $("#cell_graduate_type_" + i).height(maxHeight);
         $("#cell_status_" + i).height(maxHeight);
         $("#cell_student_" + i).height(maxHeight);
 
@@ -213,6 +227,7 @@ function optimize(t) {
             $("#cell_teacher_mobile_" + i).css("background-color", "white");
             $("#cell_teacher_address_" + i).css("background-color", "white");
             $("#cell_international_type_" + i).css("background-color", "white");
+            $("#cell_graduate_type_" + i).css("background-color", "white");
             $("#cell_status_" + i).css("background-color", "white");
             $("#cell_student_" + i).css("background-color", "white");
         } else {
@@ -223,6 +238,7 @@ function optimize(t) {
             $("#cell_teacher_mobile_" + i).css("background-color", "#f3f3ff");
             $("#cell_teacher_address_" + i).css("background-color", "#f3f3ff");
             $("#cell_international_type_" + i).css("background-color", "#f3f3ff");
+            $("#cell_graduate_type_" + i).css("background-color", "#f3f3ff");
             $("#cell_status_" + i).css("background-color", "#f3f3ff");
             $("#cell_student_" + i).css("background-color", "#f3f3ff");
         }
@@ -234,6 +250,7 @@ function optimize(t) {
     $("#cell_teacher_mobile_add").height(50);
     $("#cell_teacher_address_add").height(50);
     $("#cell_international_type_add").height(50);
+    $("#cell_graduate_type_add").height(50);
     $("#cell_status_add").height(50);
     $("#cell_student_add").height(50);
 
@@ -257,7 +274,8 @@ function addReservation() {
     $("#cell_teacher_mobile_add")[0].innerHTML = "<input id='teacher_mobile' style='width:120px'/>";
     $("#cell_teacher_address_add")[0].innerHTML = "<input id='teacher_address' style='width:180px' value='紫荆C楼407室'/><br>"
         + "<input id='teacher_address_en' style='width:180px' value='Room 407, Zijing C Building'/>";
-    $("#cell_international_type_add")[0].innerHTML = "<select id='international_type'><option value='0'>仅中文</option><option value='1'>中英双语</option></select>"
+    $("#cell_international_type_add")[0].innerHTML = "<select id='international_type'><option value='0'>仅中文</option><option value='1'>中英双语</option></select>";
+    $("#cell_graduate_type_add")[0].innerHTML = "<select id='graduate_type'><option value='0'>均可</option><option value='1'>仅本科生</option><option value='2'>仅研究生</option></select>";
     $("#cell_status_add")[0].innerHTML = "<button type='button' onclick='addReservationConfirm();'>确认</button>";
     $("#cell_student_add")[0].innerHTML = "<button type='button' onclick='window.location.reload();'>取消</button>";
     $("#input_date").datepicker({
@@ -347,6 +365,7 @@ function addReservationConfirm() {
         address: address,
         address_en: address_en,
         international_type: $("#international_type").val(),
+        graduate_type: $("#graduate_type").val(),
         location: $("#location").val(),
     };
     $.ajax({
@@ -387,6 +406,7 @@ function editReservation(index) {
         + "value='" + reservations[index].teacher_address + "'/><br>"
         + "<input id='teacher_address_en" + index + "' style='width:180px' value='" + reservations[index].teacher_address_en + "'/>";
     $("#cell_international_type_" + index)[0].innerHTML = "<select id='international_type" + index + "'><option value='0'>仅中文</option><option value='1'>中英双语</option></select>";
+    $("#cell_graduate_type_" + index)[0].innerHTML = "<select id='graduate_type" + index + "'><option value='0'>均可</option><option value='1'>仅本科生</option><option value='2'>仅研究生</option></select>";
     $("#cell_status_" + index)[0].innerHTML = "<button type='button' onclick='editReservationConfirm(" + index + ");'>确认</button>";
     $("#cell_student_" + index)[0].innerHTML = "<button type='button' onclick='window.location.reload();'>取消</button>";
     $("#input_date").datepicker({
@@ -398,6 +418,7 @@ function editReservation(index) {
         firstDay: 1
     });
     $("#international_type" + index).val(reservations[index].international_type);
+    $("#graduate_type" + index).val(reservations[index].graduate_type);
     $("#location" + index).val(reservations[index].location > 0 ? reservations[index].location : 3);
     optimize();
 }
@@ -478,6 +499,7 @@ function editReservationConfirm(index) {
         address: address,
         address_en: address_en,
         international_type: $("#international_type" + index).val(),
+        graduate_type: $("#graduate_type" + index).val(),
         location: $("#location" + index).val(),
     };
     $.ajax({
@@ -518,6 +540,7 @@ function searchTeacher(index) {
                 $("#teacher_address" + (index === undefined ? "" : index)).val(data.payload.teacher.address);
                 $("#teacher_address_en" + (index === undefined ? "" : index)).val(data.payload.teacher.address_en);
                 $("#international_type" + (index === undefined ? "" : index)).val(data.payload.teacher.international_type);
+                $("#graduate_type" + (index === undefined ? "" : index)).val(data.payload.teacher.graduate_type);
             }
         }
     });
@@ -956,6 +979,7 @@ function showTeacher(teacher) {
 			Consultable Questions：<br>\
 			<textarea id='show_teacher_problem_en' style='width:70%; height:60px;'></textarea><br>\
 			支持语言：<select id='show_teacher_international_type'><option value='0'>仅中文</option><option value='1'>中英双语</option></select><br>\
+            学生类型：<select id='show_teacher_graduate_type'><option value='0'>均可</option><option value='1'>仅本科生</option><option value='2'>仅研究生</option></select><br>\
 			<button type='button' onclick='editTeacher(" + teacher.username + ");'>保存</button>\
 			<button type='button' onclick='$(\".admin_chakan\").remove();'>关闭</button>\
 			<span id='edit_tip' style='color: red'></span>\
@@ -966,6 +990,7 @@ function showTeacher(teacher) {
     $('#show_teacher_problem').val(teacher.problem);
     $('#show_teacher_problem_en').val(teacher.problem_en);
     $('#show_teacher_international_type').val(teacher.international_type);
+    $('#show_teacher_graduate_type').val(teacher.graduate_type);
     optimize(".admin_chakan");
 }
 
@@ -1045,6 +1070,7 @@ function editTeacher(teacherUsername) {
         problem: problem,
         problem_en: problem_en,
         international_type: $('#show_teacher_international_type').val(),
+        graduate_type: $('#show_teacher_graduate_type').val(),
     };
     $.ajax({
         type: "POST",

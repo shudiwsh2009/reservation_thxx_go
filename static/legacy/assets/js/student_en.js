@@ -19,6 +19,7 @@ function viewReservations() {
 		url: "/api/student/reservation/view",
 		data: {
 			"language": "en_us",
+			"student": getUrlVars()['student'],
 		},
 		dataType: "json",
 		success: function(data) {
@@ -41,6 +42,7 @@ function viewGroupedReservations() {
 		url: "/api/student/reservation/view/group",
         data: {
             "language": "en_us",
+            "student": getUrlVars()['student'],
         },
 		dataType: "json",
 		success: function(data) {
