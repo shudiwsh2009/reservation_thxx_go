@@ -44,7 +44,6 @@ func (s *Server) ListenAndServe(addr string) error {
 	s.Middleware(server.NewRecoveryWare(s.isDebug))
 	s.Middleware(server.NewStatWare(ignoredUrls...))
 	s.Middleware(server.NewRuntimeWare(ignoredUrls, true, 15*time.Minute))
-	s.Middleware(s.wareWebpackAssets("webpack-assets.json", "bundles"))
 
 	s.Get("/debug/vars", "RuntimeStat", s.getRuntimeStat)
 	s.Files("/static/*filepath", http.Dir("static"))

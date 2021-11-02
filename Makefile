@@ -6,27 +6,18 @@ MAC_EXTERNAL = ./$(APP_NAME)-mac-external-$(APP_VERSION)
 LINUX_TARGET = ./$(APP_NAME)-linux-$(APP_VERSION)
 LINUX_EXTERNAL = ./$(APP_NAME)-linux-external-$(APP_VERSION)
 GO_FILES = $(shell find . -type f -name "*.go")
-BUNDLE = public/bundles
-ASSETS = $(shell find assets -type f)
 PID = .pid
-NODE_BIN = $(shell npm bin)
 #go server port
 PORT ?= 9000
-#webpack-dev-server port
-DEV_HOT_PORT ?= 8090
 
-build: clean $(BUNDLE) $(MAC_TARGET) $(MAC_EXTERNAL)
+build: clean $(MAC_TARGET) $(MAC_EXTERNAL)
 
 clean:
-	@rm -rf public/bundles
 	@rm -rf $(MAC_TARGET)
 	@rm -rf $(MAC_EXTERNAL)
 	@rm -rf $(LINUX_TARGET)
 	@rm -rf $(LINUX_EXTERNAL)
 	@rm -rf $(APP_NAME)-$(APP_VERSION).zip
-
-$(BUNDLE): $(ASSETS)
-	@$(NODE_BIN)/webpack --progress --colors
 
 $(MAC_TARGET): $(GO_FILES)
 	@printf "Building mac go binary ......\n"
@@ -47,16 +38,14 @@ $(LINUX_EXTERNAL): $(GO_FILES)
 kill:
 	@kill `cat $(PID)` || true
 
-dev: clean $(BUNDLE) $(MAC_TARGET) $(MAC_EXTERNAL) restart
-	@DEV_HOT=true NODE_ENV=development $(NODE_BIN)/webpack-dev-server --config webpack.config.js &
+dev: clean $(MAC_TARGET) $(MAC_EXTERNAL) restart
 	@printf "\n\nWaiting for the file change\n\n"
 	@fswatch --one-per-batch $(GO_FILES) | xargs -n1 -I{} make restart || make kill
 
 restart: kill $(MAC_TARGET)
 	@printf "\n\nrestart the app .........\n\n"
-	@$(MAC_TARGET) -debug --web=:$(PORT) --devWeb=:$(DEV_HOT_PORT) & echo $$! > $(PID)
+	@$(MAC_TARGET) -debug --web=:$(PORT) & echo $$! > $(PID)
 
 dist: clean $(LINUX_TARGET) $(LINUX_EXTERNAL)
-	@NODE_ENV=production $(NODE_BIN)/webpack --progress --colors
 	@zip -r -v $(APP_NAME)-$(APP_VERSION).zip $(LINUX_TARGET) $(LINUX_EXTERNAL) \
-    	webpack-assets.json public templates static deploy tools
+    	templates static deploy tools
