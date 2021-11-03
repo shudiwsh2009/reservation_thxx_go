@@ -116,9 +116,17 @@ function refreshDataTableForGroups(reservationGroups) {
 		");
 		for (var j = 0; j < group.reservations.length; j++) {
 			var id = group.reservations[j].id;
+			var locationStr = "";
+			if (group.reservations[j].location === 1) {
+					locationStr = "Online";
+			} else if (group.reservations[j].location === 2) {
+					locationStr = "Offline"
+			} else if (group.reservations[j].location === 3) {
+					locationStr = "Online/Offline"
+			}
 			$("#col_time_" + group.date).append("<div class='table_cell' id='cell_time_" + id + "'>"
 				+ group.reservations[j].start_time.substr(2) + "-"
-				+ group.reservations[j].end_time.split(" ")[1] + "</div>");
+				+ group.reservations[j].end_time.split(" ")[1] + "<br>" + locationStr + "</div>");
             $("#col_teacher_" + group.date).append("<div class='table_cell' id='cell_teacher_" + id
                 + "'><button type='button' id='cell_teacher_b_" + id + "' onclick='getTeacher(\"" + id
                 + "\")'>" + group.reservations[j].teacher_fullname_en + "</button></div>");
@@ -228,6 +236,7 @@ function makeReservation(id) {
 }
 
 function makeReservationData(id) {
+	let reservation = getReservationById(id);
 	$("body").append("\
 		<div class='yuyue_stu' id='make_reservation_data_" + id + "' style='text-align:left;height:370px;overflow:scroll'>\
 			<div style='text-align:center;font-size:23px'>Advising Application Form</div><br>\
@@ -238,6 +247,7 @@ function makeReservationData(id) {
 			Nationality   :<input id='hometown'/><br>\
 			Mobile No.    :<input id='mobile'/><br>\
 			Email         :<input id='email'/><br>\
+			<div id='location_div'></div>\
 			Have you ever accepted any advising service on academic development or career development or any mental health consulting ?<select id='experience'><option value=''>choose yes/no</option><option value='是'>yes</option><option value='否'>no</option></select><br>\
 			Please briefly tell us your problems to be solved.<br>\
 			<textarea id='problem'></textarea><br>\
@@ -245,6 +255,17 @@ function makeReservationData(id) {
 			<button type='button' onclick='$(\".yuyue_stu\").remove();'>Cancel</button>\
 		</div>\
 	");
+	if (reservation.location === 1) {
+			$("#location_div").append("<select id='location'></select>");
+			$("#location").append(new Option("Online", 1));
+	} else if (reservation.location === 2) {
+			$("#location_div").append("<select id='location'></select>");
+			$("#location").append(new Option("Offline", 2));
+	} else if (reservation.location === 3) {
+			$("#location_div").append("<select id='location'></select>");
+			$("#location").append(new Option("Online", 1));
+			$("#location").append(new Option("Offline", 2));
+	}
 	optimize(".yuyue_stu");
 }
 
@@ -305,6 +326,7 @@ function makeReservationConfirm(id) {
 	    email: email,
 	    experience: experience,
 	    problem: problem,
+			location: $("#location").val(),
 	};
 	$.ajax({
 		type: "POST",
@@ -329,7 +351,7 @@ function makeReservationSuccess(id) {
 	$("body").append("\
 		<div class='yuyue_stu_success'>\
 			Success! Please pay attention to SMS alerts!<br>\
-			<button type='button' onclick='$(\".yuyue_stu_success\").remove();viewReservations();'>Confirm</button>\
+			<button type='button' onclick='$(\".yuyue_stu_success\").remove();viewGroupedReservations();'>Confirm</button>\
 		</div>\
 	");
 	optimize(".yuyue_stu_success");
