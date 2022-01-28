@@ -10,7 +10,7 @@ PID = .pid
 #go server port
 PORT ?= 9000
 
-build: clean $(MAC_TARGET) $(MAC_EXTERNAL)
+build: clean $(LINUX_TARGET) $(LINUX_EXTERNAL)
 
 clean:
 	@rm -rf $(MAC_TARGET)
@@ -38,13 +38,13 @@ $(LINUX_EXTERNAL): $(GO_FILES)
 kill:
 	@kill `cat $(PID)` || true
 
-dev: clean $(MAC_TARGET) $(MAC_EXTERNAL) restart
+dev: clean $(LINUX_TARGET) $(LINUX_EXTERNAL) restart
 	@printf "\n\nWaiting for the file change\n\n"
 	@fswatch --one-per-batch $(GO_FILES) | xargs -n1 -I{} make restart || make kill
 
-restart: kill $(MAC_TARGET)
+restart: kill $(LINUX_TARGET)
 	@printf "\n\nrestart the app .........\n\n"
-	@$(MAC_TARGET) -debug --web=:$(PORT) & echo $$! > $(PID)
+	@$(LINUX_TARGET) -debug --web=:$(PORT) & echo $$! > $(PID)
 
 dist: clean $(LINUX_TARGET) $(LINUX_EXTERNAL)
 	@zip -r -v $(APP_NAME)-$(APP_VERSION).zip $(LINUX_TARGET) $(LINUX_EXTERNAL) \
