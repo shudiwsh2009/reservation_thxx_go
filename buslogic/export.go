@@ -6,7 +6,7 @@ import (
 	"github.com/shudiwsh2009/reservation_thxx_go/model"
 	re "github.com/shudiwsh2009/reservation_thxx_go/rerror"
 	"github.com/shudiwsh2009/reservation_thxx_go/utils"
-	"github.com/xuri/excelize"
+	"github.com/xuri/excelize/v2"
 	"path/filepath"
 	"sort"
 	"time"
