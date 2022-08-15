@@ -1,5 +1,7 @@
 IMPORT_PATH = $(shell echo `pwd` | sed "s|^$(GOPATH)/src/||g")
 APP_NAME = $(shell echo $(IMPORT_PATH) | sed 's:.*/::')
+# for ease of use
+CANONICAL_NAME = "reservation_thxx_go"
 APP_VERSION = 0.1
 MAC_TARGET = ./$(APP_NAME)-mac-$(APP_VERSION)
 MAC_EXTERNAL = ./$(APP_NAME)-mac-external-$(APP_VERSION)
@@ -49,3 +51,7 @@ restart: kill $(MAC_TARGET)
 dist: clean $(LINUX_TARGET) $(LINUX_EXTERNAL)
 	@zip -r -v $(APP_NAME)-$(APP_VERSION).zip $(LINUX_TARGET) $(LINUX_EXTERNAL) \
     	templates static deploy tools
+
+image:
+	@printf "\n\nBuilding linux image ......\n\n"
+	@docker build -t docker.student.tsinghua.edu.cn/$(CANONICAL_NAME):latest .
