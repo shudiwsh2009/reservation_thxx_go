@@ -5,7 +5,6 @@
 .pid
 *.exe
 deploy/
-tools/
 reservation_thxx_go
 reservation_thxx_go-*
 reservation_thxx_go.iml
