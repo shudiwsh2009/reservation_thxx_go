@@ -6,8 +6,8 @@ ENV GOOS=linux GOARCH=amd64 GOPROXY=https://goproxy.cn
 RUN go build -o reservation_thxx_go \
     && go build -o reservation_thxx_go_external ./external
 
-FROM ubuntu:latest AS runner
-RUN apt-get update && apt-get -y install tar cron mongodb-org-tools
+FROM ubuntu:20.04 AS runner
+RUN apt-get update && apt-get -y install tar cron mongo-tools
 WORKDIR /app
 COPY --from=builder /app/ .
 EXPOSE 9000
