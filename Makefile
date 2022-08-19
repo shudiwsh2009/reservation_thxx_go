@@ -40,7 +40,7 @@ $(LINUX_EXTERNAL): $(GO_FILES)
 kill:
 	@kill `cat $(PID)` || true
 
-dev: clean $(MAC_TARGET) $(MAC_EXTERNAL) $(LINUX_TARGET) $(LINUX_EXTERNAL) restart
+dev: clean $(MAC_TARGET) $(MAC_EXTERNAL) restart
 	@printf "\n\nWaiting for the file change\n\n"
 	@fswatch --one-per-batch $(GO_FILES) | xargs -n1 -I{} make restart || make kill
 
