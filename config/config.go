@@ -33,15 +33,10 @@ type Config struct {
 var conf *Config
 
 func (c *Config) IsStagingEnv() bool {
-	return c.isStaging
-}
-
-func (c *Config) IsTsinghuaEnv() bool {
-	return !c.isStaging && c.AppEnv == "TSINGHUA"
-}
-
-func (c *Config) IsAliyunEnv() bool {
-	return !c.isStaging && c.AppEnv == "ALIYUN"
+	if c.isStaging {
+		return true
+	}
+	return c.AppEnv != "PRODUCTION"
 }
 
 func Init(path string) *Config {
