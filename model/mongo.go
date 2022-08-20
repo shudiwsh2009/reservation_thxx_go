@@ -20,7 +20,7 @@ type MongoClient struct {
 func NewMongoClient() *MongoClient {
 	var session *mgo.Session
 	var err error
-	if config.Instance().IsStagingEnv() {
+	if config.Instance().IsStagingEnv() || config.Instance().IsTsinghuaEnv() {
 		session, err = mgo.Dial("127.0.0.1:27017")
 	} else {
 		mongoDbDialInfo := mgo.DialInfo{

@@ -12,7 +12,7 @@ const (
 
 func NewRedisClient() *redis.Client {
 	var client *redis.Client
-	if config.Instance().IsStagingEnv() {
+	if config.Instance().IsStagingEnv() || config.Instance().IsTsinghuaEnv() {
 		client = redis.NewClient(&redis.Options{
 			Addr:     "localhost:6379",
 			Password: "",
